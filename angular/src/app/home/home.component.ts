@@ -1,33 +1,14 @@
-import { Component } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Component, Injector, ChangeDetectionStrategy } from '@angular/core';
+import { AppComponentBase } from '@shared/app-component-base';
+import { appModuleAnimation } from '@shared/animations/routerTransition';
 
 @Component({
-  selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  animations: [appModuleAnimation()],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeComponent {
-  /** Based on the screen size, switch from standard to one column per row */
-  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({ matches }) => {
-      if (matches) {
-        return [
-          { title: 'Card 1', cols: 2, rows: 1 },
-          { title: 'Card 2', cols: 2, rows: 1 },
-          { title: 'Card 3', cols: 2, rows: 1 },
-          { title: 'Card 4', cols: 2, rows: 1 },
-        ];
-      }
-
-      return [
-        { title: 'Card 1', cols: 2, rows: 1 },
-        { title: 'Card 2', cols: 1, rows: 1 },
-        { title: 'Card 3', cols: 1, rows: 2 },
-        { title: 'Card 4', cols: 1, rows: 1 },
-      ];
-    })
-  );
-
-  constructor(private breakpointObserver: BreakpointObserver) {}
+export class HomeComponent extends AppComponentBase {
+  constructor(injector: Injector) {
+    super(injector);
+  }
 }

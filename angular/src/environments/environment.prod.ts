@@ -1,3 +1,7 @@
+// "Production" enabled environment
+
 export const environment = {
-  production: true
+    production: true,
+    hmr: false,
+    appConfig: 'appconfig.production.json'
 };
