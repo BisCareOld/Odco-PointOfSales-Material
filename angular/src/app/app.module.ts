@@ -29,9 +29,10 @@ import { AddressFormComponent } from './address-form/address-form.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
+import { UsersComponent } from './users/users.component';
 
 @NgModule({
-  declarations: [AppComponent, NavComponent, HomeComponent, TableComponent, AddressFormComponent],
+  declarations: [AppComponent, NavComponent, HomeComponent, TableComponent, AddressFormComponent, UsersComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
