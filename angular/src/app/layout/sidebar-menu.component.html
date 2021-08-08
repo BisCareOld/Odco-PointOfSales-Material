@@ -1,4 +1,4 @@
-<nav class="mt-2">
+<!-- <nav class="mt-2">
   <ul
     class="nav nav-pills nav-sidebar flex-column nav-flat"
     data-widget="treeview"
@@ -68,4 +68,29 @@
       </ng-container>
     </ul>
   </li>
+</ng-template> -->
+
+<ul
+  class="nav nav-pills nav-sidebar flex-column nav-flat"
+  data-widget="treeview"
+  role="menu"
+  data-accordion="false"
+>
+  <ng-container *ngFor="let item of menuItems">
+    <ng-container
+      *ngTemplateOutlet="sidebarInner; context: { item: item }"
+    ></ng-container>
+  </ng-container>
+</ul>
+
+<ng-template #sidebarInner let-item="item">
+  <a
+    mat-list-item
+    *ngIf="item.route && item.route.indexOf('http') != 0"
+    class="nav-link"
+    [routerLink]="item.route"
+    [class.active]="item.isActive"
+  >
+    {{ item.label }}
+  </a>
 </ng-template>
