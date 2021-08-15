@@ -1,3 +1,56 @@
+<mat-card>
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input
+      matInput
+      name="keyword"
+      [placeholder]="'SearchWithThreeDot' | localize"
+      [(ngModel)]="keyword"
+      (keyup.enter)="getDataPage(1)"
+      #input
+    />
+  </mat-form-field>
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <!-- <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef>No.</th>
+      <td mat-cell *matCellDef="let element">{{ element.position }}</td>
+    </ng-container> -->
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>{{ "RoleName" | localize }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+
+    <!-- Display Name Column -->
+    <ng-container matColumnDef="display-name">
+      <th mat-header-cell *matHeaderCellDef>{{ "DisplayName" | localize }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.displayName }}</td>
+    </ng-container>
+
+    <!-- Action Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-button color="accent" (click)="editRole(element)">
+          {{ "Edit" | localize }}
+        </button>
+        <button mat-button color="warn" (click)="delete(element)">
+          {{ "Delete" | localize }}
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</mat-card>
+
 <div [@routerTransition]>
   <section class="content-header">
     <div class="container-fluid">
@@ -6,9 +59,7 @@
           <h1>{{ "Roles" | localize }}</h1>
         </div>
         <div class="col-6 text-right">
-          <a href="javascript:;"
-            class="btn bg-blue"
-            (click)="createRole()">
+          <a href="javascript:;" class="btn bg-blue" (click)="createRole()">
             <i class="fa fa-plus-square"></i>
             {{ "Create" | localize }}
           </a>
@@ -25,56 +76,68 @@
             <div class="col-md-6">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <button type="button"
+                  <button
+                    type="button"
                     class="btn bg-blue"
-                    (click)="getDataPage(1)">
+                    (click)="getDataPage(1)"
+                  >
                     <i class="fas fa-search"></i>
                   </button>
                 </div>
-                <input type="text"
+                <input
+                  type="text"
                   class="form-control"
                   name="keyword"
                   [placeholder]="'SearchWithThreeDot' | localize"
                   [(ngModel)]="keyword"
-                  (keyup.enter)="getDataPage(1)" />
+                  (keyup.enter)="getDataPage(1)"
+                />
               </div>
             </div>
           </div>
         </div>
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table table-striped table-bordered"
-              [busy]="isTableLoading">
+            <table
+              class="table table-striped table-bordered"
+              [busy]="isTableLoading"
+            >
               <thead class="bg-light">
                 <tr>
                   <th>{{ "RoleName" | localize }}</th>
                   <th>{{ "DisplayName" | localize }}</th>
-                  <th style="width: 200px;">{{ "Actions" | localize }}</th>
+                  <th style="width: 200px">{{ "Actions" | localize }}</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="
-                  let role of roles
-                    | paginate
-                      : {
-                          id: 'server',
-                          itemsPerPage: pageSize,
-                          currentPage: pageNumber,
-                          totalItems: totalItems
-                        }
-                ">
+                <tr
+                  *ngFor="
+                    let role of roles
+                      | paginate
+                        : {
+                            id: 'server',
+                            itemsPerPage: pageSize,
+                            currentPage: pageNumber,
+                            totalItems: totalItems
+                          }
+                  "
+                >
                   <td>{{ role.name }}</td>
                   <td>{{ role.displayName }}</td>
                   <td>
-                    <button type="button"
+                    <button
+                      type="button"
                       class="btn btn-sm bg-secondary"
-                      (click)="editRole(role)">
+                      (click)="editRole(role)"
+                    >
                       <i class="fas fa-pencil-alt"></i>
                       {{ "Edit" | localize }}
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       class="btn btn-sm bg-danger mx-2"
-                      (click)="delete(role)">
+                      (click)="delete(role)"
+                    >
                       <i class="fas fa-trash"></i>
                       {{ "Delete" | localize }}
                     </button>
@@ -87,8 +150,7 @@
         <div class="card-footer table-card-footer bg-light border-top">
           <div class="row">
             <div class="col-sm-4 col-12 text-sm-left text-center">
-              <button class="btn btn-secondary"
-                (click)="refresh()">
+              <button class="btn btn-secondary" (click)="refresh()">
                 <i class="fas fa-redo-alt"></i>
               </button>
             </div>
@@ -99,8 +161,10 @@
             </div>
             <div class="col-sm-4 col-12">
               <div class="float-sm-right m-auto">
-                <abp-pagination-controls id="server"
-                  (pageChange)="getDataPage($event)">
+                <abp-pagination-controls
+                  id="server"
+                  (pageChange)="getDataPage($event)"
+                >
                 </abp-pagination-controls>
               </div>
             </div>

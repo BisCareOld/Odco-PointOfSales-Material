@@ -57,3 +57,11 @@
     </ul>
   </nav>
 </pagination-template>
+
+<mat-paginator
+  [length]="100"
+  [pageSize]="10"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="pageEvent = $event"
+>
+</mat-paginator>

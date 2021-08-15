@@ -20,8 +20,8 @@ import { CreateTenantDialogComponent } from "./tenants/create-tenant/create-tena
 import { EditTenantDialogComponent } from "./tenants/edit-tenant/edit-tenant-dialog.component";
 // roles
 import { RolesComponent } from "@app/roles/roles.component";
-import { CreateRoleDialogComponent } from "./roles/create-role/create-role-dialog.component";
-import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.component";
+// import { CreateRoleDialogComponent } from "./roles/create-role/create-role-dialog.component";
+// import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.component";
 // users
 import { UsersComponent } from "@app/users/users.component";
 import { CreateUserDialogComponent } from "@app/users/create-user/create-user-dialog.component";
@@ -47,6 +47,12 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatPaginatorModule } from "@angular/material/paginator";
+import { MatTableModule } from "@angular/material/table";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatCardModule } from "@angular/material/card";
+import { MatDialogModule } from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -59,8 +65,8 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
     EditTenantDialogComponent,
     // roles
     RolesComponent,
-    CreateRoleDialogComponent,
-    EditRoleDialogComponent,
+    // CreateRoleDialogComponent,
+    // EditRoleDialogComponent,
     // users
     UsersComponent,
     CreateUserDialogComponent,
@@ -100,6 +106,12 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
     MatIconModule,
     MatListModule,
     MatSlideToggleModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCardModule,
+    MatDialogModule,
   ],
   providers: [],
   entryComponents: [
@@ -107,8 +119,8 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
     CreateTenantDialogComponent,
     EditTenantDialogComponent,
     // roles
-    CreateRoleDialogComponent,
-    EditRoleDialogComponent,
+    // CreateRoleDialogComponent,
+    // EditRoleDialogComponent,
     // users
     CreateUserDialogComponent,
     EditUserDialogComponent,
