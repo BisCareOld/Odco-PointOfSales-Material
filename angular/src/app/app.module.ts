@@ -3,11 +3,11 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientJsonpModule } from "@angular/common/http";
 import { HttpClientModule } from "@angular/common/http";
-import { ModalModule } from "ngx-bootstrap/modal";
-import { BsDropdownModule } from "ngx-bootstrap/dropdown";
-import { CollapseModule } from "ngx-bootstrap/collapse";
-import { TabsModule } from "ngx-bootstrap/tabs";
-import { NgxPaginationModule } from "ngx-pagination";
+//import { ModalModule } from "ngx-bootstrap/modal";
+//import { BsDropdownModule } from "ngx-bootstrap/dropdown";
+//import { CollapseModule } from "ngx-bootstrap/collapse";
+//import { TabsModule } from "ngx-bootstrap/tabs";
+//import { NgxPaginationModule } from "ngx-pagination";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { ServiceProxyModule } from "@shared/service-proxies/service-proxy.module";
@@ -91,14 +91,14 @@ import { MatDialogModule } from "@angular/material/dialog";
     ReactiveFormsModule,
     HttpClientModule,
     HttpClientJsonpModule,
-    ModalModule.forChild(),
-    BsDropdownModule,
-    CollapseModule,
-    TabsModule,
+    //ModalModule.forChild(),
+    //BsDropdownModule,
+    //CollapseModule,
+    //TabsModule,
     AppRoutingModule,
     ServiceProxyModule,
     SharedModule,
-    NgxPaginationModule,
+    //NgxPaginationModule,
     LayoutModule,
     MatToolbarModule,
     MatButtonModule,
