@@ -33,8 +33,6 @@
     "lodash-es": "^4.17.15",
     "moment": "2.24.0",
     "moment-timezone": "^0.5.28",
-    "ngx-bootstrap": "^5.6.2",
-    "ngx-pagination": "^5.1.1",
     "push.js": "1.0.12",
     "rxjs": "^6.4.0",
     "sweetalert2": "^9.10.12",
