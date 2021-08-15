@@ -22,6 +22,7 @@ class PagedUsersRequestDto extends PagedRequestDto {
 
 @Component({
   templateUrl: "./users.component.html",
+  styleUrls: ["./users.component.css"],
   animations: [appModuleAnimation()],
 })
 export class UsersComponent extends PagedListingComponentBase<UserDto> {
@@ -29,6 +30,15 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
   keyword = "";
   isActive: boolean | null;
   advancedFiltersVisible = false;
+
+  displayedColumns: string[] = [
+    "user-name",
+    "full-name",
+    "email-address",
+    "is-active",
+    "actions",
+  ];
+  dataSource;
 
   constructor(
     injector: Injector,
@@ -78,6 +88,7 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
       )
       .subscribe((result: UserDtoPagedResultDto) => {
         this.users = result.items;
+        this.dataSource = result.items;
         this.showPaging(result, pageNumber);
       });
   }
