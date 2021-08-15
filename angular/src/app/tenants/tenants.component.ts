@@ -1,18 +1,18 @@
-import { Component, Injector } from '@angular/core';
-import { finalize } from 'rxjs/operators';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { appModuleAnimation } from '@shared/animations/routerTransition';
+import { Component, Injector } from "@angular/core";
+import { finalize } from "rxjs/operators";
+import { BsModalService, BsModalRef } from "ngx-bootstrap/modal";
+import { appModuleAnimation } from "@shared/animations/routerTransition";
 import {
   PagedListingComponentBase,
   PagedRequestDto,
-} from '@shared/paged-listing-component-base';
+} from "@shared/paged-listing-component-base";
 import {
   TenantServiceProxy,
   TenantDto,
   TenantDtoPagedResultDto,
-} from '@shared/service-proxies/service-proxies';
-import { CreateTenantDialogComponent } from './create-tenant/create-tenant-dialog.component';
-import { EditTenantDialogComponent } from './edit-tenant/edit-tenant-dialog.component';
+} from "@shared/service-proxies/service-proxies";
+// import { CreateTenantDialogComponent } from './create-tenant/create-tenant-dialog.component';
+// import { EditTenantDialogComponent } from './edit-tenant/edit-tenant-dialog.component';
 
 class PagedTenantsRequestDto extends PagedRequestDto {
   keyword: string;
@@ -20,14 +20,18 @@ class PagedTenantsRequestDto extends PagedRequestDto {
 }
 
 @Component({
-  templateUrl: './tenants.component.html',
-  animations: [appModuleAnimation()]
+  templateUrl: "./tenants.component.html",
+  styleUrls: ["./tenants.component.css"],
+  animations: [appModuleAnimation()],
 })
 export class TenantsComponent extends PagedListingComponentBase<TenantDto> {
   tenants: TenantDto[] = [];
-  keyword = '';
+  keyword = "";
   isActive: boolean | null;
   advancedFiltersVisible = false;
+
+  displayedColumns: string[] = ["tenant-name", "name", "is-active", "actions"];
+  dataSource;
 
   constructor(
     injector: Injector,
@@ -59,13 +63,14 @@ export class TenantsComponent extends PagedListingComponentBase<TenantDto> {
       )
       .subscribe((result: TenantDtoPagedResultDto) => {
         this.tenants = result.items;
+        this.dataSource = result.items;
         this.showPaging(result, pageNumber);
       });
   }
 
   delete(tenant: TenantDto): void {
     abp.message.confirm(
-      this.l('TenantDeleteWarningMessage', tenant.name),
+      this.l("TenantDeleteWarningMessage", tenant.name),
       undefined,
       (result: boolean) => {
         if (result) {
@@ -73,7 +78,7 @@ export class TenantsComponent extends PagedListingComponentBase<TenantDto> {
             .delete(tenant.id)
             .pipe(
               finalize(() => {
-                abp.notify.success(this.l('SuccessfullyDeleted'));
+                abp.notify.success(this.l("SuccessfullyDeleted"));
                 this.refresh();
               })
             )
@@ -92,33 +97,32 @@ export class TenantsComponent extends PagedListingComponentBase<TenantDto> {
   }
 
   showCreateOrEditTenantDialog(id?: number): void {
-    let createOrEditTenantDialog: BsModalRef;
-    if (!id) {
-      createOrEditTenantDialog = this._modalService.show(
-        CreateTenantDialogComponent,
-        {
-          class: 'modal-lg',
-        }
-      );
-    } else {
-      createOrEditTenantDialog = this._modalService.show(
-        EditTenantDialogComponent,
-        {
-          class: 'modal-lg',
-          initialState: {
-            id: id,
-          },
-        }
-      );
-    }
-
-    createOrEditTenantDialog.content.onSave.subscribe(() => {
-      this.refresh();
-    });
+    // let createOrEditTenantDialog: BsModalRef;
+    // if (!id) {
+    //   createOrEditTenantDialog = this._modalService.show(
+    //     CreateTenantDialogComponent,
+    //     {
+    //       class: "modal-lg",
+    //     }
+    //   );
+    // } else {
+    //   createOrEditTenantDialog = this._modalService.show(
+    //     EditTenantDialogComponent,
+    //     {
+    //       class: "modal-lg",
+    //       initialState: {
+    //         id: id,
+    //       },
+    //     }
+    //   );
+    // }
+    // createOrEditTenantDialog.content.onSave.subscribe(() => {
+    //   this.refresh();
+    // });
   }
 
   clearFilters(): void {
-    this.keyword = '';
+    this.keyword = "";
     this.isActive = undefined;
     this.getDataPage(1);
   }
