@@ -1,6 +1,6 @@
 import { Component, Injector } from "@angular/core";
 import { finalize } from "rxjs/operators";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+// import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import {
   PagedListingComponentBase,
@@ -35,7 +35,7 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   constructor(
     injector: Injector,
     private _rolesService: RoleServiceProxy,
-    private _modalService: BsModalService,
+    //private _modalService: BsModalService,
     private _matDialogService: MatDialog
   ) {
     super(injector);

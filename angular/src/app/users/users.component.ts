@@ -1,6 +1,6 @@
 import { Component, Injector } from "@angular/core";
 import { finalize } from "rxjs/operators";
-import { BsModalService, BsModalRef } from "ngx-bootstrap/modal";
+//import { BsModalService, BsModalRef } from "ngx-bootstrap/modal";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import {
   PagedListingComponentBase,
@@ -42,8 +42,7 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
 
   constructor(
     injector: Injector,
-    private _userService: UserServiceProxy,
-    private _modalService: BsModalService
+    private _userService: UserServiceProxy //private _modalService: BsModalService
   ) {
     super(injector);
   }
@@ -118,7 +117,7 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
   }
 
   private showCreateOrEditUserDialog(id?: number): void {
-    let createOrEditUserDialog: BsModalRef;
+    //let createOrEditUserDialog: BsModalRef;
     if (!id) {
       // createOrEditUserDialog = this._modalService.show(
       //   CreateUserDialogComponent,
@@ -138,8 +137,8 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
       // );
     }
 
-    createOrEditUserDialog.content.onSave.subscribe(() => {
-      this.refresh();
-    });
+    // createOrEditUserDialog.content.onSave.subscribe(() => {
+    //   this.refresh();
+    // });
   }
 }
