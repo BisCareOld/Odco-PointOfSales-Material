@@ -14,6 +14,7 @@ import {
 // import { CreateRoleDialogComponent } from "./create-role/create-role-dialog.component";
 import { EditRoleDialogComponent } from "./edit-role/edit-role-dialog.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { CreateRoleDialogComponent } from "./create-role/create-role-dialog.component";
 
 class PagedRolesRequestDto extends PagedRequestDto {
   keyword: string;
@@ -95,7 +96,7 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   showCreateOrEditRoleDialog(id?: number): void {
     //let createOrEditRoleDialog: BsModalRef;
     //let createOrEditRoleDialog: MatDialogRef<>;
-
+    let mat;
     if (!id) {
       // let createOrEditRoleDialog = this._modalService.show(
       //   CreateRoleDialogComponent,
@@ -103,6 +104,7 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
       //     class: "modal-lg",
       //   }
       // );
+      mat = this._matDialogService.open(CreateRoleDialogComponent);
     } else {
       // let createOrEditRoleDialog = this._matDialogService.open(
       //   EditRoleDialogComponent,
@@ -119,11 +121,13 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
       // );
       // let createOrEditRoleDialog =
       //   this._matDialogService.open(MatEditRoleComponent);
-      this._matDialogService.open(EditRoleDialogComponent, {
+      mat = this._matDialogService.open(EditRoleDialogComponent, {
         data: { id: id },
       });
     }
-
+    mat.afterClosed().subscribe(() => {
+      this.refresh();
+    });
     // let createOrEditRoleDialog.content.onSave.subscribe(() => {
     //   this.refresh();
     // });

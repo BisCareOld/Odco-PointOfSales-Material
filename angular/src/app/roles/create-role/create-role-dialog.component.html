@@ -1,1 +1,84 @@
-<p>create-role-dialog works!</p>
+<form #createRoleForm="ngForm" (ngSubmit)="save()">
+  <!-- Dialog Header -->
+  <h3>{{ "CreateNewRole" | localize }}</h3>
+
+  <!-- Dialog Content -->
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab [label]="'Details' | localize">
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "Name" | localize }}</mat-label>
+          <input
+            matInput
+            name="name"
+            required
+            minlength="2"
+            maxlength="32"
+            [(ngModel)]="role.name"
+            #nameModel="ngModel"
+            #nameEl
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="nameModel"
+          [controlEl]="nameEl"
+        ></abp-validation-summary>
+      </div>
+
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "DisplayName" | localize }}</mat-label>
+          <input
+            matInput
+            name="displayName"
+            required
+            minlength="2"
+            maxlength="32"
+            [(ngModel)]="role.displayName"
+            #displayNameModel="ngModel"
+            #displayNameEl
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="displayNameModel"
+          [controlEl]="displayNameEl"
+        ></abp-validation-summary>
+      </div>
+
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "RoleDescription" | localize }}</mat-label>
+          <textarea
+            matInput
+            name="description"
+            [(ngModel)]="role.description"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="'Permissions' | localize">
+      <ng-container *ngFor="let permission of permissions; let i = index">
+        <div>
+          <mat-checkbox
+            [id]="'permission_' + i"
+            [checked]="isPermissionChecked(permission.name)"
+            (change)="onPermissionChange(permission, $event)"
+          >
+            {{ permission.displayName }}
+          </mat-checkbox>
+        </div>
+      </ng-container>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Dialog Footer -->
+  <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+  <button
+    mat-button
+    color="accent"
+    [disabled]="!createRoleForm.form.valid || saving"
+  >
+    {{ "Submit" | localize }}
+  </button>
+</form>
