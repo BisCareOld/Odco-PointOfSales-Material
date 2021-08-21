@@ -53,6 +53,8 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
 import { MatDialogModule } from "@angular/material/dialog";
+import { EditRoleComponent } from './roles/edit-role/edit-role.component';
+import { CreateRoleComponent } from './roles/create-role/create-role.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +86,8 @@ import { MatDialogModule } from "@angular/material/dialog";
     SidebarUserPanelComponent,
     SidebarMenuComponent,
     NavComponent,
+    EditRoleComponent,
+    CreateRoleComponent,
   ],
   imports: [
     CommonModule,

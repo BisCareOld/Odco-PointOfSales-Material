@@ -41,3 +41,12 @@ $dark-theme: mat-dark-theme(
 .unicorn-dark-theme {
   @include angular-material-color($dark-theme);
 }
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
