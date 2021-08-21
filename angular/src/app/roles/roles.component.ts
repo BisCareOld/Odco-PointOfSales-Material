@@ -1,6 +1,5 @@
 import { Component, Injector } from "@angular/core";
 import { finalize } from "rxjs/operators";
-// import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import {
   PagedListingComponentBase,
@@ -11,10 +10,9 @@ import {
   RoleDto,
   RoleDtoPagedResultDto,
 } from "@shared/service-proxies/service-proxies";
-// import { CreateRoleDialogComponent } from "./create-role/create-role-dialog.component";
-import { EditRoleDialogComponent } from "./edit-role/edit-role-dialog.component";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { CreateRoleDialogComponent } from "./create-role/create-role-dialog.component";
+import { EditRoleDialogComponent } from "./edit-role/edit-role-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 class PagedRolesRequestDto extends PagedRequestDto {
   keyword: string;
@@ -36,7 +34,6 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   constructor(
     injector: Injector,
     private _rolesService: RoleServiceProxy,
-    //private _modalService: BsModalService,
     private _matDialogService: MatDialog
   ) {
     super(injector);
@@ -94,42 +91,16 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   }
 
   showCreateOrEditRoleDialog(id?: number): void {
-    //let createOrEditRoleDialog: BsModalRef;
-    //let createOrEditRoleDialog: MatDialogRef<>;
-    let mat;
+    let materialDialog;
     if (!id) {
-      // let createOrEditRoleDialog = this._modalService.show(
-      //   CreateRoleDialogComponent,
-      //   {
-      //     class: "modal-lg",
-      //   }
-      // );
-      mat = this._matDialogService.open(CreateRoleDialogComponent);
+      materialDialog = this._matDialogService.open(CreateRoleDialogComponent);
     } else {
-      // let createOrEditRoleDialog = this._matDialogService.open(
-      //   EditRoleDialogComponent,
-      //   {
-      //     class: "modal-lg",
-      //     initialState: {
-      //       id: id,
-      //     },
-      //   }
-      // );
-      // let createOrEditRoleDialog = this._matDialogService.open(
-      //   EditRoleDialogComponent,
-      //   { data: { id: id } }
-      // );
-      // let createOrEditRoleDialog =
-      //   this._matDialogService.open(MatEditRoleComponent);
-      mat = this._matDialogService.open(EditRoleDialogComponent, {
+      materialDialog = this._matDialogService.open(EditRoleDialogComponent, {
         data: { id: id },
       });
     }
-    mat.afterClosed().subscribe(() => {
+    materialDialog.afterClosed().subscribe(() => {
       this.refresh();
     });
-    // let createOrEditRoleDialog.content.onSave.subscribe(() => {
-    //   this.refresh();
-    // });
   }
 }
