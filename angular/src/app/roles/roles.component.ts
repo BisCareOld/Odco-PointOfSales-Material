@@ -12,9 +12,8 @@ import {
   RoleDtoPagedResultDto,
 } from "@shared/service-proxies/service-proxies";
 // import { CreateRoleDialogComponent } from "./create-role/create-role-dialog.component";
-// import { EditRoleDialogComponent } from "./edit-role/edit-role-dialog.component";
+import { EditRoleDialogComponent } from "./edit-role/edit-role-dialog.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-//import { MatEditRoleComponent } from "./mat-edit-role/mat-edit-role.component";
 
 class PagedRolesRequestDto extends PagedRequestDto {
   keyword: string;
@@ -29,6 +28,7 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   roles: RoleDto[] = [];
   keyword = "";
 
+  // Localization in TS file => this.l('Save')
   displayedColumns: string[] = ["name", "display-name", "actions"];
   dataSource;
 
@@ -119,6 +119,9 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
       // );
       // let createOrEditRoleDialog =
       //   this._matDialogService.open(MatEditRoleComponent);
+      this._matDialogService.open(EditRoleDialogComponent, {
+        data: { id: id },
+      });
     }
 
     // let createOrEditRoleDialog.content.onSave.subscribe(() => {

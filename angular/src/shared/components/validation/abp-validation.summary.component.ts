@@ -4,42 +4,45 @@ import {
   Injector,
   Renderer2,
   ElementRef,
-  OnInit
-} from '@angular/core';
-import { AbstractControl } from '@angular/forms';
-import { AppComponentBase } from '@shared/app-component-base';
-import { AbpValidationError } from './abp-validation.api';
+  OnInit,
+} from "@angular/core";
+import { AbstractControl } from "@angular/forms";
+import { AppComponentBase } from "@shared/app-component-base";
+import { AbpValidationError } from "./abp-validation.api";
 
 @Component({
-  selector: 'abp-validation-summary',
-  templateUrl: './abp-validation.summary.component.html'
+  selector: "abp-validation-summary",
+  templateUrl: "./abp-validation.summary.component.html",
+  styleUrls: ["./abp-validation.summary.component.scss"],
 })
-export class AbpValidationSummaryComponent extends AppComponentBase implements OnInit {
-
+export class AbpValidationSummaryComponent
+  extends AppComponentBase
+  implements OnInit
+{
   defaultValidationErrors: Partial<AbpValidationError>[] = [
-    { name: 'required', localizationKey: 'ThisFieldIsRequired' },
+    { name: "required", localizationKey: "ThisFieldIsRequired" },
     {
-      name: 'minlength',
-      localizationKey: 'PleaseEnterAtLeastNCharacter',
-      propertyKey: 'requiredLength',
+      name: "minlength",
+      localizationKey: "PleaseEnterAtLeastNCharacter",
+      propertyKey: "requiredLength",
     },
     {
-      name: 'maxlength',
-      localizationKey: 'PleaseEnterNoMoreThanNCharacter',
-      propertyKey: 'requiredLength',
+      name: "maxlength",
+      localizationKey: "PleaseEnterNoMoreThanNCharacter",
+      propertyKey: "requiredLength",
     },
     {
-      name: 'email',
-      localizationKey: 'InvalidEmailAddress',
+      name: "email",
+      localizationKey: "InvalidEmailAddress",
     },
     {
-      name: 'pattern',
-      localizationKey: 'InvalidPattern',
-      propertyKey: 'requiredPattern',
+      name: "pattern",
+      localizationKey: "InvalidPattern",
+      propertyKey: "requiredPattern",
     },
     {
-      name: 'validateEqual',
-      localizationKey: 'PairsDoNotMatch',
+      name: "validateEqual",
+      localizationKey: "PairsDoNotMatch",
     },
   ];
   validationErrors = <AbpValidationError[]>this.defaultValidationErrors;
@@ -71,7 +74,7 @@ export class AbpValidationSummaryComponent extends AppComponentBase implements O
           this.control.valid &&
           (this.control.dirty || this.control.touched)
         ) {
-          this._renderer.removeClass(this.controlEl, 'is-invalid');
+          this._renderer.removeClass(this.controlEl, "is-invalid");
         }
       });
     }
@@ -79,7 +82,7 @@ export class AbpValidationSummaryComponent extends AppComponentBase implements O
 
   getValidationErrorMessage(error: AbpValidationError): string {
     if (this.controlEl) {
-      this._renderer.addClass(this.controlEl, 'is-invalid');
+      this._renderer.addClass(this.controlEl, "is-invalid");
     }
 
     const propertyValue = this.control.errors[error.name][error.propertyKey];

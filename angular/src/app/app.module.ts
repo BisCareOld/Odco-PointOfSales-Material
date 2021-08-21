@@ -22,6 +22,8 @@ import { TenantsComponent } from "@app/tenants/tenants.component";
 import { RolesComponent } from "@app/roles/roles.component";
 // import { CreateRoleDialogComponent } from "./roles/create-role/create-role-dialog.component";
 // import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.component";
+import { CreateRoleDialogComponent } from "./roles/create-role/create-role-dialog.component";
+import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.component";
 // users
 import { UsersComponent } from "@app/users/users.component";
 // import { CreateUserDialogComponent } from "@app/users/create-user/create-user-dialog.component";
@@ -53,8 +55,9 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatCardModule } from "@angular/material/card";
 import { MatDialogModule } from "@angular/material/dialog";
-import { EditRoleComponent } from './roles/edit-role/edit-role.component';
-import { CreateRoleComponent } from './roles/create-role/create-role.component';
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatGridListModule } from "@angular/material/grid-list";
 
 @NgModule({
   declarations: [
@@ -86,8 +89,8 @@ import { CreateRoleComponent } from './roles/create-role/create-role.component';
     SidebarUserPanelComponent,
     SidebarMenuComponent,
     NavComponent,
-    EditRoleComponent,
-    CreateRoleComponent,
+    CreateRoleDialogComponent,
+    EditRoleDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -116,6 +119,9 @@ import { CreateRoleComponent } from './roles/create-role/create-role.component';
     MatInputModule,
     MatCardModule,
     MatDialogModule,
+    MatTabsModule,
+    MatCheckboxModule,
+    MatGridListModule,
   ],
   providers: [],
   entryComponents: [
@@ -123,8 +129,8 @@ import { CreateRoleComponent } from './roles/create-role/create-role.component';
     // CreateTenantDialogComponent,
     // EditTenantDialogComponent,
     // roles
-    // CreateRoleDialogComponent,
-    // EditRoleDialogComponent,
+    CreateRoleDialogComponent,
+    EditRoleDialogComponent,
     // users
     // CreateUserDialogComponent,
     // EditUserDialogComponent,

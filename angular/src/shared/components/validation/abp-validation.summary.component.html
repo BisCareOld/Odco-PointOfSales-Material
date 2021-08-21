@@ -2,7 +2,7 @@
   <ng-container *ngFor="let validationError of validationErrors">
     <span
       *ngIf="!!this.control.errors[validationError.name]"
-      class="error invalid-feedback"
+      class="error mat-error invalid-feedback"
       [class.d-block]="!!this.control.errors[validationError.name]"
     >
       {{ getValidationErrorMessage(validationError) }}
