@@ -1,4 +1,4 @@
-import { Component, Injector, OnChanges } from "@angular/core";
+import { Component, Injector } from "@angular/core";
 import { finalize } from "rxjs/operators";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import {
@@ -32,8 +32,6 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   displayedColumns: string[] = ["name", "display-name", "actions"];
   dataSource;
 
-  // MatPaginator Output
-  pageEvent: PageEvent;
   pageSizeOptions: number[] = [5, 10, 25, 100];
 
   constructor(
@@ -110,7 +108,6 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   }
 
   onChangePage(event: PageEvent) {
-    console.log(event);
     this.pageSize = event.pageSize;
     this.getDataPage(event.pageIndex + 1);
   }
