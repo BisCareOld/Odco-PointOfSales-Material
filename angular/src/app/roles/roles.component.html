@@ -59,13 +59,11 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
 
-      <mat-paginator
-        [length]="totalItems"
-        [pageSize]="10"
-        [pageSizeOptions]="pageSizeOptions"
-        (page)="onChangePage($event)"
+      <abp-pagination-controls
+        [totalItems]="totalItems"
+        (pageChange)="pageChanges($event)"
       >
-      </mat-paginator>
+      </abp-pagination-controls>
     </div>
   </mat-card>
 </div>
