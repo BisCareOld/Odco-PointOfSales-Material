@@ -1,75 +1,80 @@
-<mat-card>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="showCreateOrEditRoleDialog()"
-    style="float: right"
-  >
-    Create
-  </button>
-  <mat-form-field>
-    <mat-label>Filter</mat-label>
-    <input
-      matInput
-      name="keyword"
-      [placeholder]="'SearchWithThreeDot' | localize"
-      [(ngModel)]="keyword"
-      (keyup.enter)="getDataPage(1)"
-      #input
-    />
-  </mat-form-field>
-
-  <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource">
-      <!--- Note that these columns can be defined in any order.
-            The actual rendered columns are set as a property on the row definition" -->
-
-      <!-- Position Column -->
-      <!-- <ng-container matColumnDef="position">
-        <th mat-header-cell *matHeaderCellDef>No.</th>
-        <td mat-cell *matCellDef="let element">{{ element.position }}</td>
-      </ng-container> -->
-
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>{{ "RoleName" | localize }}</th>
-        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-      </ng-container>
-
-      <!-- Display Name Column -->
-      <ng-container matColumnDef="display-name">
-        <th mat-header-cell *matHeaderCellDef>
-          {{ "DisplayName" | localize }}
-        </th>
-        <td mat-cell *matCellDef="let element">{{ element.displayName }}</td>
-      </ng-container>
-
-      <!-- Action Column -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-button color="accent" (click)="editRole(element)">
-            {{ "Edit" | localize }}
-          </button>
-          <button mat-button color="warn" (click)="delete(element)">
-            {{ "Delete" | localize }}
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-
-    <mat-paginator
-      [length]="totalItems"
-      [pageSize]="10"
-      [pageSizeOptions]="pageSizeOptions"
-      (page)="onChangePage($event)"
+<div [@routerTransition]>
+  <section class="mat-typography">
+    <h1>{{ "Roles" | localize }}</h1>
+  </section>
+  <mat-card>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="showCreateOrEditRoleDialog()"
+      style="float: right"
     >
-    </mat-paginator>
-  </div>
-</mat-card>
+      Create
+    </button>
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input
+        matInput
+        name="keyword"
+        [placeholder]="'SearchWithThreeDot' | localize"
+        [(ngModel)]="keyword"
+        (keyup.enter)="getDataPage(1)"
+        #input
+      />
+    </mat-form-field>
+
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource">
+        <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Position Column -->
+        <!-- <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef>No.</th>
+          <td mat-cell *matCellDef="let element">{{ element.position }}</td>
+        </ng-container> -->
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>{{ "RoleName" | localize }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <!-- Display Name Column -->
+        <ng-container matColumnDef="display-name">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "DisplayName" | localize }}
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.displayName }}</td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-button color="accent" (click)="editRole(element)">
+              {{ "Edit" | localize }}
+            </button>
+            <button mat-button color="warn" (click)="delete(element)">
+              {{ "Delete" | localize }}
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="10"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onChangePage($event)"
+      >
+      </mat-paginator>
+    </div>
+  </mat-card>
+</div>
 
 <!-- <div [@routerTransition]>
   <section class="content-header">
