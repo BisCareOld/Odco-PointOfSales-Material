@@ -1,6 +1,5 @@
 import { Component, Injector } from "@angular/core";
 import { finalize } from "rxjs/operators";
-//import { BsModalService, BsModalRef } from "ngx-bootstrap/modal";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import {
   PagedListingComponentBase,
@@ -10,9 +9,11 @@ import {
   UserServiceProxy,
   UserDto,
   UserDtoPagedResultDto,
+  CreateUserDto,
 } from "@shared/service-proxies/service-proxies";
-// import { CreateUserDialogComponent } from "./create-user/create-user-dialog.component";
-// import { EditUserDialogComponent } from "./edit-user/edit-user-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
+import { CreateUserDialogComponent } from "./create-user/create-user-dialog.component";
+import { EditUserDialogComponent } from "./edit-user/edit-user-dialog.component";
 // import { ResetPasswordDialogComponent } from "./reset-password/reset-password.component";
 
 class PagedUsersRequestDto extends PagedRequestDto {
@@ -42,7 +43,8 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
 
   constructor(
     injector: Injector,
-    private _userService: UserServiceProxy //private _modalService: BsModalService
+    private _userService: UserServiceProxy,
+    private _matDialogService: MatDialog
   ) {
     super(injector);
   }
@@ -117,28 +119,21 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
   }
 
   private showCreateOrEditUserDialog(id?: number): void {
-    //let createOrEditUserDialog: BsModalRef;
+    let materialDialog;
     if (!id) {
-      // createOrEditUserDialog = this._modalService.show(
-      //   CreateUserDialogComponent,
-      //   {
-      //     class: "modal-lg",
-      //   }
-      // );
+      materialDialog = this._matDialogService.open(CreateUserDialogComponent);
     } else {
-      // createOrEditUserDialog = this._modalService.show(
-      //   EditUserDialogComponent,
-      //   {
-      //     class: "modal-lg",
-      //     initialState: {
-      //       id: id,
-      //     },
-      //   }
-      // );
+      materialDialog = this._matDialogService.open(EditUserDialogComponent, {
+        data: { id: id },
+      });
     }
+    materialDialog.afterClosed().subscribe(() => {
+      this.refresh();
+    });
+  }
 
-    // createOrEditUserDialog.content.onSave.subscribe(() => {
-    //   this.refresh();
-    // });
+  pageChanges($event) {
+    this.pageSize = $event.pageSize;
+    this.getDataPage($event.pageIndex);
   }
 }
