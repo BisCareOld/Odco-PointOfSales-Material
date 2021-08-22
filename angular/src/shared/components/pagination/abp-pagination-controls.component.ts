@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { PageEvent } from "@angular/material/paginator";
 
 @Component({
   selector: "abp-pagination-controls",
@@ -18,8 +17,6 @@ export class AbpPaginationControlsComponent {
   private _directionLinks = true;
   private _autoHide = false;
 
-  pageSizeOptions: number[] = [5, 10, 25, 100];
-
   @Input()
   get directionLinks(): boolean {
     return this._directionLinks;
@@ -33,16 +30,5 @@ export class AbpPaginationControlsComponent {
   }
   set autoHide(value: boolean) {
     this._autoHide = !!value && <any>value !== "false";
-  }
-
-  // MatPaginator Output
-  pageEvent: PageEvent;
-
-  setPageSizeOptions(setPageSizeOptionsInput: string) {
-    if (setPageSizeOptionsInput) {
-      this.pageSizeOptions = setPageSizeOptionsInput
-        .split(",")
-        .map((str) => +str);
-    }
   }
 }

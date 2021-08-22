@@ -1,4 +1,4 @@
-import { Component, Injector } from "@angular/core";
+import { Component, Injector, OnChanges } from "@angular/core";
 import { finalize } from "rxjs/operators";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import {
@@ -13,6 +13,7 @@ import {
 import { CreateRoleDialogComponent } from "./create-role/create-role-dialog.component";
 import { EditRoleDialogComponent } from "./edit-role/edit-role-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
+import { PageEvent } from "@angular/material/paginator";
 
 class PagedRolesRequestDto extends PagedRequestDto {
   keyword: string;
@@ -30,6 +31,10 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   // Localization in TS file => this.l('Save')
   displayedColumns: string[] = ["name", "display-name", "actions"];
   dataSource;
+
+  // MatPaginator Output
+  pageEvent: PageEvent;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
 
   constructor(
     injector: Injector,
@@ -102,5 +107,11 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
     materialDialog.afterClosed().subscribe(() => {
       this.refresh();
     });
+  }
+
+  onChangePage(event: PageEvent) {
+    console.log(event);
+    this.pageSize = event.pageSize;
+    this.getDataPage(event.pageIndex + 1);
   }
 }
