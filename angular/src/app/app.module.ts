@@ -28,7 +28,7 @@ import { UsersComponent } from "@app/users/users.component";
 // import { EditUserDialogComponent } from "@app/users/edit-user/edit-user-dialog.component";
 import { CreateUserDialogComponent } from "./users/create-user/create-user-dialog.component";
 import { EditUserDialogComponent } from "./users/edit-user/edit-user-dialog.component";
-
+import { ResetPasswordDialogComponent } from "./users/reset-password/reset-password.component";
 // import { ChangePasswordComponent } from "./users/change-password/change-password.component";
 // import { ResetPasswordDialogComponent } from "./users/reset-password/reset-password.component";
 // layout
@@ -77,6 +77,7 @@ import { MatGridListModule } from "@angular/material/grid-list";
     UsersComponent,
     CreateUserDialogComponent,
     EditUserDialogComponent,
+    ResetPasswordDialogComponent,
     // ChangePasswordComponent,
     // ResetPasswordDialogComponent,
     // layout
@@ -133,7 +134,7 @@ import { MatGridListModule } from "@angular/material/grid-list";
     // users
     CreateUserDialogComponent,
     EditUserDialogComponent,
-    // ResetPasswordDialogComponent,
+    ResetPasswordDialogComponent,
   ],
 })
 export class AppModule {}

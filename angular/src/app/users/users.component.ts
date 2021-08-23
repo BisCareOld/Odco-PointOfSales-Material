@@ -14,6 +14,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { CreateUserDialogComponent } from "./create-user/create-user-dialog.component";
 import { EditUserDialogComponent } from "./edit-user/edit-user-dialog.component";
+import { ResetPasswordDialogComponent } from "./reset-password/reset-password.component";
 // import { ResetPasswordDialogComponent } from "./reset-password/reset-password.component";
 
 class PagedUsersRequestDto extends PagedRequestDto {
@@ -110,12 +111,9 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
   }
 
   private showResetPasswordUserDialog(id?: number): void {
-    // this._modalService.show(ResetPasswordDialogComponent, {
-    //   class: "modal-lg",
-    //   initialState: {
-    //     id: id,
-    //   },
-    // });
+    this._matDialogService.open(ResetPasswordDialogComponent, {
+      data: { id: id },
+    });
   }
 
   private showCreateOrEditUserDialog(id?: number): void {

@@ -28,12 +28,6 @@
         <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
 
-        <!-- Position Column -->
-        <!-- <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef>No.</th>
-      <td mat-cell *matCellDef="let element">{{ element.position }}</td>
-    </ng-container> -->
-
         <!-- User Name Column -->
         <ng-container matColumnDef="user-name">
           <th mat-header-cell *matHeaderCellDef>{{ "UserName" | localize }}</th>
@@ -67,8 +61,13 @@
             <button mat-button color="accent" (click)="editUser(element)">
               {{ "Edit" | localize }}
             </button>
+
             <button mat-button color="warn" (click)="delete(element)">
               {{ "Delete" | localize }}
+            </button>
+
+            <button mat-button color="primary" (click)="resetPassword(element)">
+              {{ "ResetPassword" | localize }}
             </button>
           </td>
         </ng-container>
