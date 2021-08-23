@@ -24,13 +24,10 @@ import { CreateRoleDialogComponent } from "./roles/create-role/create-role-dialo
 import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.component";
 // users
 import { UsersComponent } from "@app/users/users.component";
-// import { CreateUserDialogComponent } from "@app/users/create-user/create-user-dialog.component";
-// import { EditUserDialogComponent } from "@app/users/edit-user/edit-user-dialog.component";
 import { CreateUserDialogComponent } from "./users/create-user/create-user-dialog.component";
 import { EditUserDialogComponent } from "./users/edit-user/edit-user-dialog.component";
+import { ChangePasswordComponent } from "./users/change-password/change-password.component";
 import { ResetPasswordDialogComponent } from "./users/reset-password/reset-password.component";
-// import { ChangePasswordComponent } from "./users/change-password/change-password.component";
-// import { ResetPasswordDialogComponent } from "./users/reset-password/reset-password.component";
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
@@ -77,9 +74,8 @@ import { MatGridListModule } from "@angular/material/grid-list";
     UsersComponent,
     CreateUserDialogComponent,
     EditUserDialogComponent,
+    ChangePasswordComponent,
     ResetPasswordDialogComponent,
-    // ChangePasswordComponent,
-    // ResetPasswordDialogComponent,
     // layout
     HeaderComponent,
     HeaderLeftNavbarComponent,
