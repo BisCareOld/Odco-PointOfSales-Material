@@ -11,6 +11,14 @@
     >
       {{ "Create" | localize }}
     </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="refresh()"
+      style="float: right"
+    >
+      {{ "Refresh" | localize }}
+    </button>
     <mat-form-field>
       <mat-label>Filter</mat-label>
       <input

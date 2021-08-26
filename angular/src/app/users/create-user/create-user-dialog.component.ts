@@ -17,7 +17,6 @@ import { AbpValidationError } from "@shared/components/validation/abp-validation
 import { MatDialogRef } from "@angular/material/dialog";
 
 @Component({
-  selector: "app-create-user-dialog",
   templateUrl: "./create-user-dialog.component.html",
   styleUrls: ["./create-user-dialog.component.scss"],
 })

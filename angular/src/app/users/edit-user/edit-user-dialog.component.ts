@@ -21,7 +21,6 @@ import {
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({
-  selector: "app-edit-user-dialog",
   templateUrl: "./edit-user-dialog.component.html",
   styleUrls: ["./edit-user-dialog.component.scss"],
 })

@@ -1,4 +1,4 @@
-<form #createUserModal="ngForm" (ngSubmit)="save()">
+<form #createUserModal="ngForm" autocomplete="off" (ngSubmit)="save()">
   <!-- Dialog Header -->
   <h3>{{ "CreateNewUser" | localize }}</h3>
 
@@ -67,6 +67,7 @@
         <mat-form-field class="example-full-width">
           <mat-label>{{ "Password" | localize }}</mat-label>
           <input
+            type="password"
             matInput
             name="password"
             required
@@ -90,6 +91,7 @@
         <mat-form-field class="example-full-width">
           <mat-label>{{ "ConfirmPassword" | localize }}</mat-label>
           <input
+            type="password"
             matInput
             name="confirmPassword"
             required
