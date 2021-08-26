@@ -20,16 +20,14 @@ import { TenantsComponent } from "@app/tenants/tenants.component";
 // import { EditTenantDialogComponent } from "./tenants/edit-tenant/edit-tenant-dialog.component";
 // roles
 import { RolesComponent } from "@app/roles/roles.component";
-// import { CreateRoleDialogComponent } from "./roles/create-role/create-role-dialog.component";
-// import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.component";
 import { CreateRoleDialogComponent } from "./roles/create-role/create-role-dialog.component";
 import { EditRoleDialogComponent } from "./roles/edit-role/edit-role-dialog.component";
 // users
 import { UsersComponent } from "@app/users/users.component";
-// import { CreateUserDialogComponent } from "@app/users/create-user/create-user-dialog.component";
-// import { EditUserDialogComponent } from "@app/users/edit-user/edit-user-dialog.component";
-// import { ChangePasswordComponent } from "./users/change-password/change-password.component";
-// import { ResetPasswordDialogComponent } from "./users/reset-password/reset-password.component";
+import { CreateUserDialogComponent } from "./users/create-user/create-user-dialog.component";
+import { EditUserDialogComponent } from "./users/edit-user/edit-user-dialog.component";
+import { ChangePasswordComponent } from "./users/change-password/change-password.component";
+import { ResetPasswordDialogComponent } from "./users/reset-password/reset-password.component";
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
@@ -70,14 +68,14 @@ import { MatGridListModule } from "@angular/material/grid-list";
     // EditTenantDialogComponent,
     // roles
     RolesComponent,
-    // CreateRoleDialogComponent,
-    // EditRoleDialogComponent,
+    CreateRoleDialogComponent,
+    EditRoleDialogComponent,
     // users
     UsersComponent,
-    // CreateUserDialogComponent,
-    // EditUserDialogComponent,
-    // ChangePasswordComponent,
-    // ResetPasswordDialogComponent,
+    CreateUserDialogComponent,
+    EditUserDialogComponent,
+    ChangePasswordComponent,
+    ResetPasswordDialogComponent,
     // layout
     HeaderComponent,
     HeaderLeftNavbarComponent,
@@ -89,8 +87,6 @@ import { MatGridListModule } from "@angular/material/grid-list";
     SidebarUserPanelComponent,
     SidebarMenuComponent,
     NavComponent,
-    CreateRoleDialogComponent,
-    EditRoleDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -132,9 +128,9 @@ import { MatGridListModule } from "@angular/material/grid-list";
     CreateRoleDialogComponent,
     EditRoleDialogComponent,
     // users
-    // CreateUserDialogComponent,
-    // EditUserDialogComponent,
-    // ResetPasswordDialogComponent,
+    CreateUserDialogComponent,
+    EditUserDialogComponent,
+    ResetPasswordDialogComponent,
   ],
 })
 export class AppModule {}
