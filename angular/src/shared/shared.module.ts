@@ -1,7 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule, ModuleWithProviders } from "@angular/core";
 import { RouterModule } from "@angular/router";
-//import { NgxPaginationModule } from "ngx-pagination";
 
 import { AppSessionService } from "./session/app-session.service";
 import { AppUrlService } from "./nav/app-url.service";
@@ -17,16 +16,10 @@ import { LayoutStoreService } from "./layout/layout-store.service";
 
 import { BusyDirective } from "./directives/busy.directive";
 import { EqualValidator } from "./directives/equal-validator.directive";
-
-import { MatPaginatorModule } from "@angular/material/paginator";
+import { MaterialModule } from "./material/material.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule,
-    //NgxPaginationModule,
-    MatPaginatorModule,
-  ],
+  imports: [CommonModule, RouterModule, MaterialModule],
   declarations: [
     AbpPaginationControlsComponent,
     AbpValidationSummaryComponent,
