@@ -14,13 +14,12 @@ import { AboutComponent } from "@app/about/about.component";
 import { MaterialModule } from "../shared/material/material.module";
 
 // tenants
-import { TenantsComponent } from "@app/tenants/tenants.component";
-// import { CreateTenantDialogComponent } from "./tenants/create-tenant/create-tenant-dialog.component";
-// import { EditTenantDialogComponent } from "./tenants/edit-tenant/edit-tenant-dialog.component";
+import { TenantModule } from "./tenants/tenant.module";
 // roles
 import { RoleModule } from "./roles/role.module";
 // users
 import { UserModule } from "./users/user.module";
+
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
@@ -39,11 +38,6 @@ import { LayoutModule } from "@angular/cdk/layout";
     AppComponent,
     HomeComponent,
     AboutComponent,
-    // tenants
-    TenantsComponent,
-    // CreateTenantDialogComponent,
-    // EditTenantDialogComponent,
-
     // layout
     HeaderComponent,
     HeaderLeftNavbarComponent,
@@ -69,12 +63,9 @@ import { LayoutModule } from "@angular/cdk/layout";
     LayoutModule,
     UserModule,
     RoleModule,
+    TenantModule,
   ],
   providers: [],
-  entryComponents: [
-    // tenants
-    // CreateTenantDialogComponent,
-    // EditTenantDialogComponent,
-  ],
+  entryComponents: [],
 })
 export class AppModule {}
