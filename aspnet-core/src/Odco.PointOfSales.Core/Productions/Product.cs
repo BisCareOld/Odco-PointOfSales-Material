@@ -1,5 +1,7 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.IntermediateEntities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -59,5 +61,16 @@ namespace Odco.PointOfSales.Core.Productions
         public decimal ReOrderQuantity { get; set; }
 
         public bool IsActive { get; set; }
+
+        public virtual ICollection<SupplierProduct> SupplierProducts { get; set; }
+
+        public virtual ICollection<ProductPriceGroup> ProductPriceGroups { get; set; }
+
+        public Product()
+        {
+            SupplierProducts = new HashSet<SupplierProduct>();
+
+            ProductPriceGroups = new HashSet<ProductPriceGroup>();
+        }
     }
 }
