@@ -37,6 +37,7 @@ import { MaterialModule } from "./material/material.module";
     LocalizePipe,
     BusyDirective,
     EqualValidator,
+    MaterialModule,
   ],
 })
 export class SharedModule {
