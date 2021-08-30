@@ -19,7 +19,8 @@ import { TenantModule } from "./tenants/tenant.module";
 import { RoleModule } from "./roles/role.module";
 // users
 import { UserModule } from "./users/user.module";
-
+// product
+import { ProductModule } from "./productions/products/product.module";
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
@@ -64,6 +65,7 @@ import { LayoutModule } from "@angular/cdk/layout";
     UserModule,
     RoleModule,
     TenantModule,
+    ProductModule,
   ],
   providers: [],
   entryComponents: [],
