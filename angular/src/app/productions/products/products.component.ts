@@ -5,11 +5,14 @@ import {
   PagedListingComponentBase,
   PagedRequestDto,
 } from "shared/paged-listing-component-base";
+import { MatDialog } from "@angular/material/dialog";
 import {
   ProductionServiceProxy,
   ProductDto,
   ProductDtoPagedResultDto,
 } from "@shared/service-proxies/service-proxies";
+import { CreateProductDialogComponent } from "./create-product/create-product-dialog.component";
+import { EditProductDialogComponent } from "./edit-product/edit-product-dialog.component";
 
 class PagedProductRequestDto extends PagedRequestDto {
   keyword: string;
@@ -39,12 +42,11 @@ export class ProductsComponent extends PagedListingComponentBase<ProductDto> {
 
   constructor(
     injector: Injector,
-    private _productService: ProductionServiceProxy
+    private _productService: ProductionServiceProxy,
+    private _matDialogService: MatDialog
   ) {
     super(injector);
   }
-
-  createProduct(): void {}
 
   protected list(
     request: PagedProductRequestDto,
@@ -73,7 +75,51 @@ export class ProductsComponent extends PagedListingComponentBase<ProductDto> {
       });
   }
 
-  protected delete(entity: ProductDto): void {
-    throw new Error("Method not implemented.");
+  delete(product: ProductDto): void {
+    abp.message.confirm(
+      this.l("RoleDeleteWarningMessage", product.name),
+      undefined,
+      (result: boolean) => {
+        if (result) {
+          this._productService
+            .deleteProduct(product.id)
+            .pipe(
+              finalize(() => {
+                abp.notify.success(this.l("SuccessfullyDeleted"));
+                this.refresh();
+              })
+            )
+            .subscribe(() => {});
+        }
+      }
+    );
+  }
+
+  createProduct(): void {
+    this.showCreateOrEditProductDialog();
+  }
+
+  editProduct(product: ProductDto): void {
+    this.showCreateOrEditProductDialog(product.id);
+  }
+
+  showCreateOrEditProductDialog(id?: string): void {
+    let materialDialog;
+    if (!id) {
+      materialDialog = this._matDialogService.open(
+        CreateProductDialogComponent,
+        {
+          width: "70%",
+        }
+      );
+    } else {
+      materialDialog = this._matDialogService.open(EditProductDialogComponent, {
+        data: { id: id },
+        width: "70%",
+      });
+    }
+    materialDialog.afterClosed().subscribe(() => {
+      this.refresh();
+    });
   }
 }

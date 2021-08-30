@@ -5,6 +5,7 @@ import {
   PagedListingComponentBase,
   PagedRequestDto,
 } from "@shared/paged-listing-component-base";
+import { MatDialog } from "@angular/material/dialog";
 import {
   RoleServiceProxy,
   RoleDto,
@@ -12,7 +13,6 @@ import {
 } from "@shared/service-proxies/service-proxies";
 import { CreateRoleDialogComponent } from "./create-role/create-role-dialog.component";
 import { EditRoleDialogComponent } from "./edit-role/edit-role-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
 
 class PagedRolesRequestDto extends PagedRequestDto {
   keyword: string;
