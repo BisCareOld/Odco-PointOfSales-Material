@@ -7,6 +7,8 @@ using Abp.Linq;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Productions.Brands;
+using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
 using Odco.PointOfSales.Core.Productions;
 using System;
@@ -20,11 +22,17 @@ namespace Odco.PointOfSales.Application.Productions
     {
         private readonly IAsyncQueryableExecuter _asyncQueryableExecuter;
         private readonly IRepository<Product, Guid> _productRepository;
+        private readonly IRepository<Category, Guid> _categoryRepository;
+        private readonly IRepository<Brand, Guid> _brandRepository;
 
-        public ProductionAppService(IRepository<Product, Guid> productRepository)
+        public ProductionAppService(IRepository<Product, Guid> productRepository, 
+            IRepository<Category, Guid> categoryRepository,
+            IRepository<Brand, Guid> brandRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
+            _brandRepository = brandRepository;
         }
 
         #region Product
@@ -128,6 +136,192 @@ namespace Odco.PointOfSales.Application.Productions
                     Name = p.Name,
                 })
                 .ToList();
+        }
+        #endregion
+
+        #region Category
+        public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto input)
+        {
+            try
+            {
+                var category = ObjectMapper.Map<Category>(input);
+                var created = await _categoryRepository.InsertAsync(category);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return ObjectMapper.Map<CategoryDto>(created);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task DeleteCategoryAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var category = _categoryRepository.GetAll().FirstOrDefault(pt => pt.Id == input.Id); ;
+                await _categoryRepository.DeleteAsync(category);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<PagedResultDto<CategoryDto>> GetAllCategoriesAsync(PagedCategoryResultRequestDto input)
+        {
+            try
+            {
+                var query = _categoryRepository.GetAll()
+                        .WhereIf(!input.Keyword.IsNullOrWhiteSpace(),
+                        x => x.Name.Contains(input.Keyword));
+
+                var result = _asyncQueryableExecuter.ToListAsync
+                    (
+                        query.OrderBy(o => o.CreationTime)
+                             .PageBy(input.SkipCount, input.MaxResultCount)
+                    );
+
+                var count = await _asyncQueryableExecuter.CountAsync(query);
+
+                var resultDto = ObjectMapper.Map<List<CategoryDto>>(result.Result);
+                return new PagedResultDto<CategoryDto>(count, resultDto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<CategoryDto> GetCategoryAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var category = await _categoryRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
+                return ObjectMapper.Map<CategoryDto>(category);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<CategoryDto> UpdateCategoryAsync(CategoryDto input)
+        {
+            try
+            {
+                var category = _categoryRepository.GetAll().FirstOrDefault(pt => pt.Id == input.Id);
+                ObjectMapper.Map(input, category);
+                await _categoryRepository.UpdateAsync(category);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<CommonKeyValuePairDto>> GetAllCategoriesKeyValuePairAsync()
+        {
+            return await _categoryRepository.GetAll().Select(c => new CommonKeyValuePairDto
+            {
+                Id = c.Id,
+                Name = c.Name
+            }).ToListAsync();
+        }
+        #endregion
+
+        #region Brand
+        public async Task<BrandDto> CreateBrandAsync(CreateBrandDto input)
+        {
+            try
+            {
+                var brand = ObjectMapper.Map<Brand>(input);
+                var created = await _brandRepository.InsertAsync(brand);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return ObjectMapper.Map<BrandDto>(created);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task DeleteBrandAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var brand = _brandRepository.GetAll().FirstOrDefault(pt => pt.Id == input.Id); ;
+                await _brandRepository.DeleteAsync(brand);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<PagedResultDto<BrandDto>> GetAllBrandsAsync(PagedBrandsResultRequestDto input)
+        {
+            try
+            {
+                var query = _brandRepository.GetAll()
+                        .WhereIf(!input.Keyword.IsNullOrWhiteSpace(),
+                        x => x.Name.Contains(input.Keyword));
+
+                var result = _asyncQueryableExecuter.ToListAsync
+                    (
+                        query.OrderBy(o => o.CreationTime)
+                             .PageBy(input.SkipCount, input.MaxResultCount)
+                    );
+
+                var count = await _asyncQueryableExecuter.CountAsync(query);
+
+                var resultDto = ObjectMapper.Map<List<BrandDto>>(result.Result);
+                return new PagedResultDto<BrandDto>(count, resultDto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<BrandDto> GetBrandAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var brand = await _brandRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
+                return ObjectMapper.Map<BrandDto>(brand);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<BrandDto> UpdateBrandAsync(BrandDto input)
+        {
+            try
+            {
+                var brand = _brandRepository.GetAll().FirstOrDefault(pt => pt.Id == input.Id);
+                ObjectMapper.Map(input, brand);
+                await _brandRepository.UpdateAsync(brand);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<CommonKeyValuePairDto>> GetAllBrandsKeyValuePairAsync()
+        {
+            return await _categoryRepository.GetAll().Select(c => new CommonKeyValuePairDto
+            {
+                Id = c.Id,
+                Name = c.Name
+            }).ToListAsync();
         }
         #endregion
     }
