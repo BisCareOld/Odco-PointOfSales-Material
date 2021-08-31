@@ -1,0 +1,118 @@
+<form #editProductForm="ngForm" (ngSubmit)="save()">
+  <!-- Dialog Header -->
+  <h3>{{ "EditProduct" | localize }}</h3>
+
+  <!-- Dialog Content -->
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab [label]="'Details' | localize">
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "Code" | localize }}</mat-label>
+          <input
+            matInput
+            name="code"
+            required
+            minlength="2"
+            maxlength="10"
+            [(ngModel)]="product.code"
+            #codeModel="ngModel"
+            #codeEl
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="codeModel"
+          [controlEl]="codeEl"
+        ></abp-validation-summary>
+      </div>
+
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "Name" | localize }}</mat-label>
+          <input
+            matInput
+            name="name"
+            required
+            minlength="2"
+            maxlength="100"
+            [(ngModel)]="product.name"
+            #nameModel="ngModel"
+            #nameEl
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="nameModel"
+          [controlEl]="nameEl"
+        ></abp-validation-summary>
+      </div>
+
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "ReOrderLevel" | localize }}</mat-label>
+          <input
+            type="number"
+            matInput
+            name="reOrderLevel"
+            required
+            [(ngModel)]="product.reOrderLevel"
+            #reOrderLevelModel="ngModel"
+            #reOrderLevelEl
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="reOrderLevelModel"
+          [controlEl]="reOrderLevelEl"
+        ></abp-validation-summary>
+      </div>
+
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "ReOrderQuantity" | localize }}</mat-label>
+          <input
+            type="number"
+            matInput
+            name="reOrderQuantity"
+            required
+            [(ngModel)]="product.reOrderQuantity"
+            #reOrderQuantityModel="ngModel"
+            #reOrderQuantityEl
+          />
+        </mat-form-field>
+        <abp-validation-summary
+          [control]="reOrderQuantityModel"
+          [controlEl]="reOrderQuantityEl"
+        ></abp-validation-summary>
+      </div>
+
+      <div>
+        <mat-form-field class="example-full-width">
+          <mat-label>{{ "Description" | localize }}</mat-label>
+          <textarea
+            matInput
+            name="description"
+            [(ngModel)]="product.description"
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-checkbox
+          name="isActive"
+          id="isActive"
+          [(ngModel)]="product.isActive"
+        >
+          {{ "IsActive" | localize }}
+        </mat-checkbox>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Dialog Footer -->
+  <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+  <button
+    mat-button
+    color="accent"
+    [disabled]="!editProductForm.form.valid || saving"
+  >
+    {{ "Submit" | localize }}
+  </button>
+</form>

@@ -1,12 +1,12 @@
 <div [@routerTransition]>
   <section class="mat-typography">
-    <h1>{{ "Tenants" | localize }}</h1>
+    <h1>{{ "Products" | localize }}</h1>
   </section>
   <mat-card>
     <button
       mat-raised-button
       color="primary"
-      (click)="createTenant()"
+      (click)="createProduct()"
       style="float: right"
     >
       {{ "Create" | localize }}
@@ -32,28 +32,28 @@
     </mat-form-field>
 
     <div class="mat-elevation-z8">
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <table class="full-width-table" mat-table [dataSource]="dataSource">
         <!--- Note that these columns can be defined in any order.
-                  The actual rendered columns are set as a property on the row definition" -->
+            The actual rendered columns are set as a property on the row definition" -->
 
-        <!-- Position Column -->
-        <!-- <ng-container matColumnDef="position">
-              <th mat-header-cell *matHeaderCellDef>No.</th>
-              <td mat-cell *matCellDef="let element">{{ element.position }}</td>
-            </ng-container> -->
-
-        <!-- Tenant Name Column -->
-        <ng-container matColumnDef="tenant-name">
-          <th mat-header-cell *matHeaderCellDef>
-            {{ "TenancyName" | localize }}
-          </th>
-          <td mat-cell *matCellDef="let element">{{ element.tenancyName }}</td>
+        <!-- Code Column -->
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>{{ "Code" | localize }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.code }}</td>
         </ng-container>
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>{{ "Name" | localize }}</th>
           <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <!-- Category Column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ "Category" | localize }}
+          </th>
+          <td mat-cell *matCellDef="let element">{{ element.categoryId }}</td>
         </ng-container>
 
         <!-- Is Active Column -->
@@ -66,9 +66,10 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
           <td mat-cell *matCellDef="let element">
-            <button mat-button color="accent" (click)="editTenant(element)">
+            <button mat-button color="accent" (click)="editProduct(element)">
               {{ "Edit" | localize }}
             </button>
+
             <button mat-button color="warn" (click)="delete(element)">
               {{ "Delete" | localize }}
             </button>
