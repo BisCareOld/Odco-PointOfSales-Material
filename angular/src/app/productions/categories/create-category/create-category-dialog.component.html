@@ -1,0 +1,42 @@
+<form #createCategoryForm="ngForm" (ngSubmit)="save()">
+  <!-- Dialog Header -->
+  <h3>{{ "CreateNewCategory" | localize }}</h3>
+
+  <!-- Dialog Content -->
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "Name" | localize }}</mat-label>
+      <input
+        matInput
+        name="name"
+        required
+        minlength="2"
+        maxlength="50"
+        [(ngModel)]="category.name"
+        #nameModel="ngModel"
+        #nameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="nameModel"
+      [controlEl]="nameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-checkbox name="isActive" id="isActive" [(ngModel)]="category.isActive">
+      {{ "IsActive" | localize }}
+    </mat-checkbox>
+  </div>
+
+  <!-- Dialog Footer -->
+  <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+  <button
+    mat-button
+    color="accent"
+    [disabled]="!createCategoryForm.form.valid || saving"
+  >
+    {{ "Submit" | localize }}
+  </button>
+</form>

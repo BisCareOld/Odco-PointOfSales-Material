@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Authorization.Users;
+using Odco.PointOfSales.Core.Productions;
 
 namespace Odco.PointOfSales.Users.Dto
 {
@@ -14,6 +16,10 @@ namespace Odco.PointOfSales.Users.Dto
 
             CreateMap<CreateUserDto, User>();
             CreateMap<CreateUserDto, User>().ForMember(x => x.Roles, opt => opt.Ignore());
+
+
+            CreateMap<CategoryDto, Category>();
+            CreateMap<Category, CategoryDto>();
         }
     }
 }
