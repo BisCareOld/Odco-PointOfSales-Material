@@ -1,0 +1,99 @@
+<form #createTenantForm="ngForm" autocomplete="off" (ngSubmit)="save()">
+  <!-- Dialog Header -->
+  <h3>{{ "CreateNewTenant" | localize }}</h3>
+
+  <!-- Dialog Content -->
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "TenancyName" | localize }}</mat-label>
+      <input
+        type="text"
+        matInput
+        name="tenancyName"
+        required
+        minlength="2"
+        maxlength="64"
+        [(ngModel)]="tenant.tenancyName"
+        #tenancyNameModel="ngModel"
+        #tenancyNameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="tenancyNameModel"
+      [controlEl]="tenancyNameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "Name" | localize }}</mat-label>
+      <input
+        type="text"
+        matInput
+        name="name"
+        maxlength="128"
+        [(ngModel)]="tenant.name"
+        #nameModel="ngModel"
+        #nameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="nameModel"
+      [controlEl]="nameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "DatabaseConnectionString" | localize }}</mat-label>
+      <input
+        type="text"
+        matInput
+        name="connectionString"
+        maxlength="1024"
+        [(ngModel)]="tenant.connectionString"
+      />
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "AdminEmailAddress" | localize }}</mat-label>
+      <input
+        type="email"
+        matInput
+        name="adminEmailAddress"
+        pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{1,})+$"
+        maxlength="256"
+        required
+        [(ngModel)]="tenant.adminEmailAddress"
+        #adminEmailAddressModel="ngModel"
+        #adminEmailAddressEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="adminEmailAddressModel"
+      [controlEl]="adminEmailAddressEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-checkbox name="isActive" id="isActive" [(ngModel)]="tenant.isActive">
+      {{ "IsActive" | localize }}
+    </mat-checkbox>
+  </div>
+
+  <p class="text-center text-info mb-0">
+    {{ "DefaultPasswordIs" | localize: "123qwe" }}
+  </p>
+
+  <!-- Dialog Footer -->
+  <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+  <button
+    mat-button
+    color="accent"
+    [disabled]="!createTenantForm.form.valid || saving"
+  >
+    {{ "Submit" | localize }}
+  </button>
+</form>
