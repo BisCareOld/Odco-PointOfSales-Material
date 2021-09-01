@@ -10,6 +10,7 @@ import { RolesComponent } from "app/roles/roles.component";
 import { ProductsComponent } from "./productions/products/products.component";
 import { ChangePasswordComponent } from "./users/change-password/change-password.component";
 import { CategoriesComponent } from "./productions/categories/categories.component";
+import { BrandsComponent } from "./productions/brands/brands.component";
 
 @NgModule({
   imports: [
@@ -55,6 +56,12 @@ import { CategoriesComponent } from "./productions/categories/categories.compone
           {
             path: "categories",
             component: CategoriesComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "brands",
+            component: BrandsComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },

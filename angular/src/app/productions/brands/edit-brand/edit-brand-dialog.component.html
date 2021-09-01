@@ -1,0 +1,42 @@
+<form #editBrandForm="ngForm" (ngSubmit)="save()">
+  <!-- Dialog Header -->
+  <h3>{{ "EditCategory" | localize }}</h3>
+
+  <!-- Dialog Content -->
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "Name" | localize }}</mat-label>
+      <input
+        matInput
+        name="name"
+        required
+        minlength="2"
+        maxlength="50"
+        [(ngModel)]="brand.name"
+        #nameModel="ngModel"
+        #nameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="nameModel"
+      [controlEl]="nameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-checkbox name="isActive" id="isActive" [(ngModel)]="brand.isActive">
+      {{ "IsActive" | localize }}
+    </mat-checkbox>
+  </div>
+
+  <!-- Dialog Footer -->
+  <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+  <button
+    mat-button
+    color="accent"
+    [disabled]="!editBrandForm.form.valid || saving"
+  >
+    {{ "Submit" | localize }}
+  </button>
+</form>
