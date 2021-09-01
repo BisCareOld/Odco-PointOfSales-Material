@@ -1,0 +1,76 @@
+<div [@routerTransition]>
+  <section class="mat-typography">
+    <h1>{{ "Brands" | localize }}</h1>
+  </section>
+  <mat-card>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="createBrand()"
+      style="float: right"
+    >
+      {{ "Create" | localize }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="refresh()"
+      style="float: right"
+    >
+      {{ "Refresh" | localize }}
+    </button>
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input
+        matInput
+        name="keyword"
+        [placeholder]="'SearchWithThreeDot' | localize"
+        [(ngModel)]="keyword"
+        (keyup.enter)="getDataPage(1)"
+        #input
+      />
+    </mat-form-field>
+
+    <div class="mat-elevation-z8">
+      <table class="full-width-table" mat-table [dataSource]="dataSource">
+        <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>{{ "Name" | localize }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <!-- Is Active Column -->
+        <ng-container matColumnDef="is-active">
+          <th mat-header-cell *matHeaderCellDef>{{ "IsActive" | localize }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.isActive }}</td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-button color="accent" (click)="editBrand(element)">
+              {{ "Edit" | localize }}
+            </button>
+
+            <button mat-button color="warn" (click)="delete(element)">
+              {{ "Delete" | localize }}
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <!-- <abp-pagination-controls
+            [totalItems]="totalItems"
+            (pageChange)="pageChanges($event)"
+          >
+          </abp-pagination-controls> -->
+    </div>
+  </mat-card>
+</div>
