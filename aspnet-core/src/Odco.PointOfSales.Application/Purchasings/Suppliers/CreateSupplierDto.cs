@@ -16,11 +16,7 @@ namespace Odco.PointOfSales.Application.Purchasings.Suppliers
         [StringLength(100)]
         public string BusinessName { get; set; }
 
-        [Required]
-        public Guid CityId { get; set; }
-
-        [Required]
-        public Guid PersonTitleId { get; set; }
+        public Guid? PersonTitleId { get; set; }
 
         [Required]
         [StringLength(100)]

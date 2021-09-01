@@ -23,18 +23,9 @@ namespace Odco.PointOfSales.Core.Common
         public string BusinessName { get; set; }
 
         /// <summary>
-        /// Town Entity is changed into City
-        /// </summary>
-        [Required]
-        public Guid CityId { get; set; }
-
-        public City City { get; set; }
-
-        /// <summary>
         /// Mr, Mrs etc..
         /// </summary>
-        [Required]
-        public Guid PersonTitleId { get; set; }
+        public Guid? PersonTitleId { get; set; }
 
         public PersonTitle PersonTitle { get; set; }
 

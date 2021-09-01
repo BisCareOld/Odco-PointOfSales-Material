@@ -25,6 +25,8 @@ import { ProductModule } from "./productions/products/product.module";
 import { CategoryModule } from "./productions/categories/category.module";
 // brand
 import { BrandModule } from "./productions/brands/brand.module";
+// supplier
+import { SupplierModule } from "./purchasings/suppliers/supplier.module";
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
@@ -72,6 +74,7 @@ import { LayoutModule } from "@angular/cdk/layout";
     ProductModule,
     CategoryModule,
     BrandModule,
+    SupplierModule,
   ],
   providers: [],
   entryComponents: [],
