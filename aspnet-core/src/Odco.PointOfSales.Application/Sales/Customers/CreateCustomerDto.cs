@@ -1,14 +1,12 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Odco.PointOfSales.Core.Common;
+﻿using Abp.AutoMapper;
+using Odco.PointOfSales.Sales.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Odco.PointOfSales.Sales.Common
+namespace Odco.PointOfSales.Application.Sales.Customers
 {
-    [Table("Sales.Customer")]
-    public partial class Customer : FullAuditedEntity<Guid>
+    [AutoMapTo(typeof(Customer))]
+    public class CreateCustomerDto
     {
         [Required]
         [StringLength(10)]
@@ -18,8 +16,6 @@ namespace Odco.PointOfSales.Sales.Common
         /// Mr, Mrs etc..
         /// </summary>
         public Guid? PersonTitleId { get; set; }
-
-        public PersonTitle PersonTitle { get; set; }
 
         /// <summary>
         /// Customer Name
@@ -55,7 +51,6 @@ namespace Odco.PointOfSales.Sales.Common
         /// <summary>
         /// Define the amount of rupees
         /// </summary>
-        [Column(TypeName = "money")]
         public decimal? CreditLimit { get; set; }
 
         /// <summary>
@@ -70,19 +65,8 @@ namespace Odco.PointOfSales.Sales.Common
 
         public Guid? ClassificationId { get; set; }
 
-        public Classification Classification { get; set; }
-
         public Guid? PriceGroupId { get; set; }
 
-        public PriceGroup PriceGroup { get; set; }
-
         public bool IsActive { get; set; }
-
-        public ICollection<Address> Addresses { get; set; }
-
-        public Customer()
-        {
-            Addresses = new HashSet<Address>();
-        }
     }
 }
