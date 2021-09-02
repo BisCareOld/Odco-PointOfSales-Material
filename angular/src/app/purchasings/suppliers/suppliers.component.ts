@@ -31,7 +31,7 @@ export class SuppliersComponent extends PagedListingComponentBase<SupplierDto> {
   isActive: boolean | null;
   advancedFiltersVisible = false;
 
-  displayedColumns: string[] = ["name", "is-active", "actions"];
+  displayedColumns: string[] = ["code", "name", "is-active", "actions"];
   dataSource;
 
   constructor(

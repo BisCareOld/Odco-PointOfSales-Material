@@ -15,6 +15,7 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatGridListModule } from "@angular/material/grid-list";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 const AngularMaterialComponents = [
   MatToolbarModule,
@@ -32,6 +33,7 @@ const AngularMaterialComponents = [
   MatTabsModule,
   MatCheckboxModule,
   MatGridListModule,
+  MatAutocompleteModule,
 ];
 
 @NgModule({

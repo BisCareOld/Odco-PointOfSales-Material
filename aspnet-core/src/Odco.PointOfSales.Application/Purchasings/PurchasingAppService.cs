@@ -120,8 +120,8 @@ namespace Odco.PointOfSales.Application.Purchasings
 
             var suppliers = await _supplierRepository
                 .GetAll()
-                .Where(s => s.FirstName.ToLower().Contains(keyword) || s.MiddleName.ToLower().Contains(keyword) || s.LastName.ToLower().Contains(keyword) || s.Code.Contains(keyword))
-                .Take(20)
+                .Where(s => s.IsActive && (s.FirstName.ToLower().Contains(keyword) || s.MiddleName.ToLower().Contains(keyword) || s.LastName.ToLower().Contains(keyword) || s.Code.Contains(keyword)))
+                .Take(PointOfSalesConsts.MaximumNumberOfReturnResults)
                 .ToListAsync();
 
             return suppliers.Select(s => new CommonKeyValuePairDto

@@ -36,6 +36,12 @@
         <!--- Note that these columns can be defined in any order.
                   The actual rendered columns are set as a property on the row definition" -->
 
+        <!-- Code Column -->
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>{{ "Code" | localize }}</th>
+          <td mat-cell *matCellDef="let element">{{ element.code }}</td>
+        </ng-container>
+
         <!-- Name Column -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>{{ "Name" | localize }}</th>
@@ -74,3 +80,4 @@
     </div>
   </mat-card>
 </div>
+<app-partial-suppliers></app-partial-suppliers>

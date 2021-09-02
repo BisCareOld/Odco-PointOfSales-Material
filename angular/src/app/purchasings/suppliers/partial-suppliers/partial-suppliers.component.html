@@ -1,0 +1,31 @@
+<mat-form-field class="example-full-width">
+  <mat-label>Supplier</mat-label>
+  <input
+    type="text"
+    placeholder="Pick one"
+    aria-label="Supplier"
+    matInput
+    [(ngModel)]="searchKeyword"
+    (keyup)="changeKeyword()"
+    [disabled]="disable"
+    [matAutocomplete]="auto"
+  />
+  <button
+    *ngIf="searchKeyword"
+    matSuffix
+    mat-icon-button
+    aria-label="Clear"
+    (click)="clearSelectedSupplier()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+  <mat-autocomplete #auto="matAutocomplete">
+    <mat-option
+      (onSelectionChange)="selectedSupplier(option)"
+      *ngFor="let option of filteredOptions | async"
+      [value]="option.name"
+    >
+      {{ option.name }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
