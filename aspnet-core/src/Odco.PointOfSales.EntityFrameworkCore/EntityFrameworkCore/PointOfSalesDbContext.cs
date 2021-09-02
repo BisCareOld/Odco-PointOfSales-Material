@@ -7,6 +7,7 @@ using Odco.PointOfSales.Core.Productions;
 using Odco.PointOfSales.Core.Common;
 using Odco.PointOfSales.Core.IntermediateEntities;
 using Odco.PointOfSales.Sales.Common;
+using Odco.PointOfSales.Core.Inventory;
 
 namespace Odco.PointOfSales.EntityFrameworkCore
 {
@@ -45,6 +46,12 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<PriceGroup> PriceGroups { get; set; }
 
+        #endregion
+
+        #region Inventory
+        public virtual DbSet<StockBalance> StockBalances { get; set; }
+        public virtual DbSet<GoodsRecieved> GoodsRecievedTransactions { get; set; }
+        public virtual DbSet<GoodsRecievedProduct> GoodsRecievedProducts { get; set; }
         #endregion
 
         public PointOfSalesDbContext(DbContextOptions<PointOfSalesDbContext> options)

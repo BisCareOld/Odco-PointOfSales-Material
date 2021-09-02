@@ -10,6 +10,7 @@ using Odco.PointOfSales.Application.GeneralDto;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
+using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
 using System;
 using System.Collections.Generic;
@@ -24,15 +25,18 @@ namespace Odco.PointOfSales.Application.Productions
         private readonly IRepository<Product, Guid> _productRepository;
         private readonly IRepository<Category, Guid> _categoryRepository;
         private readonly IRepository<Brand, Guid> _brandRepository;
+        private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
 
         public ProductionAppService(IRepository<Product, Guid> productRepository, 
             IRepository<Category, Guid> categoryRepository,
-            IRepository<Brand, Guid> brandRepository)
+            IRepository<Brand, Guid> brandRepository,
+            IRepository<StockBalance, Guid> stockBalanceRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
             _brandRepository = brandRepository;
+            _stockBalanceRepository = stockBalanceRepository;
         }
 
         #region Product
@@ -42,6 +46,7 @@ namespace Odco.PointOfSales.Application.Productions
             {
                 var product = ObjectMapper.Map<Product>(input);
                 var created = await _productRepository.InsertAsync(product);
+                await CreateOrUpdateStockBalance(created.Id, created.Code, created.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(created);
             }
@@ -110,6 +115,7 @@ namespace Odco.PointOfSales.Application.Productions
                 var product = await _productRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
                 ObjectMapper.Map(input, product);
                 var updated = await _productRepository.UpdateAsync(product);
+                await CreateOrUpdateStockBalance(updated.Id, updated.Code, updated.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(updated);
             }
@@ -324,5 +330,44 @@ namespace Odco.PointOfSales.Application.Productions
             }).ToListAsync();
         }
         #endregion
+
+        private async Task CreateOrUpdateStockBalance(Guid productId, string productCode, string productName)
+        {
+            var products = _stockBalanceRepository.GetAll().Where(sb => sb.ProductId == productId);
+            
+            if(products.Count() > 0)
+            {
+                foreach(var product in products)
+                {
+                    product.ProductId = productId;
+                    product.ProductCode = productCode;
+                    product.ProductName = productName;
+                    await _stockBalanceRepository.UpdateAsync(product);
+                }
+            }
+            else
+            {
+                await _stockBalanceRepository.InsertAsync(new StockBalance
+                {
+                    SequenceNumber = 0,
+                    ProductId = productId,
+                    ProductCode = productCode,
+                    ProductName = productName,
+                    ReceivedQuantity = 0,
+                    ReceivedQuantityUnitOfMeasureUnit = null,
+                    BookBalanceQuantity = 0,
+                    BookBalanceUnitOfMeasureUnit = null,
+                    OnOrderQuantity = 0,
+                    OnOrderQuantityUnitOfMeasureUnit = null,
+                    AllocatedQuantity = 0,
+                    AllocatedQuantityUnitOfMeasureUnit = null,
+                    CostPrice = 0,
+                    SellingPrice = 0,
+                    MaximumRetailPrice = 0,
+                    GoodsRecievedNumber = null,
+                });
+            }
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
     }
 }
