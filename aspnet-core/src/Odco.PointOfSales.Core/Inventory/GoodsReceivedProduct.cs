@@ -6,11 +6,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Odco.PointOfSales.Core.Inventory
 {
     [Table("Inventory.GoodsRecievedProduct")]
-    public class GoodsRecievedProduct : FullAuditedEntity<Guid>
+    public class GoodsReceivedProduct : FullAuditedEntity<Guid>
     {
         public Guid GoodsRecievedId { get; set; }
 
-        public GoodsRecieved GoodsRecieved { get; set; }
+        public GoodsReceived GoodsRecieved { get; set; }
 
         /// <summary>
         ///     GRN sequence Number

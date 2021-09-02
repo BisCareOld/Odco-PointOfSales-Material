@@ -1,25 +1,19 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Odco.PointOfSales.Core.Enums;
+﻿using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
+using Odco.PointOfSales.Core.Inventory;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Transactions;
 
-namespace Odco.PointOfSales.Core.Inventory
+namespace Odco.PointOfSales.Application.Inventory.GoodsReceiveNotes
 {
-    [Table("Inventory.GoodsRecieved")]
-    public class GoodsRecieved : FullAuditedEntity<Guid>
+    [AutoMapTo(typeof(GoodsReceivedDto)), AutoMapFrom(typeof(GoodsReceived))]
+    public class GoodsReceivedDto : EntityDto<Guid>
     {
-        /// <summary>
-        ///     GRN Number => Sequence Number
-        /// </summary>
         [Required]
         [StringLength(15)]
-        public string GoodsRecievedNumber { get; set; }
+        public string GoodsReceivedNumber { get; set; }
 
-        /// <summary>
-        ///     Should be unique but not implemented (Unique, Nullable and Index)
-        /// </summary>
         [StringLength(15)]
         public string ReferenceNumber { get; set; }
 
@@ -48,13 +42,5 @@ namespace Odco.PointOfSales.Core.Inventory
 
         [StringLength(100)]
         public string Remarks { get; set; }
-
-        public ICollection<GoodsRecievedProduct> GoodsRecievedProducts { get; set; }
-
-        public GoodsRecieved()
-        {
-            GoodsRecievedProducts = new HashSet<GoodsRecievedProduct>();
-        }
-
     }
 }

@@ -50,8 +50,8 @@ namespace Odco.PointOfSales.EntityFrameworkCore
 
         #region Inventory
         public virtual DbSet<StockBalance> StockBalances { get; set; }
-        public virtual DbSet<GoodsRecieved> GoodsRecievedTransactions { get; set; }
-        public virtual DbSet<GoodsRecievedProduct> GoodsRecievedProducts { get; set; }
+        public virtual DbSet<GoodsReceived> GoodsReceivedTransactions { get; set; }
+        public virtual DbSet<GoodsReceivedProduct> GoodsReceivedProducts { get; set; }
         #endregion
 
         public PointOfSalesDbContext(DbContextOptions<PointOfSalesDbContext> options)
