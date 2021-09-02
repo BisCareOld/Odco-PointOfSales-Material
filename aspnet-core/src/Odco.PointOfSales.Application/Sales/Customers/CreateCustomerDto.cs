@@ -1,33 +1,21 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Odco.PointOfSales.Core.IntermediateEntities;
+﻿using Abp.AutoMapper;
 using Odco.PointOfSales.Sales.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Odco.PointOfSales.Core.Common
+namespace Odco.PointOfSales.Application.Sales.Customers
 {
-    [Table("Purchasing.Supplier")]
-    public class Supplier : FullAuditedEntity<Guid>
+    [AutoMapTo(typeof(Customer))]
+    public class CreateCustomerDto
     {
         [Required]
         [StringLength(10)]
         public string Code { get; set; }
 
         /// <summary>
-        /// Business Name aka Company Name
-        /// </summary>
-        [Required]
-        [StringLength(100)]
-        public string BusinessName { get; set; }
-
-        /// <summary>
         /// Mr, Mrs etc..
         /// </summary>
         public Guid? PersonTitleId { get; set; }
-
-        public PersonTitle PersonTitle { get; set; }
 
         /// <summary>
         /// Customer Name
@@ -63,7 +51,6 @@ namespace Odco.PointOfSales.Core.Common
         /// <summary>
         /// Define the amount of rupees
         /// </summary>
-        [Column(TypeName = "money")]
         public decimal? CreditLimit { get; set; }
 
         /// <summary>
@@ -78,23 +65,8 @@ namespace Odco.PointOfSales.Core.Common
 
         public Guid? ClassificationId { get; set; }
 
-        public Classification Classification { get; set; }
-
         public Guid? PriceGroupId { get; set; }
 
-        public PriceGroup PriceGroup { get; set; }
-
         public bool IsActive { get; set; }
-
-        public virtual ICollection<SupplierProduct> SupplierProducts { get; set; }
-
-        public virtual ICollection<Address> Addresses { get; set; }
-
-        public Supplier()
-        {
-            SupplierProducts = new HashSet<SupplierProduct>();
-            
-            Addresses = new HashSet<Address>();
-        }
     }
 }

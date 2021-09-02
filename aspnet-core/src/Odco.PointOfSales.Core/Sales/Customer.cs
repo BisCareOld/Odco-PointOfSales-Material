@@ -17,8 +17,7 @@ namespace Odco.PointOfSales.Sales.Common
         /// <summary>
         /// Mr, Mrs etc..
         /// </summary>
-        [Required]
-        public Guid PersonTitleId { get; set; }
+        public Guid? PersonTitleId { get; set; }
 
         public PersonTitle PersonTitle { get; set; }
 
@@ -34,14 +33,6 @@ namespace Odco.PointOfSales.Sales.Common
 
         [StringLength(100)]
         public string LastName { get; set; }
-
-        /// <summary>
-        /// Town Entity is changed into City
-        /// </summary>
-        [Required]
-        public Guid CityId { get; set; }
-
-        public City City { get; set; }
 
         [Required]
         [StringLength(15)]

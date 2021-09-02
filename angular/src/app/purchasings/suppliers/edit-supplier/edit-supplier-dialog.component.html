@@ -1,0 +1,140 @@
+<form #editSupplierForm="ngForm" (ngSubmit)="save()">
+  <!-- Dialog Header -->
+  <h3>{{ "EditSupplier" | localize }}</h3>
+
+  <!-- Dialog Content -->
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "Code" | localize }}</mat-label>
+      <input
+        matInput
+        name="code"
+        required
+        minlength="1"
+        maxlength="10"
+        [(ngModel)]="supplier.code"
+        #codeModel="ngModel"
+        #codeEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="codeModel"
+      [controlEl]="codeEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "BusinessName" | localize }}</mat-label>
+      <input
+        matInput
+        name="businessName"
+        required
+        minlength="2"
+        maxlength="100"
+        [(ngModel)]="supplier.businessName"
+        #businessNameModel="ngModel"
+        #businessNameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="businessNameModel"
+      [controlEl]="businessNameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "FirstName" | localize }}</mat-label>
+      <input
+        matInput
+        name="firstName"
+        required
+        minlength="2"
+        maxlength="100"
+        [(ngModel)]="supplier.firstName"
+        #firstNameModel="ngModel"
+        #firstNameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="firstNameModel"
+      [controlEl]="firstNameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "MiddleName" | localize }}</mat-label>
+      <input
+        matInput
+        name="middleName"
+        minlength="2"
+        maxlength="100"
+        [(ngModel)]="supplier.middleName"
+        #middleNameModel="ngModel"
+        #middleNameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="middleNameModel"
+      [controlEl]="middleNameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "LastName" | localize }}</mat-label>
+      <input
+        matInput
+        name="lastName"
+        required
+        minlength="2"
+        maxlength="100"
+        [(ngModel)]="supplier.lastName"
+        #lastNameModel="ngModel"
+        #lastNameEl
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="lastNameModel"
+      [controlEl]="lastNameEl"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ "ContactNumber1" | localize }}</mat-label>
+      <input
+        matInput
+        name="contactNumber1"
+        required
+        minlength="9"
+        maxlength="15"
+        [(ngModel)]="supplier.contactNumber1"
+        #contactNumber1Model="ngModel"
+        #contactNumber1El
+      />
+    </mat-form-field>
+    <abp-validation-summary
+      [control]="contactNumber1Model"
+      [controlEl]="contactNumber1El"
+    ></abp-validation-summary>
+  </div>
+
+  <div>
+    <mat-checkbox name="isActive" id="isActive" [(ngModel)]="supplier.isActive">
+      {{ "IsActive" | localize }}
+    </mat-checkbox>
+  </div>
+
+  <!-- Dialog Footer -->
+  <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+  <button
+    mat-button
+    color="accent"
+    [disabled]="!editSupplierForm.form.valid || saving"
+  >
+    {{ "Submit" | localize }}
+  </button>
+</form>

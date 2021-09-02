@@ -11,6 +11,7 @@ import { ProductsComponent } from "./productions/products/products.component";
 import { ChangePasswordComponent } from "./users/change-password/change-password.component";
 import { CategoriesComponent } from "./productions/categories/categories.component";
 import { BrandsComponent } from "./productions/brands/brands.component";
+import { SuppliersComponent } from "./purchasings/suppliers/suppliers.component";
 
 @NgModule({
   imports: [
@@ -62,6 +63,12 @@ import { BrandsComponent } from "./productions/brands/brands.component";
           {
             path: "brands",
             component: BrandsComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "suppliers",
+            component: SuppliersComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },

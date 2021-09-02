@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odco.PointOfSales.EntityFrameworkCore;
 
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    partial class PointOfSalesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210901153145_RemoveCityInSupplierModel")]
+    partial class RemoveCityInSupplierModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2527,6 +2529,9 @@ namespace Odco.PointOfSales.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("ClassificationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2601,13 +2606,15 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<int?>("NoOfInvoices")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("PersonTitleId")
+                    b.Property<Guid>("PersonTitleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("PriceGroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.HasIndex("ClassificationId");
 
@@ -3024,17 +3031,27 @@ namespace Odco.PointOfSales.Migrations
 
             modelBuilder.Entity("Odco.PointOfSales.Sales.Common.Customer", b =>
                 {
+                    b.HasOne("Odco.PointOfSales.Core.Common.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Odco.PointOfSales.Core.Common.Classification", "Classification")
                         .WithMany()
                         .HasForeignKey("ClassificationId");
 
                     b.HasOne("Odco.PointOfSales.Core.Common.PersonTitle", "PersonTitle")
                         .WithMany()
-                        .HasForeignKey("PersonTitleId");
+                        .HasForeignKey("PersonTitleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Odco.PointOfSales.Sales.Common.PriceGroup", "PriceGroup")
                         .WithMany()
                         .HasForeignKey("PriceGroupId");
+
+                    b.Navigation("City");
 
                     b.Navigation("Classification");
 
