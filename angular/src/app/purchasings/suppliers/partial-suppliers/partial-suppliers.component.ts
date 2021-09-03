@@ -1,25 +1,9 @@
-import {
-  Component,
-  OnInit,
-  SimpleChanges,
-  OnChanges,
-  Output,
-  EventEmitter,
-} from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import {
   CommonKeyValuePairDto,
   PurchasingServiceProxy,
 } from "@shared/service-proxies/service-proxies";
 import { Observable } from "rxjs";
-import { map, startWith } from "rxjs/operators";
-import { finalize } from "rxjs/operators";
-import { appModuleAnimation } from "@shared/animations/routerTransition";
-import {
-  PagedListingComponentBase,
-  PagedRequestDto,
-} from "shared/paged-listing-component-base";
-import { MatDialog } from "@angular/material/dialog";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 
 @Component({

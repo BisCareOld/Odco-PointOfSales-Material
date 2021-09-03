@@ -1,4 +1,4 @@
-<mat-form-field class="example-full-width">
+<mat-form-field>
   <mat-label>Supplier</mat-label>
   <input
     type="text"
@@ -10,6 +10,7 @@
     [disabled]="disable"
     [matAutocomplete]="auto"
   />
+
   <button
     *ngIf="searchKeyword"
     matSuffix
@@ -19,6 +20,7 @@
   >
     <mat-icon>close</mat-icon>
   </button>
+
   <mat-autocomplete #auto="matAutocomplete">
     <mat-option
       (onSelectionChange)="selectedSupplier(option)"
