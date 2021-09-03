@@ -132,7 +132,7 @@ namespace Odco.PointOfSales.Application.Productions
 
             var products  = await _productRepository.GetAllListAsync();
 
-            return products.Where(p => p.Code.Contains(keyword) || p.Name.ToLower().Contains(keyword))
+            return products.Where(p => p.IsActive && (p.Code.Contains(keyword) || p.Name.ToLower().Contains(keyword)))
                 .OrderBy(p => p.Name)
                 .Take(PointOfSalesConsts.MaximumNumberOfReturnResults)
                 .Select(p => new CommonKeyValuePairDto
