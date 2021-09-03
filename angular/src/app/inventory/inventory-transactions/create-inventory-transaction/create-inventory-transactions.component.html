@@ -1,0 +1,31 @@
+<div [@routerTransition]>
+  <section class="mat-typography">
+    <h1>{{ "Brands" | localize }}</h1>
+  </section>
+  <mat-card>
+    <form #createBrandForm="ngForm" (ngSubmit)="save()">
+      <!-- Dialog Header -->
+
+      <!-- Dialog Content -->
+
+      <mat-grid-list cols="2" rowHeight="50px" gutterSize="15px">
+        <mat-grid-tile>
+          <partial-suppliers></partial-suppliers>
+        </mat-grid-tile>
+        <mat-grid-tile>B</mat-grid-tile>
+        <mat-grid-tile>C</mat-grid-tile>
+        <mat-grid-tile>D</mat-grid-tile>
+      </mat-grid-list>
+
+      <!-- Dialog Footer -->
+      <!-- <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+      <button
+        mat-button
+        color="accent"
+        [disabled]="!createBrandForm.form.valid || saving"
+      >
+        {{ "Submit" | localize }}
+      </button> -->
+    </form>
+  </mat-card>
+</div>
