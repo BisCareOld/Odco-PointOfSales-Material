@@ -74,3 +74,24 @@ namespace Odco.PointOfSales.Core.Inventory
         public string GoodsRecievedNumber { get; set; }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
