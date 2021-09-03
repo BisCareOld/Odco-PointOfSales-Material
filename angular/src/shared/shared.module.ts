@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { NgModule, ModuleWithProviders } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { AppSessionService } from "./session/app-session.service";
 import { AppUrlService } from "./nav/app-url.service";
@@ -17,9 +18,16 @@ import { LayoutStoreService } from "./layout/layout-store.service";
 import { BusyDirective } from "./directives/busy.directive";
 import { EqualValidator } from "./directives/equal-validator.directive";
 import { MaterialModule } from "./material/material.module";
+import { PartialSuppliersComponent } from "./components/partial-suppliers/partial-suppliers.component";
 
 @NgModule({
-  imports: [CommonModule, RouterModule, MaterialModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   declarations: [
     AbpPaginationControlsComponent,
     AbpValidationSummaryComponent,
@@ -28,6 +36,7 @@ import { MaterialModule } from "./material/material.module";
     LocalizePipe,
     BusyDirective,
     EqualValidator,
+    PartialSuppliersComponent,
   ],
   exports: [
     AbpPaginationControlsComponent,
@@ -38,6 +47,7 @@ import { MaterialModule } from "./material/material.module";
     BusyDirective,
     EqualValidator,
     MaterialModule,
+    PartialSuppliersComponent,
   ],
 })
 export class SharedModule {

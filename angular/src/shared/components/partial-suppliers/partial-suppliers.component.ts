@@ -7,7 +7,7 @@ import { Observable } from "rxjs";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 
 @Component({
-  selector: "app-partial-suppliers",
+  selector: "partial-suppliers",
   templateUrl: "./partial-suppliers.component.html",
   styleUrls: ["./partial-suppliers.component.scss"],
 })
