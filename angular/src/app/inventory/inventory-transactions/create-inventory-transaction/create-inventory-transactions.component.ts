@@ -12,4 +12,8 @@ export class CreateInventoryTransactionsComponent implements OnInit {
   ngOnInit(): void {}
 
   save() {}
+
+  selectedSupplier($event) {
+    console.log($event);
+  }
 }

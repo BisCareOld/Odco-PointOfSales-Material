@@ -23,7 +23,7 @@
 
   <mat-autocomplete #auto="matAutocomplete">
     <mat-option
-      (onSelectionChange)="selectedSupplier(option)"
+      (onSelectionChange)="selectSupplier(option)"
       *ngFor="let option of filteredOptions | async"
       [value]="option.name"
     >

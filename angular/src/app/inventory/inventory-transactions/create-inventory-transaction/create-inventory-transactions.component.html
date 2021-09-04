@@ -10,7 +10,9 @@
 
       <mat-grid-list cols="2" rowHeight="50px" gutterSize="15px">
         <mat-grid-tile>
-          <partial-suppliers></partial-suppliers>
+          <partial-suppliers
+            (selectedEvent)="selectedSupplier($event)"
+          ></partial-suppliers>
         </mat-grid-tile>
         <mat-grid-tile>B</mat-grid-tile>
         <mat-grid-tile>C</mat-grid-tile>
