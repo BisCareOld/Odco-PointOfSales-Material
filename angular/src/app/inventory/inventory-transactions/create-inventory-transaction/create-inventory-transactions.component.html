@@ -1,33 +1,85 @@
-<div [@routerTransition]>
-  <section class="mat-typography">
-    <h1>{{ "Brands" | localize }}</h1>
-  </section>
-  <mat-card>
-    <form #createBrandForm="ngForm" (ngSubmit)="save()">
-      <!-- Dialog Header -->
-
-      <!-- Dialog Content -->
-
-      <mat-grid-list cols="2" rowHeight="50px" gutterSize="15px">
-        <mat-grid-tile>
+<form #createGRNForm="ngForm" novalidate (ngSubmit)="save()">
+  <mat-card class="shipping-card">
+    <mat-card-header>
+      <mat-card-title>{{ "GoodsReceivedNotes" | localize }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
           <partial-suppliers
             (selectedEvent)="selectedSupplier($event)"
           ></partial-suppliers>
-        </mat-grid-tile>
-        <mat-grid-tile>B</mat-grid-tile>
-        <mat-grid-tile>C</mat-grid-tile>
-        <mat-grid-tile>D</mat-grid-tile>
-      </mat-grid-list>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>{{ "GoodsReceivedNumber" | localize }}</mat-label>
+            <input
+              matInput
+              name="goodsReceivedNumber"
+              required
+              minlength="2"
+              maxlength="10"
+              [(ngModel)]="grn.goodsReceivedNumber"
+              #goodsReceivedNumberModel="ngModel"
+              #goodsReceivedNumberEl
+            />
+          </mat-form-field>
+          <abp-validation-summary
+            [control]="goodsReceivedNumberModel"
+            [controlEl]="goodsReceivedNumberEl"
+          ></abp-validation-summary>
+        </div>
+      </div>
 
-      <!-- Dialog Footer -->
-      <!-- <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>{{ "Remarks" | localize }}</mat-label>
+            <input
+              matInput
+              name="remarks"
+              minlength="0"
+              maxlength="100"
+              [(ngModel)]="grn.remarks"
+              #remarksModel="ngModel"
+              #remarksEl
+            />
+          </mat-form-field>
+          <abp-validation-summary
+            [control]="remarksModel"
+            [controlEl]="remarksEl"
+          ></abp-validation-summary>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>{{ "ReferenceNumber" | localize }}</mat-label>
+            <input
+              matInput
+              name="referenceNumber"
+              minlength="2"
+              maxlength="10"
+              [(ngModel)]="grn.referenceNumber"
+              #referenceNumberModel="ngModel"
+              #referenceNumberEl
+            />
+          </mat-form-field>
+          <abp-validation-summary
+            [control]="referenceNumberModel"
+            [controlEl]="referenceNumberEl"
+          ></abp-validation-summary>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
       <button
-        mat-button
-        color="accent"
-        [disabled]="!createBrandForm.form.valid || saving"
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="!createGRNForm.form.valid || saving"
       >
         {{ "Submit" | localize }}
-      </button> -->
-    </form>
+      </button>
+    </mat-card-actions>
   </mat-card>
-</div>
+</form>

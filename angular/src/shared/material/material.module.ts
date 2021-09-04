@@ -16,8 +16,11 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatSelectModule } from "@angular/material/select";
+import { MatRadioModule } from "@angular/material/radio";
 
 const AngularMaterialComponents = [
+  MatFormFieldModule,
   MatToolbarModule,
   MatButtonModule,
   MatSidenavModule,
@@ -26,7 +29,6 @@ const AngularMaterialComponents = [
   MatSlideToggleModule,
   MatPaginatorModule,
   MatTableModule,
-  MatFormFieldModule,
   MatInputModule,
   MatCardModule,
   MatDialogModule,
@@ -34,6 +36,8 @@ const AngularMaterialComponents = [
   MatCheckboxModule,
   MatGridListModule,
   MatAutocompleteModule,
+  MatSelectModule,
+  MatRadioModule,
 ];
 
 @NgModule({

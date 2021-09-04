@@ -205,6 +205,245 @@ export class ConfigurationServiceProxy {
 }
 
 @Injectable()
+export class DocumentSequenceNumberManagerImplementationServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @return Success
+     */
+    syncDocumentSequenceNumber(): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/DocumentSequenceNumberManagerImplementation/SyncDocumentSequenceNumber";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSyncDocumentSequenceNumber(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSyncDocumentSequenceNumber(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSyncDocumentSequenceNumber(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param documentType (optional) 
+     * @return Success
+     */
+    getNextDocumentNumber(documentType: number | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/services/app/DocumentSequenceNumberManagerImplementation/GetNextDocumentNumber?";
+        if (documentType === null)
+            throw new Error("The parameter 'documentType' cannot be null.");
+        else if (documentType !== undefined)
+            url_ += "documentType=" + encodeURIComponent("" + documentType) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetNextDocumentNumber(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetNextDocumentNumber(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetNextDocumentNumber(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
+    }
+
+    /**
+     * @param documentType (optional) 
+     * @return Success
+     */
+    getAndUpdateNextDocumentNumber(documentType: DocumentType | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/services/app/DocumentSequenceNumberManagerImplementation/GetAndUpdateNextDocumentNumber?";
+        if (documentType === null)
+            throw new Error("The parameter 'documentType' cannot be null.");
+        else if (documentType !== undefined)
+            url_ += "documentType=" + encodeURIComponent("" + documentType) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAndUpdateNextDocumentNumber(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAndUpdateNextDocumentNumber(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAndUpdateNextDocumentNumber(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
+    }
+}
+
+@Injectable()
+export class InventoryServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createGoodsReceivedNote(body: CreateGoodsReceivedDto | undefined): Observable<GoodsReceivedDto> {
+        let url_ = this.baseUrl + "/api/services/app/Inventory/CreateGoodsReceivedNote";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateGoodsReceivedNote(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateGoodsReceivedNote(<any>response_);
+                } catch (e) {
+                    return <Observable<GoodsReceivedDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GoodsReceivedDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateGoodsReceivedNote(response: HttpResponseBase): Observable<GoodsReceivedDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GoodsReceivedDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GoodsReceivedDto>(<any>null);
+    }
+}
+
+@Injectable()
 export class ProductionServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -3839,6 +4078,327 @@ export class ChangeUiThemeInput implements IChangeUiThemeInput {
 
 export interface IChangeUiThemeInput {
     theme: string;
+}
+
+export enum DocumentType {
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+    _4 = 4,
+    _5 = 5,
+    _6 = 6,
+    _7 = 7,
+    _8 = 8,
+    _9 = 9,
+    _10 = 10,
+}
+
+export enum TransactionStatus {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+}
+
+export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProductDto {
+    goodsRecievedId: string;
+    goodsRecievedNumber: string;
+    sequenceNumber: number;
+    productId: string;
+    productCode: string;
+    productName: string;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    quantity: number;
+    freeQuantity: number;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    discountRate: number;
+    discountAmount: number;
+    lineTotal: number;
+
+    constructor(data?: ICreateGoodsReceivedProductDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.goodsRecievedId = _data["goodsRecievedId"];
+            this.goodsRecievedNumber = _data["goodsRecievedNumber"];
+            this.sequenceNumber = _data["sequenceNumber"];
+            this.productId = _data["productId"];
+            this.productCode = _data["productCode"];
+            this.productName = _data["productName"];
+            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
+            this.batchNumber = _data["batchNumber"];
+            this.quantity = _data["quantity"];
+            this.freeQuantity = _data["freeQuantity"];
+            this.costPrice = _data["costPrice"];
+            this.sellingPrice = _data["sellingPrice"];
+            this.maximumRetailPrice = _data["maximumRetailPrice"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.lineTotal = _data["lineTotal"];
+        }
+    }
+
+    static fromJS(data: any): CreateGoodsReceivedProductDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateGoodsReceivedProductDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["goodsRecievedId"] = this.goodsRecievedId;
+        data["goodsRecievedNumber"] = this.goodsRecievedNumber;
+        data["sequenceNumber"] = this.sequenceNumber;
+        data["productId"] = this.productId;
+        data["productCode"] = this.productCode;
+        data["productName"] = this.productName;
+        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
+        data["batchNumber"] = this.batchNumber;
+        data["quantity"] = this.quantity;
+        data["freeQuantity"] = this.freeQuantity;
+        data["costPrice"] = this.costPrice;
+        data["sellingPrice"] = this.sellingPrice;
+        data["maximumRetailPrice"] = this.maximumRetailPrice;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["lineTotal"] = this.lineTotal;
+        return data; 
+    }
+
+    clone(): CreateGoodsReceivedProductDto {
+        const json = this.toJSON();
+        let result = new CreateGoodsReceivedProductDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateGoodsReceivedProductDto {
+    goodsRecievedId: string;
+    goodsRecievedNumber: string;
+    sequenceNumber: number;
+    productId: string;
+    productCode: string;
+    productName: string;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    quantity: number;
+    freeQuantity: number;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    discountRate: number;
+    discountAmount: number;
+    lineTotal: number;
+}
+
+export class CreateGoodsReceivedDto implements ICreateGoodsReceivedDto {
+    goodsReceivedNumber: string;
+    referenceNumber: string | undefined;
+    supplierId: string;
+    supplierCode: string | undefined;
+    supplierName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    transactionStatus: TransactionStatus;
+    remarks: string | undefined;
+    goodsReceivedProducts: CreateGoodsReceivedProductDto[] | undefined;
+
+    constructor(data?: ICreateGoodsReceivedDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.goodsReceivedNumber = _data["goodsReceivedNumber"];
+            this.referenceNumber = _data["referenceNumber"];
+            this.supplierId = _data["supplierId"];
+            this.supplierCode = _data["supplierCode"];
+            this.supplierName = _data["supplierName"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.taxRate = _data["taxRate"];
+            this.taxAmount = _data["taxAmount"];
+            this.grossAmount = _data["grossAmount"];
+            this.netAmount = _data["netAmount"];
+            this.transactionStatus = _data["transactionStatus"];
+            this.remarks = _data["remarks"];
+            if (Array.isArray(_data["goodsReceivedProducts"])) {
+                this.goodsReceivedProducts = [] as any;
+                for (let item of _data["goodsReceivedProducts"])
+                    this.goodsReceivedProducts.push(CreateGoodsReceivedProductDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateGoodsReceivedDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateGoodsReceivedDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["goodsReceivedNumber"] = this.goodsReceivedNumber;
+        data["referenceNumber"] = this.referenceNumber;
+        data["supplierId"] = this.supplierId;
+        data["supplierCode"] = this.supplierCode;
+        data["supplierName"] = this.supplierName;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["taxRate"] = this.taxRate;
+        data["taxAmount"] = this.taxAmount;
+        data["grossAmount"] = this.grossAmount;
+        data["netAmount"] = this.netAmount;
+        data["transactionStatus"] = this.transactionStatus;
+        data["remarks"] = this.remarks;
+        if (Array.isArray(this.goodsReceivedProducts)) {
+            data["goodsReceivedProducts"] = [];
+            for (let item of this.goodsReceivedProducts)
+                data["goodsReceivedProducts"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): CreateGoodsReceivedDto {
+        const json = this.toJSON();
+        let result = new CreateGoodsReceivedDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateGoodsReceivedDto {
+    goodsReceivedNumber: string;
+    referenceNumber: string | undefined;
+    supplierId: string;
+    supplierCode: string | undefined;
+    supplierName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    transactionStatus: TransactionStatus;
+    remarks: string | undefined;
+    goodsReceivedProducts: CreateGoodsReceivedProductDto[] | undefined;
+}
+
+export class GoodsReceivedDto implements IGoodsReceivedDto {
+    goodsReceivedNumber: string;
+    referenceNumber: string | undefined;
+    supplierId: string;
+    supplierCode: string | undefined;
+    supplierName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    transactionStatus: TransactionStatus;
+    remarks: string | undefined;
+    id: string;
+
+    constructor(data?: IGoodsReceivedDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.goodsReceivedNumber = _data["goodsReceivedNumber"];
+            this.referenceNumber = _data["referenceNumber"];
+            this.supplierId = _data["supplierId"];
+            this.supplierCode = _data["supplierCode"];
+            this.supplierName = _data["supplierName"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.taxRate = _data["taxRate"];
+            this.taxAmount = _data["taxAmount"];
+            this.grossAmount = _data["grossAmount"];
+            this.netAmount = _data["netAmount"];
+            this.transactionStatus = _data["transactionStatus"];
+            this.remarks = _data["remarks"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): GoodsReceivedDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GoodsReceivedDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["goodsReceivedNumber"] = this.goodsReceivedNumber;
+        data["referenceNumber"] = this.referenceNumber;
+        data["supplierId"] = this.supplierId;
+        data["supplierCode"] = this.supplierCode;
+        data["supplierName"] = this.supplierName;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["taxRate"] = this.taxRate;
+        data["taxAmount"] = this.taxAmount;
+        data["grossAmount"] = this.grossAmount;
+        data["netAmount"] = this.netAmount;
+        data["transactionStatus"] = this.transactionStatus;
+        data["remarks"] = this.remarks;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): GoodsReceivedDto {
+        const json = this.toJSON();
+        let result = new GoodsReceivedDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IGoodsReceivedDto {
+    goodsReceivedNumber: string;
+    referenceNumber: string | undefined;
+    supplierId: string;
+    supplierCode: string | undefined;
+    supplierName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    transactionStatus: TransactionStatus;
+    remarks: string | undefined;
+    id: string;
 }
 
 export class CreateProductDto implements ICreateProductDto {
