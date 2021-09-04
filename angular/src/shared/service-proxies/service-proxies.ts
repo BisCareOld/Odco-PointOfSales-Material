@@ -743,15 +743,12 @@ export class ProductionServiceProxy {
 
     /**
      * @param keyword (optional) 
-     * @param supplierId (optional) 
      * @return Success
      */
-    getPartialProducts(keyword: string | null | undefined, supplierId: string | null | undefined): Observable<CommonKeyValuePairDto[]> {
+    getPartialProducts(keyword: string | null | undefined): Observable<CommonKeyValuePairDto[]> {
         let url_ = this.baseUrl + "/api/services/app/Production/GetPartialProducts?";
         if (keyword !== undefined && keyword !== null)
             url_ += "keyword=" + encodeURIComponent("" + keyword) + "&";
-        if (supplierId !== undefined && supplierId !== null)
-            url_ += "supplierId=" + encodeURIComponent("" + supplierId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

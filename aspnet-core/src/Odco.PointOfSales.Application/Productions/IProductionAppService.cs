@@ -18,7 +18,7 @@ namespace Odco.PointOfSales.Application.Productions
         Task<ProductDto> GetProductAsync(EntityDto<Guid> input);
         Task<PagedResultDto<ProductDto>> GetAllProductsAsync(PagedProductResultRequestDto input);
         Task<ProductDto> UpdateProductAsync(UpdateProductDto input);
-        Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword, Guid? supplierId);
+        Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword);
         #endregion
 
         #region Category

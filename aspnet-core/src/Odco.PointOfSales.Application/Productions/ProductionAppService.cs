@@ -125,7 +125,7 @@ namespace Odco.PointOfSales.Application.Productions
             }
         }
 
-        public async Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword, Guid? supplierId)
+        public async Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))
                 return new List<CommonKeyValuePairDto>();

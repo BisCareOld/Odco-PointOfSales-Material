@@ -19,6 +19,7 @@ import { BusyDirective } from "./directives/busy.directive";
 import { EqualValidator } from "./directives/equal-validator.directive";
 import { MaterialModule } from "./material/material.module";
 import { PartialSuppliersComponent } from "./components/partial-suppliers/partial-suppliers.component";
+import { PartialProductsComponent } from "./components/partial-products/partial-products.component";
 
 @NgModule({
   imports: [
@@ -37,6 +38,7 @@ import { PartialSuppliersComponent } from "./components/partial-suppliers/partia
     BusyDirective,
     EqualValidator,
     PartialSuppliersComponent,
+    PartialProductsComponent,
   ],
   exports: [
     AbpPaginationControlsComponent,
@@ -48,6 +50,7 @@ import { PartialSuppliersComponent } from "./components/partial-suppliers/partia
     EqualValidator,
     MaterialModule,
     PartialSuppliersComponent,
+    PartialProductsComponent,
   ],
 })
 export class SharedModule {

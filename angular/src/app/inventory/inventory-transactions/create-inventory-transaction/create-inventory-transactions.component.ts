@@ -36,6 +36,10 @@ export class CreateInventoryTransactionsComponent
     console.log($event);
   }
 
+  selectedProducts($event) {
+    console.log($event);
+  }
+
   save(): void {
     this.saving = true;
 
