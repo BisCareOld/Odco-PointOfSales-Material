@@ -441,6 +441,57 @@ export class InventoryServiceProxy {
         }
         return _observableOf<GoodsReceivedDto>(<any>null);
     }
+
+    /**
+     * @return Success
+     */
+    syncStockBalances(): Observable<boolean> {
+        let url_ = this.baseUrl + "/api/services/app/Inventory/SyncStockBalances";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSyncStockBalances(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSyncStockBalances(<any>response_);
+                } catch (e) {
+                    return <Observable<boolean>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<boolean>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSyncStockBalances(response: HttpResponseBase): Observable<boolean> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<boolean>(<any>null);
+    }
 }
 
 @Injectable()
@@ -774,6 +825,351 @@ export class ProductionServiceProxy {
     }
 
     protected processGetPartialProducts(response: HttpResponseBase): Observable<CommonKeyValuePairDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(CommonKeyValuePairDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonKeyValuePairDto[]>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createWarehouse(body: CreateWarehouseDto | undefined): Observable<WarehouseDto> {
+        let url_ = this.baseUrl + "/api/services/app/Production/CreateWarehouse";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateWarehouse(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateWarehouse(<any>response_);
+                } catch (e) {
+                    return <Observable<WarehouseDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<WarehouseDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateWarehouse(response: HttpResponseBase): Observable<WarehouseDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WarehouseDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WarehouseDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    deleteWarehouse(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Production/DeleteWarehouse?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteWarehouse(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteWarehouse(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDeleteWarehouse(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getWarehouse(id: string | undefined): Observable<WarehouseDto> {
+        let url_ = this.baseUrl + "/api/services/app/Production/GetWarehouse?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWarehouse(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWarehouse(<any>response_);
+                } catch (e) {
+                    return <Observable<WarehouseDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<WarehouseDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetWarehouse(response: HttpResponseBase): Observable<WarehouseDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WarehouseDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WarehouseDto>(<any>null);
+    }
+
+    /**
+     * @param keyword (optional) 
+     * @param isActive (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAllWarehouses(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<WarehouseDtoPagedResultDto> {
+        let url_ = this.baseUrl + "/api/services/app/Production/GetAllWarehouses?";
+        if (keyword !== undefined && keyword !== null)
+            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
+        if (isActive !== undefined && isActive !== null)
+            url_ += "IsActive=" + encodeURIComponent("" + isActive) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllWarehouses(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllWarehouses(<any>response_);
+                } catch (e) {
+                    return <Observable<WarehouseDtoPagedResultDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<WarehouseDtoPagedResultDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllWarehouses(response: HttpResponseBase): Observable<WarehouseDtoPagedResultDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WarehouseDtoPagedResultDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WarehouseDtoPagedResultDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    updateWarehouse(body: UpdateWarehouseDto | undefined): Observable<WarehouseDto> {
+        let url_ = this.baseUrl + "/api/services/app/Production/UpdateWarehouse";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateWarehouse(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateWarehouse(<any>response_);
+                } catch (e) {
+                    return <Observable<WarehouseDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<WarehouseDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateWarehouse(response: HttpResponseBase): Observable<WarehouseDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WarehouseDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WarehouseDto>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllKeyValuePairWarehouses(): Observable<CommonKeyValuePairDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Production/GetAllKeyValuePairWarehouses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllKeyValuePairWarehouses(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllKeyValuePairWarehouses(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonKeyValuePairDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonKeyValuePairDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllKeyValuePairWarehouses(response: HttpResponseBase): Observable<CommonKeyValuePairDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -4104,6 +4500,9 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
     productId: string;
     productCode: string;
     productName: string;
+    warehouseId: string;
+    warehouseCode: string;
+    warehouseName: string;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
     quantity: number;
@@ -4132,6 +4531,9 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
             this.productId = _data["productId"];
             this.productCode = _data["productCode"];
             this.productName = _data["productName"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
             this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
             this.batchNumber = _data["batchNumber"];
             this.quantity = _data["quantity"];
@@ -4160,6 +4562,9 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
         data["productId"] = this.productId;
         data["productCode"] = this.productCode;
         data["productName"] = this.productName;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
         data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
         data["batchNumber"] = this.batchNumber;
         data["quantity"] = this.quantity;
@@ -4188,6 +4593,9 @@ export interface ICreateGoodsReceivedProductDto {
     productId: string;
     productCode: string;
     productName: string;
+    warehouseId: string;
+    warehouseCode: string;
+    warehouseName: string;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
     quantity: number;
@@ -4783,6 +5191,258 @@ export interface ICommonKeyValuePairDto {
     id: string;
     code: string | undefined;
     name: string | undefined;
+}
+
+export class CreateWarehouseDto implements ICreateWarehouseDto {
+    code: string;
+    name: string;
+    description: string | undefined;
+    contactPersonName: string | undefined;
+    contactNumber: string | undefined;
+    isActive: boolean;
+
+    constructor(data?: ICreateWarehouseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.contactPersonName = _data["contactPersonName"];
+            this.contactNumber = _data["contactNumber"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): CreateWarehouseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateWarehouseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["contactPersonName"] = this.contactPersonName;
+        data["contactNumber"] = this.contactNumber;
+        data["isActive"] = this.isActive;
+        return data; 
+    }
+
+    clone(): CreateWarehouseDto {
+        const json = this.toJSON();
+        let result = new CreateWarehouseDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateWarehouseDto {
+    code: string;
+    name: string;
+    description: string | undefined;
+    contactPersonName: string | undefined;
+    contactNumber: string | undefined;
+    isActive: boolean;
+}
+
+export class WarehouseDto implements IWarehouseDto {
+    code: string;
+    name: string;
+    description: string | undefined;
+    contactPersonName: string | undefined;
+    contactNumber: string | undefined;
+    isActive: boolean;
+    id: string;
+
+    constructor(data?: IWarehouseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.contactPersonName = _data["contactPersonName"];
+            this.contactNumber = _data["contactNumber"];
+            this.isActive = _data["isActive"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): WarehouseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WarehouseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["contactPersonName"] = this.contactPersonName;
+        data["contactNumber"] = this.contactNumber;
+        data["isActive"] = this.isActive;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): WarehouseDto {
+        const json = this.toJSON();
+        let result = new WarehouseDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IWarehouseDto {
+    code: string;
+    name: string;
+    description: string | undefined;
+    contactPersonName: string | undefined;
+    contactNumber: string | undefined;
+    isActive: boolean;
+    id: string;
+}
+
+export class WarehouseDtoPagedResultDto implements IWarehouseDtoPagedResultDto {
+    totalCount: number;
+    items: WarehouseDto[] | undefined;
+
+    constructor(data?: IWarehouseDtoPagedResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items.push(WarehouseDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WarehouseDtoPagedResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WarehouseDtoPagedResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): WarehouseDtoPagedResultDto {
+        const json = this.toJSON();
+        let result = new WarehouseDtoPagedResultDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IWarehouseDtoPagedResultDto {
+    totalCount: number;
+    items: WarehouseDto[] | undefined;
+}
+
+export class UpdateWarehouseDto implements IUpdateWarehouseDto {
+    code: string;
+    name: string;
+    description: string | undefined;
+    contactPersonName: string | undefined;
+    contactNumber: string | undefined;
+    isActive: boolean;
+    id: string;
+
+    constructor(data?: IUpdateWarehouseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.contactPersonName = _data["contactPersonName"];
+            this.contactNumber = _data["contactNumber"];
+            this.isActive = _data["isActive"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): UpdateWarehouseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateWarehouseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["contactPersonName"] = this.contactPersonName;
+        data["contactNumber"] = this.contactNumber;
+        data["isActive"] = this.isActive;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): UpdateWarehouseDto {
+        const json = this.toJSON();
+        let result = new UpdateWarehouseDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IUpdateWarehouseDto {
+    code: string;
+    name: string;
+    description: string | undefined;
+    contactPersonName: string | undefined;
+    contactNumber: string | undefined;
+    isActive: boolean;
+    id: string;
 }
 
 export class CreateCategoryDto implements ICreateCategoryDto {

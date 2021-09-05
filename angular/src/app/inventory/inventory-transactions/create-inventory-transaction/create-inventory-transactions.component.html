@@ -93,6 +93,34 @@
             </td>
           </ng-container>
 
+          <!-- Warehouse Column -->
+          <ng-container matColumnDef="warehouse">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "Warehouse" | localize }}
+            </th>
+            <td mat-cell *matCellDef="let element; let i = index">
+              <select
+                matNativeControl
+                required
+                name="warehouseId{{ i }}"
+                id="warehouseId{{ i }}"
+                (change)="selectWarehouse($event, element)"
+                [(ngModel)]="element.warehouseId"
+                #warehouseIdModel="ngModel"
+                #warehouseIdEl
+              >
+                <option value="" selected></option>
+                <option *ngFor="let w of warehouses" [value]="w.id">
+                  {{ w.name }}
+                </option>
+              </select>
+              <abp-validation-summary
+                [control]="warehouseIdModel"
+                [controlEl]="warehouseIdEl"
+              ></abp-validation-summary>
+            </td>
+          </ng-container>
+
           <!-- Quantity Column -->
           <ng-container matColumnDef="quantity">
             <th mat-header-cell *matHeaderCellDef>

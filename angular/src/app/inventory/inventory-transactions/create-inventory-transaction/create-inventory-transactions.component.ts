@@ -3,6 +3,7 @@ import { finalize } from "rxjs/operators";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
   InventoryServiceProxy,
+  ProductionServiceProxy,
   CreateGoodsReceivedDto,
   CreateGoodsReceivedProductDto,
   CommonKeyValuePairDto,
@@ -10,6 +11,8 @@ import {
 import { forEach as _forEach, map as _map } from "lodash-es";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { MatTableDataSource } from "@angular/material/table";
+import { Observable } from "rxjs";
+import { FormControl, Validators } from "@angular/forms";
 
 @Component({
   selector: "app-create-inventory-transactions",
@@ -22,9 +25,11 @@ export class CreateInventoryTransactionsComponent
   implements OnInit
 {
   saving = false;
+  warehouses: CommonKeyValuePairDto[];
   grn = new CreateGoodsReceivedDto();
   displayedColumns: string[] = [
     "product-name",
+    "warehouse",
     "quantity",
     "free-quantity",
     "cost-price",
@@ -34,7 +39,6 @@ export class CreateInventoryTransactionsComponent
     "discount-amount",
     "line-amount",
   ];
-
   LINE_LEVEL_DATA: CreateGoodsReceivedProductDto[] = [];
   dataSource = new MatTableDataSource<CreateGoodsReceivedProductDto>(
     this.LINE_LEVEL_DATA
@@ -42,12 +46,38 @@ export class CreateInventoryTransactionsComponent
 
   constructor(
     injector: Injector,
+    private _productionService: ProductionServiceProxy,
     private _inventoryService: InventoryServiceProxy
   ) {
     super(injector);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getAllWarehouses();
+    console.log(this.warehouses);
+  }
+
+  getAllWarehouses() {
+    this._productionService
+      .getAllKeyValuePairWarehouses()
+      .subscribe((result) => (this.warehouses = result));
+  }
+
+  selectWarehouse($event, lineLevelDto: CreateGoodsReceivedProductDto) {
+    let warehouseId = $event.target.value;
+    let objWarehouse = new CommonKeyValuePairDto();
+
+    if (warehouseId) {
+      objWarehouse = this.warehouses.find((x) => x.id == warehouseId);
+    }
+
+    // set value for warehouse
+    lineLevelDto.warehouseId = !objWarehouse.id ? null : objWarehouse.id;
+    lineLevelDto.warehouseCode = !objWarehouse.id ? null : objWarehouse.code;
+    lineLevelDto.warehouseName = !objWarehouse.id ? null : objWarehouse.name;
+
+    console.log(lineLevelDto);
+  }
 
   selectedSupplier($event: CommonKeyValuePairDto) {
     console.log($event);
@@ -63,6 +93,9 @@ export class CreateInventoryTransactionsComponent
     l.productId = $event.id;
     l.productCode = $event.code;
     l.productName = $event.name;
+    l.warehouseId = null;
+    l.warehouseCode = null;
+    l.warehouseName = null;
     l.expiryDate = null;
     l.batchNumber = null;
     l.quantity = 0;
