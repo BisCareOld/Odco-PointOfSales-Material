@@ -29,6 +29,19 @@ namespace Odco.PointOfSales.Core.Inventory
         [StringLength(100)]
         public string ProductName { get; set; }
 
+        /// <summary>
+        ///     Warehouse Id *FK
+        ///     1 : M
+        ///     from which warehouse should receive the goods
+        /// </summary>
+        public Guid? WarehouseId { get; set; }
+
+        [StringLength(10)]
+        public string WarehouseCode { get; set; }
+
+        [StringLength(100)]
+        public string WarehouseName { get; set; }
+
         public DateTime? ExpiryDate { get; set; }
 
         [StringLength(15)]

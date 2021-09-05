@@ -8,6 +8,10 @@ namespace Odco.PointOfSales.Application.Productions.Warehouses
     public class CreateWarehouseDto
     {
         [Required]
+        [StringLength(10)]
+        public string Code { get; set; }
+
+        [Required]
         [StringLength(100)]
         public string Name { get; set; }
 

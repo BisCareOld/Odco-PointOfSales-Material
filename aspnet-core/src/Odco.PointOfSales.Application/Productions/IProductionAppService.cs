@@ -46,5 +46,6 @@ namespace Odco.PointOfSales.Application.Productions
         Task<PagedResultDto<BrandDto>> GetAllBrandsAsync(PagedBrandsResultRequestDto input);
         Task<BrandDto> UpdateBrandAsync(BrandDto input);
         #endregion
+
     }
 }

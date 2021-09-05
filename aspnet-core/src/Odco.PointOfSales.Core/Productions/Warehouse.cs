@@ -11,6 +11,10 @@ namespace Odco.PointOfSales.Core.Productions
     public class Warehouse : FullAuditedEntity<Guid>
     {
         [Required]
+        [StringLength(10)]
+        public string Code { get; set; }
+
+        [Required]
         [StringLength(100)]
         public string Name { get; set; }
 

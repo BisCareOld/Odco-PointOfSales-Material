@@ -29,7 +29,7 @@ namespace Odco.PointOfSales.Application.Productions
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
 
-        public ProductionAppService(IRepository<Product, Guid> productRepository, 
+        public ProductionAppService(IRepository<Product, Guid> productRepository,
             IRepository<Category, Guid> categoryRepository,
             IRepository<Brand, Guid> brandRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
@@ -134,7 +134,7 @@ namespace Odco.PointOfSales.Application.Productions
             if (string.IsNullOrEmpty(keyword))
                 return new List<CommonKeyValuePairDto>();
 
-            var products  = await _productRepository.GetAllListAsync();
+            var products = await _productRepository.GetAllListAsync();
 
             return products.Where(p => p.IsActive && (p.Code.Contains(keyword) || p.Name.ToLower().Contains(keyword)))
                 .OrderBy(p => p.Name)
@@ -236,11 +236,13 @@ namespace Odco.PointOfSales.Application.Productions
         public async Task<List<CommonKeyValuePairDto>> GetAllKeyValuePairWarehousesAsync()
         {
             return await _warehouseRepository.GetAll()
-                .OrderBy(p => p.Name)
-                .Select(p => new CommonKeyValuePairDto
+                .Where(w => w.IsActive)
+                .OrderBy(w => w.Name)
+                .Select(w => new CommonKeyValuePairDto
                 {
-                    Id = p.Id,
-                    Name = p.Name,
+                    Id = w.Id,
+                    Code = w.Code,
+                    Name = w.Name,
                 })
                 .ToListAsync();
         }
@@ -434,41 +436,46 @@ namespace Odco.PointOfSales.Application.Productions
 
         private async Task CreateOrUpdateStockBalance(Guid productId, string productCode, string productName)
         {
-            var products = _stockBalanceRepository.GetAll().Where(sb => sb.ProductId == productId);
-            
-            if(products.Count() > 0)
+            var stockBalances = _stockBalanceRepository.GetAll().Where(sb => sb.ProductId == productId);
+
+            if (stockBalances.Count() > 0)
             {
-                foreach(var product in products)
+                foreach (var sb in stockBalances)
                 {
-                    product.ProductId = productId;
-                    product.ProductCode = productCode;
-                    product.ProductName = productName;
-                    await _stockBalanceRepository.UpdateAsync(product);
+                    sb.ProductId = productId;
+                    sb.ProductCode = productCode;
+                    sb.ProductName = productName;
+                    await _stockBalanceRepository.UpdateAsync(sb);
                 }
             }
             else
             {
-                await _stockBalanceRepository.InsertAsync(new StockBalance
+                // Warehouse summary
+                var warehouses = await GetAllKeyValuePairWarehousesAsync();
+
+                // Company summary
+                // Initializing with a Empty (Null) warehouse
+                warehouses.Add(new CommonKeyValuePairDto());
+
+                var newStockBalances = warehouses.Select(w => new StockBalance
                 {
                     SequenceNumber = 0,
                     ProductId = productId,
                     ProductCode = productCode,
                     ProductName = productName,
-                    ReceivedQuantity = 0,
-                    ReceivedQuantityUnitOfMeasureUnit = null,
-                    BookBalanceQuantity = 0,
-                    BookBalanceUnitOfMeasureUnit = null,
-                    OnOrderQuantity = 0,
-                    OnOrderQuantityUnitOfMeasureUnit = null,
-                    AllocatedQuantity = 0,
-                    AllocatedQuantityUnitOfMeasureUnit = null,
-                    CostPrice = 0,
-                    SellingPrice = 0,
-                    MaximumRetailPrice = 0,
-                    GoodsRecievedNumber = null,
-                });
+                    WarehouseId = w.Id,
+                    WarehouseCode = w.Code,
+                    WarehouseName = w.Name
+                }).ToList();
+
+                foreach (var stockBalance in newStockBalances)
+                    await _stockBalanceRepository.InsertAsync(stockBalance);
             }
             await CurrentUnitOfWork.SaveChangesAsync();
         }
+
+        
+
+
     }
 }

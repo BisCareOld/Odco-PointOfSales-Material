@@ -7,5 +7,9 @@ namespace Odco.PointOfSales.Application.Inventory
     public interface IInventoryAppService : IApplicationService
     {
         Task<GoodsReceivedDto> CreateGoodsReceivedNoteAsync(CreateGoodsReceivedDto input);
+
+        #region Stock Balance
+        Task<bool> SyncStockBalancesAsync();
+        #endregion
     }
 }
