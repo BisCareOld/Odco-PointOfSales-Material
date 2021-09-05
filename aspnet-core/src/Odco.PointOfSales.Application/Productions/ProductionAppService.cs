@@ -473,9 +473,5 @@ namespace Odco.PointOfSales.Application.Productions
             }
             await CurrentUnitOfWork.SaveChangesAsync();
         }
-
-        
-
-
     }
 }
