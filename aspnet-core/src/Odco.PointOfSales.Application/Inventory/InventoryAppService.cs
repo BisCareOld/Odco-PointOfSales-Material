@@ -51,7 +51,7 @@ namespace Odco.PointOfSales.Application.Inventory
                 {
                     lineLevel.GoodsRecievedNumber = created.GoodsReceivedNumber;
 
-                    var stockBalances = await GetStockBalancesAsync(lineLevel.ProductId);
+                    var stockBalances = await GetStockBalancesAsync(lineLevel.ProductId, lineLevel.WarehouseId);
 
                     /// Creating a new row in StockBalance table
                     var newStockBalance = new StockBalance
@@ -78,9 +78,10 @@ namespace Odco.PointOfSales.Application.Inventory
 
                     await _stockBalanceRepository.InsertAsync(newStockBalance);
 
-                    var stockSummary = stockBalances.FirstOrDefault(sb => sb.SequenceNumber == 0);
+                    // Company Summary + Warehouse Summary
+                    var stockSummaries = stockBalances.Where(sb => sb.SequenceNumber == 0);
 
-                    if (stockSummary != null)
+                    foreach (var stockSummary in stockSummaries)
                     {
                         stockSummary.BookBalanceQuantity += lineLevel.Quantity + lineLevel.FreeQuantity;
                         stockSummary.ReceivedQuantity += lineLevel.Quantity + lineLevel.FreeQuantity;
@@ -155,15 +156,16 @@ namespace Odco.PointOfSales.Application.Inventory
         #endregion
 
         /// <summary>
-        /// Company summary + GRN summaries
+        /// Company summary + Warehouse summaries + GRN summaries
         /// </summary>
         /// <param name="productId"></param>
+        /// <param name="warehouseId"></param>
         /// <returns></returns>
-        private async Task<List<StockBalance>> GetStockBalancesAsync(Guid productId)
+        private async Task<List<StockBalance>> GetStockBalancesAsync(Guid productId, Guid warehouseId)
         {
             return await _stockBalanceRepository
                 .GetAll()
-                .Where(sb => sb.ProductId == productId)
+                .Where(sb => sb.ProductId == productId && (!sb.WarehouseId.HasValue || sb.WarehouseId == warehouseId))
                 .ToListAsync();
         }
     }
