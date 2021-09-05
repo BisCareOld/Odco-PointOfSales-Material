@@ -10,6 +10,7 @@ using Odco.PointOfSales.Application.GeneralDto;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
+using Odco.PointOfSales.Application.Productions.Warehouses;
 using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
 using System;
@@ -26,17 +27,20 @@ namespace Odco.PointOfSales.Application.Productions
         private readonly IRepository<Category, Guid> _categoryRepository;
         private readonly IRepository<Brand, Guid> _brandRepository;
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
+        private readonly IRepository<Warehouse, Guid> _warehouseRepository;
 
         public ProductionAppService(IRepository<Product, Guid> productRepository, 
             IRepository<Category, Guid> categoryRepository,
             IRepository<Brand, Guid> brandRepository,
-            IRepository<StockBalance, Guid> stockBalanceRepository)
+            IRepository<StockBalance, Guid> stockBalanceRepository,
+            IRepository<Warehouse, Guid> warehouseRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
             _brandRepository = brandRepository;
             _stockBalanceRepository = stockBalanceRepository;
+            _warehouseRepository = warehouseRepository;
         }
 
         #region Product
@@ -142,6 +146,103 @@ namespace Odco.PointOfSales.Application.Productions
                     Name = p.Name,
                 })
                 .ToList();
+        }
+        #endregion
+
+        #region Warehouse
+        public async Task<WarehouseDto> CreateWarehouseAsync(CreateWarehouseDto input)
+        {
+            try
+            {
+                var warehouse = ObjectMapper.Map<Warehouse>(input);
+                var created = await _warehouseRepository.InsertAsync(warehouse);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return ObjectMapper.Map<WarehouseDto>(created);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task DeleteWarehouseAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var warehouse = await _warehouseRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id); ;
+                await _warehouseRepository.DeleteAsync(warehouse);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<WarehouseDto> GetWarehouseAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var warehouse = await _warehouseRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
+                var returnDto = ObjectMapper.Map<WarehouseDto>(warehouse);
+                return returnDto;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<PagedResultDto<WarehouseDto>> GetAllWarehousesAsync(PagedWarehouseResultRequestDto input)
+        {
+            try
+            {
+                var query = _warehouseRepository.GetAll()
+                        .WhereIf(!input.Keyword.IsNullOrWhiteSpace(),
+                        x => x.Name.Contains(input.Keyword));
+
+                var result = _asyncQueryableExecuter.ToListAsync
+                    (
+                        query.OrderBy(o => o.CreationTime)
+                             .PageBy(input.SkipCount, input.MaxResultCount)
+                    );
+
+                var count = await _asyncQueryableExecuter.CountAsync(query);
+
+                var resultDto = ObjectMapper.Map<List<WarehouseDto>>(result.Result);
+                return new PagedResultDto<WarehouseDto>(count, resultDto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<WarehouseDto> UpdateWarehouseAsync(UpdateWarehouseDto input)
+        {
+            try
+            {
+                var warehouse = await _warehouseRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
+                ObjectMapper.Map(input, warehouse);
+                var updated = await _warehouseRepository.UpdateAsync(warehouse);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return ObjectMapper.Map<WarehouseDto>(updated);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<CommonKeyValuePairDto>> GetAllKeyValuePairWarehousesAsync()
+        {
+            return await _warehouseRepository.GetAll()
+                .OrderBy(p => p.Name)
+                .Select(p => new CommonKeyValuePairDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                })
+                .ToListAsync();
         }
         #endregion
 
