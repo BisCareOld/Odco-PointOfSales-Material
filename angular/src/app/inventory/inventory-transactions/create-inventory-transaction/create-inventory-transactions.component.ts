@@ -27,7 +27,7 @@ export class CreateInventoryTransactionsComponent
     "product-name",
     "quantity",
     "free-quantity",
-    "unit-price",
+    "cost-price",
     "selling-price",
     "mrp-price",
     "discount-rate",
