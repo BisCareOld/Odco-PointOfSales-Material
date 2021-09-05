@@ -34,6 +34,16 @@ namespace Odco.PointOfSales.Application.Inventory.GoodsReceivedProducts
         [StringLength(100)]
         public string ProductName { get; set; }
 
+        public Guid WarehouseId { get; set; }
+
+        [Required]
+        [StringLength(10)]
+        public string WarehouseCode { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string WarehouseName { get; set; }
+
         public DateTime? ExpiryDate { get; set; }
 
         [StringLength(15)]
