@@ -4494,7 +4494,6 @@ export enum TransactionStatus {
 }
 
 export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProductDto {
-    goodsRecievedId: string;
     goodsRecievedNumber: string;
     sequenceNumber: number;
     productId: string;
@@ -4525,7 +4524,6 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
 
     init(_data?: any) {
         if (_data) {
-            this.goodsRecievedId = _data["goodsRecievedId"];
             this.goodsRecievedNumber = _data["goodsRecievedNumber"];
             this.sequenceNumber = _data["sequenceNumber"];
             this.productId = _data["productId"];
@@ -4556,7 +4554,6 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["goodsRecievedId"] = this.goodsRecievedId;
         data["goodsRecievedNumber"] = this.goodsRecievedNumber;
         data["sequenceNumber"] = this.sequenceNumber;
         data["productId"] = this.productId;
@@ -4587,7 +4584,6 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
 }
 
 export interface ICreateGoodsReceivedProductDto {
-    goodsRecievedId: string;
     goodsRecievedNumber: string;
     sequenceNumber: number;
     productId: string;

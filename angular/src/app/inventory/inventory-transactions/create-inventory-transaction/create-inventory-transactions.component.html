@@ -4,6 +4,8 @@
       <mat-card-title>{{ "GoodsReceivedNotes" | localize }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
+      <li *ngFor="let error of errors">{{ error }}</li>
+
       <div class="row">
         <div class="col">
           <partial-suppliers
@@ -134,6 +136,7 @@
                 required
                 name="quantity{{ i }}"
                 id="quantity{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.quantity"
                 #quantityModel="ngModel"
                 #quantityEl
@@ -158,6 +161,7 @@
                 required
                 name="freeQuantity{{ i }}"
                 id="freeQuantity{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.freeQuantity"
                 #freeQuantityModel="ngModel"
                 #freeQuantityEl
@@ -182,6 +186,7 @@
                 required
                 name="costPrice{{ i }}"
                 id="costPrice{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.costPrice"
                 #costPriceModel="ngModel"
                 #costPriceEl
@@ -206,6 +211,7 @@
                 required
                 name="sellingPrice{{ i }}"
                 id="sellingPrice{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.sellingPrice"
                 #sellingPriceModel="ngModel"
                 #sellingPriceEl
@@ -230,6 +236,7 @@
                 required
                 name="maximumRetailPrice{{ i }}"
                 id="maximumRetailPrice{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.maximumRetailPrice"
                 #maximumRetailPriceModel="ngModel"
                 #maximumRetailPriceEl
@@ -254,6 +261,7 @@
                 required
                 name="discountRate{{ i }}"
                 id="discountRate{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.discountRate"
                 #discountRateModel="ngModel"
                 #discountRateEl
@@ -305,7 +313,73 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
+
+      <div class="parent">
+        <div class="child">
+          <mat-label>{{ "GrossAmount" | localize }}</mat-label>
+        </div>
+        <div class="child">LKR. {{ grn.grossAmount }}</div>
+
+        <div class="child">
+          <mat-label>{{ "Taxes" | localize }}</mat-label>
+        </div>
+        <div class="child">
+          <input
+            type="number"
+            matInput
+            class="transaction-table-inputs"
+            name="overallTaxRate"
+            id="overallTaxRate"
+            min="0"
+            max="100"
+            required
+            (change)="headerLevelCalculation()"
+            [(ngModel)]="grn.taxRate"
+            #overallTaxRateModel="ngModel"
+            #overallTaxRateEl
+          />
+          <abp-validation-summary
+            [control]="overallTaxRateModel"
+            [controlEl]="overallTaxRateEl"
+          ></abp-validation-summary>
+        </div>
+
+        <div class="child">
+          <mat-label>{{ "Discount" | localize }}</mat-label>
+        </div>
+        <div class="child">
+          <input
+            type="number"
+            matInput
+            class="transaction-table-inputs"
+            name="overallDiscountRate"
+            id="overallDiscountRate"
+            min="0"
+            max="100"
+            required
+            (change)="headerLevelCalculation()"
+            [(ngModel)]="grn.discountRate"
+            #overallDiscountRateModel="ngModel"
+            #overallDiscountRateEl
+          />
+          <abp-validation-summary
+            [control]="overallDiscountRateModel"
+            [controlEl]="overallDiscountRateEl"
+          ></abp-validation-summary>
+        </div>
+
+        <div class="child">
+          <mat-label>{{ "TotalDiscount" | localize }}</mat-label>
+        </div>
+        <div class="child">LKR. {{ grn.discountAmount }}</div>
+
+        <div class="child">
+          <mat-label>{{ "NetAmount" | localize }}</mat-label>
+        </div>
+        <div class="child">LKR. {{ grn.netAmount }}</div>
+      </div>
     </mat-card-content>
+
     <mat-card-actions>
       <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
       <button

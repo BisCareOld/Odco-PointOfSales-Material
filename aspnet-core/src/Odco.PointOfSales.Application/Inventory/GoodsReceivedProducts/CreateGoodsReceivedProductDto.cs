@@ -8,12 +8,9 @@ namespace Odco.PointOfSales.Application.Inventory.GoodsReceivedProducts
     [AutoMapTo(typeof(GoodsReceivedProduct))]
     public class CreateGoodsReceivedProductDto
     {
-        public Guid GoodsRecievedId { get; set; }
-
         /// <summary>
         ///     GRN sequence Number
         /// </summary>
-        [Required]
         [StringLength(15)]
         public string GoodsRecievedNumber { get; set; }
 

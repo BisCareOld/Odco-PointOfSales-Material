@@ -11,13 +11,13 @@ import { Observable } from "rxjs";
   styleUrls: ["./partial-products.component.scss"],
 })
 export class PartialProductsComponent implements OnInit {
-  constructor(private _productionService: ProductionServiceProxy) {}
-
   searchKeyword: string;
   filteredOptions: Observable<CommonKeyValuePairDto[]>;
   disable: boolean = false;
 
   @Output() selectedEvent = new EventEmitter<CommonKeyValuePairDto>();
+
+  constructor(private _productionService: ProductionServiceProxy) {}
 
   ngOnInit() {}
 
@@ -28,7 +28,13 @@ export class PartialProductsComponent implements OnInit {
   }
 
   selectProduct(option: CommonKeyValuePairDto) {
+    var vm = this;
+
     this.selectedEvent.emit(option);
+
+    setTimeout(function () {
+      vm.clearSelectedProduct();
+    }, 1000);
   }
 
   clearSelectedProduct() {
