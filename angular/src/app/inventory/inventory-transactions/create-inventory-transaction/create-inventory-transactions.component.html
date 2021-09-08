@@ -137,7 +137,6 @@
                 name="quantity{{ i }}"
                 id="quantity{{ i }}"
                 min="1"
-                max="10"
                 (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.quantity"
                 #quantityModel="ngModel"
@@ -150,7 +149,6 @@
               <validate-min-max
                 [control]="quantityModel"
                 [minValue]="1"
-                [maxValue]="10"
                 [enteredValue]="element.quantity"
               ></validate-min-max>
             </td>
@@ -169,6 +167,7 @@
                 required
                 name="freeQuantity{{ i }}"
                 id="freeQuantity{{ i }}"
+                min="1"
                 (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.freeQuantity"
                 #freeQuantityModel="ngModel"
@@ -178,6 +177,11 @@
                 [control]="freeQuantityModel"
                 [controlEl]="freeQuantityEl"
               ></abp-validation-summary>
+              <validate-min-max
+                [control]="freeQuantityModel"
+                [minValue]="1"
+                [enteredValue]="element.freeQuantity"
+              ></validate-min-max>
             </td>
           </ng-container>
 
@@ -194,6 +198,7 @@
                 required
                 name="costPrice{{ i }}"
                 id="costPrice{{ i }}"
+                min="1"
                 (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.costPrice"
                 #costPriceModel="ngModel"
@@ -203,6 +208,11 @@
                 [control]="costPriceModel"
                 [controlEl]="costPriceEl"
               ></abp-validation-summary>
+              <validate-min-max
+                [control]="costPriceModel"
+                [minValue]="1"
+                [enteredValue]="element.costPrice"
+              ></validate-min-max>
             </td>
           </ng-container>
 
@@ -219,6 +229,7 @@
                 required
                 name="sellingPrice{{ i }}"
                 id="sellingPrice{{ i }}"
+                min="1"
                 (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.sellingPrice"
                 #sellingPriceModel="ngModel"
@@ -228,6 +239,11 @@
                 [control]="sellingPriceModel"
                 [controlEl]="sellingPriceEl"
               ></abp-validation-summary>
+              <validate-min-max
+                [control]="sellingPriceModel"
+                [minValue]="1"
+                [enteredValue]="element.sellingPrice"
+              ></validate-min-max>
             </td>
           </ng-container>
 
@@ -244,6 +260,7 @@
                 required
                 name="maximumRetailPrice{{ i }}"
                 id="maximumRetailPrice{{ i }}"
+                min="1"
                 (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.maximumRetailPrice"
                 #maximumRetailPriceModel="ngModel"
@@ -253,6 +270,11 @@
                 [control]="maximumRetailPriceModel"
                 [controlEl]="maximumRetailPriceEl"
               ></abp-validation-summary>
+              <validate-min-max
+                [control]="maximumRetailPriceModel"
+                [minValue]="1"
+                [enteredValue]="element.maximumRetailPrice"
+              ></validate-min-max>
             </td>
           </ng-container>
 
@@ -269,6 +291,8 @@
                 required
                 name="discountRate{{ i }}"
                 id="discountRate{{ i }}"
+                min="1"
+                max="100"
                 (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.discountRate"
                 #discountRateModel="ngModel"
@@ -278,6 +302,12 @@
                 [control]="discountRateModel"
                 [controlEl]="discountRateEl"
               ></abp-validation-summary>
+              <validate-min-max
+                [control]="discountRateModel"
+                [minValue]="1"
+                [maxValue]="100"
+                [enteredValue]="element.discountRate"
+              ></validate-min-max>
             </td>
           </ng-container>
 
@@ -350,6 +380,12 @@
             [control]="overallTaxRateModel"
             [controlEl]="overallTaxRateEl"
           ></abp-validation-summary>
+          <validate-min-max
+            [control]="overallTaxRateModel"
+            [minValue]="1"
+            [maxValue]="100"
+            [enteredValue]="grn.taxRate"
+          ></validate-min-max>
         </div>
 
         <div class="child">
@@ -374,6 +410,12 @@
             [control]="overallDiscountRateModel"
             [controlEl]="overallDiscountRateEl"
           ></abp-validation-summary>
+          <validate-min-max
+            [control]="overallDiscountRateModel"
+            [minValue]="1"
+            [maxValue]="100"
+            [enteredValue]="grn.discountRate"
+          ></validate-min-max>
         </div>
 
         <div class="child">
