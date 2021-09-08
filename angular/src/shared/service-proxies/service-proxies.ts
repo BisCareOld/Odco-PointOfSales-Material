@@ -4494,7 +4494,7 @@ export enum TransactionStatus {
 }
 
 export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProductDto {
-    goodsRecievedNumber: string;
+    goodsRecievedNumber: string | undefined;
     sequenceNumber: number;
     productId: string;
     productCode: string;
@@ -4584,7 +4584,7 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
 }
 
 export interface ICreateGoodsReceivedProductDto {
-    goodsRecievedNumber: string;
+    goodsRecievedNumber: string | undefined;
     sequenceNumber: number;
     productId: string;
     productCode: string;

@@ -20,6 +20,7 @@ import { EqualValidator } from "./directives/equal-validator.directive";
 import { MaterialModule } from "./material/material.module";
 import { PartialSuppliersComponent } from "./components/partial-suppliers/partial-suppliers.component";
 import { PartialProductsComponent } from "./components/partial-products/partial-products.component";
+import { ValidateMinMaxComponent } from "./components/validate-min-max/validate-min-max.component";
 
 @NgModule({
   imports: [
@@ -39,6 +40,7 @@ import { PartialProductsComponent } from "./components/partial-products/partial-
     EqualValidator,
     PartialSuppliersComponent,
     PartialProductsComponent,
+    ValidateMinMaxComponent,
   ],
   exports: [
     AbpPaginationControlsComponent,
@@ -51,6 +53,7 @@ import { PartialProductsComponent } from "./components/partial-products/partial-
     MaterialModule,
     PartialSuppliersComponent,
     PartialProductsComponent,
+    ValidateMinMaxComponent,
   ],
 })
 export class SharedModule {

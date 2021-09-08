@@ -136,6 +136,8 @@
                 required
                 name="quantity{{ i }}"
                 id="quantity{{ i }}"
+                min="1"
+                max="10"
                 (change)="updateLineLevelCalculations(element)"
                 [(ngModel)]="element.quantity"
                 #quantityModel="ngModel"
@@ -145,6 +147,12 @@
                 [control]="quantityModel"
                 [controlEl]="quantityEl"
               ></abp-validation-summary>
+              <validate-min-max
+                [control]="quantityModel"
+                [minValue]="1"
+                [maxValue]="10"
+                [enteredValue]="element.quantity"
+              ></validate-min-max>
             </td>
           </ng-container>
 
