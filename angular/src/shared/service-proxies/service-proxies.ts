@@ -28,7 +28,7 @@ export class AccountServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     isTenantAvailable(body: IsTenantAvailableInput | undefined): Observable<IsTenantAvailableOutput> {
@@ -84,7 +84,7 @@ export class AccountServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     register(body: RegisterInput | undefined): Observable<RegisterOutput> {
@@ -152,7 +152,7 @@ export class ConfigurationServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     changeUiTheme(body: ChangeUiThemeInput | undefined): Observable<void> {
@@ -263,7 +263,7 @@ export class DocumentSequenceNumberManagerImplementationServiceProxy {
     }
 
     /**
-     * @param documentType (optional) 
+     * @param documentType (optional)
      * @return Success
      */
     getNextDocumentNumber(documentType: number | undefined): Observable<string> {
@@ -319,7 +319,7 @@ export class DocumentSequenceNumberManagerImplementationServiceProxy {
     }
 
     /**
-     * @param documentType (optional) 
+     * @param documentType (optional)
      * @return Success
      */
     getAndUpdateNextDocumentNumber(documentType: DocumentType | undefined): Observable<string> {
@@ -387,7 +387,7 @@ export class InventoryServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     createGoodsReceivedNote(body: CreateGoodsReceivedDto | undefined): Observable<GoodsReceivedDto> {
@@ -506,7 +506,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     createProduct(body: CreateProductDto | undefined): Observable<ProductDto> {
@@ -562,7 +562,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     deleteProduct(id: string | undefined): Observable<void> {
@@ -614,7 +614,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     getProduct(id: string | undefined): Observable<ProductDto> {
@@ -670,10 +670,10 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAllProducts(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<ProductDtoPagedResultDto> {
@@ -737,7 +737,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     updateProduct(body: UpdateProductDto | undefined): Observable<ProductDto> {
@@ -793,7 +793,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
+     * @param keyword (optional)
      * @return Success
      */
     getPartialProducts(keyword: string | null | undefined): Observable<CommonKeyValuePairDto[]> {
@@ -854,7 +854,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     createWarehouse(body: CreateWarehouseDto | undefined): Observable<WarehouseDto> {
@@ -910,7 +910,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     deleteWarehouse(id: string | undefined): Observable<void> {
@@ -962,7 +962,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     getWarehouse(id: string | undefined): Observable<WarehouseDto> {
@@ -1018,10 +1018,10 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAllWarehouses(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<WarehouseDtoPagedResultDto> {
@@ -1085,7 +1085,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     updateWarehouse(body: UpdateWarehouseDto | undefined): Observable<WarehouseDto> {
@@ -1199,7 +1199,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     createCategory(body: CreateCategoryDto | undefined): Observable<CategoryDto> {
@@ -1255,7 +1255,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     deleteCategory(id: string | undefined): Observable<void> {
@@ -1307,10 +1307,10 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAllCategories(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<CategoryDtoPagedResultDto> {
@@ -1374,7 +1374,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     getCategory(id: string | undefined): Observable<CategoryDto> {
@@ -1430,7 +1430,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     updateCategory(body: CategoryDto | undefined): Observable<CategoryDto> {
@@ -1544,7 +1544,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     createBrand(body: CreateBrandDto | undefined): Observable<BrandDto> {
@@ -1600,7 +1600,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     deleteBrand(id: string | undefined): Observable<void> {
@@ -1652,10 +1652,10 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAllBrands(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<BrandDtoPagedResultDto> {
@@ -1719,7 +1719,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     getBrand(id: string | undefined): Observable<BrandDto> {
@@ -1775,7 +1775,7 @@ export class ProductionServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     updateBrand(body: BrandDto | undefined): Observable<BrandDto> {
@@ -1901,7 +1901,7 @@ export class PurchasingServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     createSupplier(body: CreateSupplierDto | undefined): Observable<SupplierDto> {
@@ -1957,7 +1957,7 @@ export class PurchasingServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     deleteSupplier(id: string | undefined): Observable<void> {
@@ -2009,10 +2009,10 @@ export class PurchasingServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAllSuppliers(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<SupplierDtoPagedResultDto> {
@@ -2076,7 +2076,7 @@ export class PurchasingServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     getSupplier(id: string | undefined): Observable<SupplierDto> {
@@ -2132,7 +2132,7 @@ export class PurchasingServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     updateSupplier(body: SupplierDto | undefined): Observable<SupplierDto> {
@@ -2188,7 +2188,7 @@ export class PurchasingServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
+     * @param keyword (optional)
      * @return Success
      */
     getPartialSuppliers(keyword: string | null | undefined): Observable<CommonKeyValuePairDto[]> {
@@ -2261,7 +2261,7 @@ export class RoleServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     create(body: CreateRoleDto | undefined): Observable<RoleDto> {
@@ -2317,7 +2317,7 @@ export class RoleServiceProxy {
     }
 
     /**
-     * @param permission (optional) 
+     * @param permission (optional)
      * @return Success
      */
     getRoles(permission: string | null | undefined): Observable<RoleListDtoListResultDto> {
@@ -2371,7 +2371,7 @@ export class RoleServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     update(body: RoleDto | undefined): Observable<RoleDto> {
@@ -2427,7 +2427,7 @@ export class RoleServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     delete(id: number | undefined): Observable<void> {
@@ -2530,7 +2530,7 @@ export class RoleServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     getRoleForEdit(id: number | undefined): Observable<GetRoleForEditOutput> {
@@ -2586,7 +2586,7 @@ export class RoleServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     get(id: number | undefined): Observable<RoleDto> {
@@ -2642,9 +2642,9 @@ export class RoleServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAll(keyword: string | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<RoleDtoPagedResultDto> {
@@ -2718,7 +2718,7 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     createCustomer(body: CreateCustomerDto | undefined): Observable<CustomerDto> {
@@ -2774,7 +2774,7 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     deleteCustomer(id: string | undefined): Observable<void> {
@@ -2826,10 +2826,10 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAllCustomers(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<CustomerDtoPagedResultDto> {
@@ -2893,7 +2893,7 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     getCustomer(id: string | undefined): Observable<CustomerDto> {
@@ -2949,7 +2949,7 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     updateCustomer(body: CustomerDto | undefined): Observable<CustomerDto> {
@@ -3005,7 +3005,7 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
+     * @param keyword (optional)
      * @return Success
      */
     getPartialCustomers(keyword: string | null | undefined): Observable<CommonKeyValuePairDto[]> {
@@ -3141,7 +3141,7 @@ export class TenantServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     create(body: CreateTenantDto | undefined): Observable<TenantDto> {
@@ -3197,7 +3197,7 @@ export class TenantServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     delete(id: number | undefined): Observable<void> {
@@ -3249,7 +3249,7 @@ export class TenantServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     get(id: number | undefined): Observable<TenantDto> {
@@ -3305,10 +3305,10 @@ export class TenantServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAll(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<TenantDtoPagedResultDto> {
@@ -3372,7 +3372,7 @@ export class TenantServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     update(body: TenantDto | undefined): Observable<TenantDto> {
@@ -3440,7 +3440,7 @@ export class TokenAuthServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     authenticate(body: AuthenticateModel | undefined): Observable<AuthenticateResultModel> {
@@ -3554,7 +3554,7 @@ export class TokenAuthServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     externalAuthenticate(body: ExternalAuthenticateModel | undefined): Observable<ExternalAuthenticateResultModel> {
@@ -3622,7 +3622,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     create(body: CreateUserDto | undefined): Observable<UserDto> {
@@ -3678,7 +3678,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     update(body: UserDto | undefined): Observable<UserDto> {
@@ -3734,7 +3734,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     delete(id: number | undefined): Observable<void> {
@@ -3786,7 +3786,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     activate(body: Int64EntityDto | undefined): Observable<void> {
@@ -3838,7 +3838,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     deActivate(body: Int64EntityDto | undefined): Observable<void> {
@@ -3941,7 +3941,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     changeLanguage(body: ChangeUserLanguageDto | undefined): Observable<void> {
@@ -3993,7 +3993,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     changePassword(body: ChangePasswordDto | undefined): Observable<boolean> {
@@ -4049,7 +4049,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param body (optional) 
+     * @param body (optional)
      * @return Success
      */
     resetPassword(body: ResetPasswordDto | undefined): Observable<boolean> {
@@ -4105,7 +4105,7 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param id (optional) 
+     * @param id (optional)
      * @return Success
      */
     get(id: number | undefined): Observable<UserDto> {
@@ -4161,10 +4161,10 @@ export class UserServiceProxy {
     }
 
     /**
-     * @param keyword (optional) 
-     * @param isActive (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
+     * @param keyword (optional)
+     * @param isActive (optional)
+     * @param skipCount (optional)
+     * @param maxResultCount (optional)
      * @return Success
      */
     getAll(keyword: string | null | undefined, isActive: boolean | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<UserDtoPagedResultDto> {
@@ -4256,7 +4256,7 @@ export class IsTenantAvailableInput implements IIsTenantAvailableInput {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["tenancyName"] = this.tenancyName;
-        return data; 
+        return data;
     }
 
     clone(): IsTenantAvailableInput {
@@ -4308,7 +4308,7 @@ export class IsTenantAvailableOutput implements IIsTenantAvailableOutput {
         data = typeof data === 'object' ? data : {};
         data["state"] = this.state;
         data["tenantId"] = this.tenantId;
-        return data; 
+        return data;
     }
 
     clone(): IsTenantAvailableOutput {
@@ -4367,7 +4367,7 @@ export class RegisterInput implements IRegisterInput {
         data["emailAddress"] = this.emailAddress;
         data["password"] = this.password;
         data["captchaResponse"] = this.captchaResponse;
-        return data; 
+        return data;
     }
 
     clone(): RegisterInput {
@@ -4415,7 +4415,7 @@ export class RegisterOutput implements IRegisterOutput {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["canLogin"] = this.canLogin;
-        return data; 
+        return data;
     }
 
     clone(): RegisterOutput {
@@ -4458,7 +4458,7 @@ export class ChangeUiThemeInput implements IChangeUiThemeInput {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["theme"] = this.theme;
-        return data; 
+        return data;
     }
 
     clone(): ChangeUiThemeInput {
@@ -4572,7 +4572,7 @@ export class CreateGoodsReceivedProductDto implements ICreateGoodsReceivedProduc
         data["discountRate"] = this.discountRate;
         data["discountAmount"] = this.discountAmount;
         data["lineTotal"] = this.lineTotal;
-        return data; 
+        return data;
     }
 
     clone(): CreateGoodsReceivedProductDto {
@@ -4679,7 +4679,7 @@ export class CreateGoodsReceivedDto implements ICreateGoodsReceivedDto {
             for (let item of this.goodsReceivedProducts)
                 data["goodsReceivedProducts"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): CreateGoodsReceivedDto {
@@ -4774,7 +4774,7 @@ export class GoodsReceivedDto implements IGoodsReceivedDto {
         data["transactionStatus"] = this.transactionStatus;
         data["remarks"] = this.remarks;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): GoodsReceivedDto {
@@ -4871,7 +4871,7 @@ export class CreateProductDto implements ICreateProductDto {
             for (let item of this.supplierIds)
                 data["supplierIds"].push(item);
         }
-        return data; 
+        return data;
     }
 
     clone(): CreateProductDto {
@@ -4958,7 +4958,7 @@ export class ProductDto implements IProductDto {
         data["reOrderQuantity"] = this.reOrderQuantity;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): ProductDto {
@@ -5023,7 +5023,7 @@ export class ProductDtoPagedResultDto implements IProductDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): ProductDtoPagedResultDto {
@@ -5111,7 +5111,7 @@ export class UpdateProductDto implements IUpdateProductDto {
                 data["supplierIds"].push(item);
         }
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): UpdateProductDto {
@@ -5172,7 +5172,7 @@ export class CommonKeyValuePairDto implements ICommonKeyValuePairDto {
         data["id"] = this.id;
         data["code"] = this.code;
         data["name"] = this.name;
-        return data; 
+        return data;
     }
 
     clone(): CommonKeyValuePairDto {
@@ -5232,7 +5232,7 @@ export class CreateWarehouseDto implements ICreateWarehouseDto {
         data["contactPersonName"] = this.contactPersonName;
         data["contactNumber"] = this.contactNumber;
         data["isActive"] = this.isActive;
-        return data; 
+        return data;
     }
 
     clone(): CreateWarehouseDto {
@@ -5298,7 +5298,7 @@ export class WarehouseDto implements IWarehouseDto {
         data["contactNumber"] = this.contactNumber;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): WarehouseDto {
@@ -5358,7 +5358,7 @@ export class WarehouseDtoPagedResultDto implements IWarehouseDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): WarehouseDtoPagedResultDto {
@@ -5420,7 +5420,7 @@ export class UpdateWarehouseDto implements IUpdateWarehouseDto {
         data["contactNumber"] = this.contactNumber;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): UpdateWarehouseDto {
@@ -5472,7 +5472,7 @@ export class CreateCategoryDto implements ICreateCategoryDto {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["isActive"] = this.isActive;
-        return data; 
+        return data;
     }
 
     clone(): CreateCategoryDto {
@@ -5522,7 +5522,7 @@ export class CategoryDto implements ICategoryDto {
         data["name"] = this.name;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): CategoryDto {
@@ -5578,7 +5578,7 @@ export class CategoryDtoPagedResultDto implements ICategoryDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): CategoryDtoPagedResultDto {
@@ -5625,7 +5625,7 @@ export class CreateBrandDto implements ICreateBrandDto {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["isActive"] = this.isActive;
-        return data; 
+        return data;
     }
 
     clone(): CreateBrandDto {
@@ -5675,7 +5675,7 @@ export class BrandDto implements IBrandDto {
         data["name"] = this.name;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): BrandDto {
@@ -5731,7 +5731,7 @@ export class BrandDtoPagedResultDto implements IBrandDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): BrandDtoPagedResultDto {
@@ -5823,7 +5823,7 @@ export class CreateSupplierDto implements ICreateSupplierDto {
         data["classificationId"] = this.classificationId;
         data["priceGroupId"] = this.priceGroupId;
         data["isActive"] = this.isActive;
-        return data; 
+        return data;
     }
 
     clone(): CreateSupplierDto {
@@ -5933,7 +5933,7 @@ export class SupplierDto implements ISupplierDto {
         data["priceGroupId"] = this.priceGroupId;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): SupplierDto {
@@ -6004,7 +6004,7 @@ export class SupplierDtoPagedResultDto implements ISupplierDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): SupplierDtoPagedResultDto {
@@ -6068,7 +6068,7 @@ export class CreateRoleDto implements ICreateRoleDto {
             for (let item of this.grantedPermissions)
                 data["grantedPermissions"].push(item);
         }
-        return data; 
+        return data;
     }
 
     clone(): CreateRoleDto {
@@ -6138,7 +6138,7 @@ export class RoleDto implements IRoleDto {
                 data["grantedPermissions"].push(item);
         }
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): RoleDto {
@@ -6201,7 +6201,7 @@ export class RoleListDto implements IRoleListDto {
         data["isDefault"] = this.isDefault;
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): RoleListDto {
@@ -6257,7 +6257,7 @@ export class RoleListDtoListResultDto implements IRoleListDtoListResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): RoleListDtoListResultDto {
@@ -6309,7 +6309,7 @@ export class PermissionDto implements IPermissionDto {
         data["displayName"] = this.displayName;
         data["description"] = this.description;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): PermissionDto {
@@ -6363,7 +6363,7 @@ export class PermissionDtoListResultDto implements IPermissionDtoListResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): PermissionDtoListResultDto {
@@ -6418,7 +6418,7 @@ export class RoleEditDto implements IRoleEditDto {
         data["description"] = this.description;
         data["isStatic"] = this.isStatic;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): RoleEditDto {
@@ -6471,7 +6471,7 @@ export class FlatPermissionDto implements IFlatPermissionDto {
         data["name"] = this.name;
         data["displayName"] = this.displayName;
         data["description"] = this.description;
-        return data; 
+        return data;
     }
 
     clone(): FlatPermissionDto {
@@ -6538,7 +6538,7 @@ export class GetRoleForEditOutput implements IGetRoleForEditOutput {
             for (let item of this.grantedPermissionNames)
                 data["grantedPermissionNames"].push(item);
         }
-        return data; 
+        return data;
     }
 
     clone(): GetRoleForEditOutput {
@@ -6594,7 +6594,7 @@ export class RoleDtoPagedResultDto implements IRoleDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): RoleDtoPagedResultDto {
@@ -6683,7 +6683,7 @@ export class CreateCustomerDto implements ICreateCustomerDto {
         data["classificationId"] = this.classificationId;
         data["priceGroupId"] = this.priceGroupId;
         data["isActive"] = this.isActive;
-        return data; 
+        return data;
     }
 
     clone(): CreateCustomerDto {
@@ -6789,7 +6789,7 @@ export class CustomerDto implements ICustomerDto {
         data["priceGroupId"] = this.priceGroupId;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): CustomerDto {
@@ -6859,7 +6859,7 @@ export class CustomerDtoPagedResultDto implements ICustomerDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): CustomerDtoPagedResultDto {
@@ -6921,7 +6921,7 @@ export class ApplicationInfoDto implements IApplicationInfoDto {
                     (<any>data["features"])[key] = this.features[key];
             }
         }
-        return data; 
+        return data;
     }
 
     clone(): ApplicationInfoDto {
@@ -6978,7 +6978,7 @@ export class UserLoginInfoDto implements IUserLoginInfoDto {
         data["userName"] = this.userName;
         data["emailAddress"] = this.emailAddress;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): UserLoginInfoDto {
@@ -7031,7 +7031,7 @@ export class TenantLoginInfoDto implements ITenantLoginInfoDto {
         data["tenancyName"] = this.tenancyName;
         data["name"] = this.name;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): TenantLoginInfoDto {
@@ -7082,7 +7082,7 @@ export class GetCurrentLoginInformationsOutput implements IGetCurrentLoginInform
         data["application"] = this.application ? this.application.toJSON() : <any>undefined;
         data["user"] = this.user ? this.user.toJSON() : <any>undefined;
         data["tenant"] = this.tenant ? this.tenant.toJSON() : <any>undefined;
-        return data; 
+        return data;
     }
 
     clone(): GetCurrentLoginInformationsOutput {
@@ -7139,7 +7139,7 @@ export class CreateTenantDto implements ICreateTenantDto {
         data["adminEmailAddress"] = this.adminEmailAddress;
         data["connectionString"] = this.connectionString;
         data["isActive"] = this.isActive;
-        return data; 
+        return data;
     }
 
     clone(): CreateTenantDto {
@@ -7195,7 +7195,7 @@ export class TenantDto implements ITenantDto {
         data["name"] = this.name;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): TenantDto {
@@ -7252,7 +7252,7 @@ export class TenantDtoPagedResultDto implements ITenantDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): TenantDtoPagedResultDto {
@@ -7302,7 +7302,7 @@ export class AuthenticateModel implements IAuthenticateModel {
         data["userNameOrEmailAddress"] = this.userNameOrEmailAddress;
         data["password"] = this.password;
         data["rememberClient"] = this.rememberClient;
-        return data; 
+        return data;
     }
 
     clone(): AuthenticateModel {
@@ -7356,7 +7356,7 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
         data["encryptedAccessToken"] = this.encryptedAccessToken;
         data["expireInSeconds"] = this.expireInSeconds;
         data["userId"] = this.userId;
-        return data; 
+        return data;
     }
 
     clone(): AuthenticateResultModel {
@@ -7405,7 +7405,7 @@ export class ExternalLoginProviderInfoModel implements IExternalLoginProviderInf
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["clientId"] = this.clientId;
-        return data; 
+        return data;
     }
 
     clone(): ExternalLoginProviderInfoModel {
@@ -7455,7 +7455,7 @@ export class ExternalAuthenticateModel implements IExternalAuthenticateModel {
         data["authProvider"] = this.authProvider;
         data["providerKey"] = this.providerKey;
         data["providerAccessCode"] = this.providerAccessCode;
-        return data; 
+        return data;
     }
 
     clone(): ExternalAuthenticateModel {
@@ -7509,7 +7509,7 @@ export class ExternalAuthenticateResultModel implements IExternalAuthenticateRes
         data["encryptedAccessToken"] = this.encryptedAccessToken;
         data["expireInSeconds"] = this.expireInSeconds;
         data["waitingForActivation"] = this.waitingForActivation;
-        return data; 
+        return data;
     }
 
     clone(): ExternalAuthenticateResultModel {
@@ -7581,7 +7581,7 @@ export class CreateUserDto implements ICreateUserDto {
                 data["roleNames"].push(item);
         }
         data["password"] = this.password;
-        return data; 
+        return data;
     }
 
     clone(): CreateUserDto {
@@ -7665,7 +7665,7 @@ export class UserDto implements IUserDto {
                 data["roleNames"].push(item);
         }
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): UserDto {
@@ -7717,7 +7717,7 @@ export class Int64EntityDto implements IInt64EntityDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        return data; 
+        return data;
     }
 
     clone(): Int64EntityDto {
@@ -7768,7 +7768,7 @@ export class RoleDtoListResultDto implements IRoleDtoListResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): RoleDtoListResultDto {
@@ -7811,7 +7811,7 @@ export class ChangeUserLanguageDto implements IChangeUserLanguageDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["languageName"] = this.languageName;
-        return data; 
+        return data;
     }
 
     clone(): ChangeUserLanguageDto {
@@ -7857,7 +7857,7 @@ export class ChangePasswordDto implements IChangePasswordDto {
         data = typeof data === 'object' ? data : {};
         data["currentPassword"] = this.currentPassword;
         data["newPassword"] = this.newPassword;
-        return data; 
+        return data;
     }
 
     clone(): ChangePasswordDto {
@@ -7907,7 +7907,7 @@ export class ResetPasswordDto implements IResetPasswordDto {
         data["adminPassword"] = this.adminPassword;
         data["userId"] = this.userId;
         data["newPassword"] = this.newPassword;
-        return data; 
+        return data;
     }
 
     clone(): ResetPasswordDto {
@@ -7963,7 +7963,7 @@ export class UserDtoPagedResultDto implements IUserDtoPagedResultDto {
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
-        return data; 
+        return data;
     }
 
     clone(): UserDtoPagedResultDto {
