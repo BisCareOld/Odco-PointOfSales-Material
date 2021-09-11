@@ -33,20 +33,43 @@ export class CreateInventoryTransactionsComponent
 {
   saving = false;
   warehouses: CommonKeyValuePairDto[];
-  displayedColumns: string[] = ["product-name"];
-  // LINE_LEVEL_DATA: FormGroup[] = [];
-  // dataSource = new MatTableDataSource<FormGroup>(this.LINE_LEVEL_DATA);
-  //LINE_LEVEL_DATA: CreateGoodsReceivedProductDto[] = [];
+  displayedColumns: string[] = [
+    "product-name",
+    "warehouse",
+    "quantity",
+    "free-quantity",
+    "cost-price",
+    "selling-price",
+    "mrp-price",
+    "discount-rate",
+    "discount-amount",
+    "line-amount",
+  ];
   dataSource = new MatTableDataSource<AbstractControl>();
+
   grnForm = this.fb.group({
     goodsReceivedNumber: [null, Validators.required],
     referenceNumber: [null, Validators.maxLength(10)],
     supplierId: [null, Validators.required],
     supplierCode: [null, Validators.required],
     supplierName: [null, Validators.required],
-    discountRate: [0, Validators.required],
+    discountRate: [
+      11,
+      Validators.compose([
+        Validators.required,
+        Validators.min(0),
+        Validators.max(100),
+      ]),
+    ],
     discountAmount: [0, Validators.required],
-    taxRate: [0, Validators.required],
+    taxRate: [
+      10,
+      Validators.compose([
+        Validators.required,
+        Validators.min(0),
+        Validators.max(100),
+      ]),
+    ],
     taxAmount: [0, Validators.required],
     grossAmount: [0, Validators.required],
     netAmount: [0, Validators.required],
@@ -65,40 +88,11 @@ export class CreateInventoryTransactionsComponent
     super(injector);
   }
 
-  initItemRows() {
-    return this.fb.group({
-      goodsRecievedNumber: [null, Validators.required],
-      sequenceNumber: [0, Validators.required],
-      productId: [null, Validators.required],
-      productCode: [null, Validators.required],
-      productName: [null, Validators.required],
-      warehouseId: [null, Validators.required],
-      warehouseCode: [null, Validators.required],
-      warehouseName: [null, Validators.required],
-      expiryDate: [null],
-      batchNumber: [null],
-      quantity: [0, Validators.required],
-      freeQuantity: [0, Validators.required],
-      costPrice: [0, Validators.required],
-      sellingPrice: [0, Validators.required],
-      maximumRetailPrice: [0, Validators.required],
-      discountRate: [0, Validators.required],
-      discountAmount: [0, Validators.required],
-      lineTotal: [0, Validators.required],
-    });
-  }
-
   ngOnInit(): void {
     this.getAllWarehouses();
     this._documentService.getNextDocumentNumber(2).subscribe((result) => {
-      //this.grn.goodsReceivedNumber = result;
+      this.goodsReceivedNumber.setValue(result);
     });
-    // this.grn.grossAmount = 0.0;
-    // this.grn.taxRate = 0.0;
-    // this.grn.taxAmount = 0.0;
-    // this.grn.discountRate = 0.0;
-    // this.grn.discountAmount = 0.0;
-    // this.grn.netAmount = 0.0;
   }
 
   getAllWarehouses() {
@@ -107,25 +101,28 @@ export class CreateInventoryTransactionsComponent
       .subscribe((result) => (this.warehouses = result));
   }
 
-  selectWarehouse($event, lineLevelDto: CreateGoodsReceivedProductDto) {
+  selectWarehouse($event, item: FormGroup) {
     let warehouseId = $event.target.value;
     let objWarehouse = new CommonKeyValuePairDto();
 
     if (warehouseId) {
       objWarehouse = this.warehouses.find((x) => x.id == warehouseId);
     }
+
     // set value for warehouse
-    lineLevelDto.warehouseId = !objWarehouse.id ? null : objWarehouse.id;
-    lineLevelDto.warehouseCode = !objWarehouse.id ? null : objWarehouse.code;
-    lineLevelDto.warehouseName = !objWarehouse.id ? null : objWarehouse.name;
+    item.get("warehouseId").setValue(!objWarehouse.id ? null : objWarehouse.id);
+    item
+      .get("warehouseCode")
+      .setValue(!objWarehouse.id ? null : objWarehouse.code);
+    item
+      .get("warehouseName")
+      .setValue(!objWarehouse.id ? null : objWarehouse.name);
   }
 
   selectedSupplier($event: CommonKeyValuePairDto) {
     this.supplierId.setValue(!$event.id ? null : $event.id);
     this.supplierCode.setValue(!$event.code ? null : $event.code);
     this.supplierName.setValue(!$event.name ? null : $event.name);
-
-    console.log(this.grnForm);
   }
 
   isProductExist(productId): boolean {
@@ -142,34 +139,11 @@ export class CreateInventoryTransactionsComponent
 
   selectedProducts($event: CommonKeyValuePairDto) {
     if (!this.isProductExist($event.id)) {
-      // let l = new CreateGoodsReceivedProductDto();
-      // l.goodsRecievedNumber = null;
-      // l.sequenceNumber = this.goodsReceivedProducts.length + 1;
-      // l.productId = $event.id;
-      // l.productCode = $event.code;
-      // l.productName = $event.name;
-      // l.warehouseId = null;
-      // l.warehouseCode = null;
-      // l.warehouseName = null;
-      // l.expiryDate = null;
-      // l.batchNumber = null;
-      // l.quantity = 0;
-      // l.freeQuantity = 0;
-      // l.costPrice = 0;
-      // l.sellingPrice = 0;
-      // l.maximumRetailPrice = 0;
-      // l.discountRate = 0;
-      // l.discountAmount = 0;
-      // l.lineTotal = 0;
-
-      // this.goodsReceivedProducts.setValue();
-
-      // this.grnForm.setControl(
-      //   "goodsReceivedProducts",
-      //   this.goodsReceivedProducts
-      // );
-      let x = this.fb.group({
-        goodsRecievedNumber: [null, Validators.required],
+      let item = this.fb.group({
+        goodsRecievedNumber: [
+          this.goodsReceivedNumber.value,
+          Validators.required,
+        ],
         sequenceNumber: [0, Validators.required],
         productId: [$event.id, Validators.required],
         productCode: [$event.code, Validators.required],
@@ -179,28 +153,42 @@ export class CreateInventoryTransactionsComponent
         warehouseName: [null, Validators.required],
         expiryDate: [null],
         batchNumber: [null],
-        quantity: [0, Validators.required],
-        freeQuantity: [0, Validators.required],
-        costPrice: [0, Validators.required],
-        sellingPrice: [0, Validators.required],
-        maximumRetailPrice: [0, Validators.required],
-        discountRate: [0, Validators.required],
+        quantity: [
+          0,
+          Validators.compose([Validators.required, Validators.min(1)]),
+        ],
+        freeQuantity: [
+          0,
+          Validators.compose([Validators.required, Validators.min(0)]),
+        ],
+        costPrice: [
+          0,
+          Validators.compose([Validators.required, Validators.min(1)]),
+        ],
+        sellingPrice: [
+          0,
+          Validators.compose([Validators.required, Validators.min(1)]),
+        ],
+        maximumRetailPrice: [
+          0,
+          Validators.compose([Validators.required, Validators.min(1)]),
+        ],
+        discountRate: [
+          0,
+          Validators.compose([Validators.required, Validators.min(1)]),
+        ],
         discountAmount: [0, Validators.required],
         lineTotal: [0, Validators.required],
       });
-      this.goodsReceivedProducts.push(x);
-      this.dataSource.data.push(x);
-      //this.goodsReceivedProducts.push(this.initItemRows());
-      // this.dataSource.data.forEach((x) => {
-      //   this.goodsReceivedProducts.push(x);
-      // });
-      console.log(this.grnForm);
-      console.log(this.goodsReceivedProducts);
+
+      this.goodsReceivedProducts.push(item);
+      this.dataSource.data.push(item);
+
       return (this.dataSource.filter = "");
     }
   }
 
-  updateLineLevelCalculations(grp: CreateGoodsReceivedProductDto) {
+  updateLineLevelCalculations(item: FormGroup) {
     // let _quantity = grp.quantity;
     // let _costPrice = parseFloat(grp.costPrice.toFixed(2));
     // let _lineTotal = _quantity * _costPrice;
@@ -212,28 +200,42 @@ export class CreateInventoryTransactionsComponent
     // grp.discountAmount = _discountAmount;
     // grp.lineTotal = parseFloat((_lineTotal - _discountAmount).toFixed(2));
     // this.headerLevelCalculation();
+    let _quantity = item.get("quantity").value;
+    let _costPrice = parseFloat(item.get("costPrice").value.toFixed(2));
+    let _lineTotal = _quantity * _costPrice;
+    let _discountRate = parseFloat(item.get("discountRate").value.toFixed(2));
+    let _discountAmount = parseFloat(
+      ((_lineTotal * _discountRate) / 100).toFixed(2)
+    );
+    item.get("discountRate").setValue(_discountRate);
+    item.get("discountAmount").setValue(_discountAmount);
+    item
+      .get("lineTotal")
+      .setValue(parseFloat((_lineTotal - _discountAmount).toFixed(2)));
+    this.headerLevelCalculation();
+    console.log(item);
   }
 
   calculateLineLevelTotal() {
-    // let total = 0;
-    // this.LINE_LEVEL_DATA.forEach(function (item) {
-    //   total += item.lineTotal;
-    // });
-    // this.grn.grossAmount = parseFloat(total.toFixed(2));
-    // return total.toFixed(2);
+    let total = 0;
+    this.goodsReceivedProducts.controls.forEach(function (item) {
+      total += item.get("lineTotal").value;
+    });
+    this.grossAmount.setValue(parseFloat(total.toFixed(2)));
+    return total.toFixed(2);
   }
 
   headerLevelCalculation() {
-    // // (gross value + tax – discount)
-    // let grossTotal = parseFloat(this.calculateLineLevelTotal());
-    // let tax = parseFloat((grossTotal * (this.grn.taxRate / 100)).toFixed(2));
-    // let discount = parseFloat(
-    //   (grossTotal * (this.grn.discountRate / 100)).toFixed(2)
-    // );
-    // this.grn.discountAmount = discount;
-    // this.grn.taxAmount = tax;
-    // let netAmount = parseFloat((grossTotal + tax - discount).toFixed(2));
-    // this.grn.netAmount = netAmount;
+    // (gross value + tax – discount)
+    let grossTotal = parseFloat(this.calculateLineLevelTotal());
+    let tax = parseFloat((grossTotal * (this.taxRate.value / 100)).toFixed(2));
+    let discount = parseFloat(
+      (grossTotal * (this.discountRate.value / 100)).toFixed(2)
+    );
+    this.discountAmount.setValue(discount);
+    this.taxAmount.setValue(tax);
+    let netAmount = parseFloat((grossTotal + tax - discount).toFixed(2));
+    this.netAmount.setValue(netAmount);
   }
 
   validateForm() {

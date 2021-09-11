@@ -68,21 +68,161 @@
               </td>
             </ng-container>
 
+            <!-- Warehouse Column -->
+            <ng-container matColumnDef="warehouse">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Warehouse" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <select
+                  matNativeControl
+                  id="warehouseId{{ i }}"
+                  (change)="selectWarehouse($event, element)"
+                >
+                  <option value="" selected></option>
+                  <option *ngFor="let w of warehouses" [value]="w.id">
+                    {{ w.name }}
+                  </option>
+                </select>
+              </td>
+            </ng-container>
+
+            <!-- Quantity Column -->
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Quantity" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  id="quantity{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Free Quantity Column -->
+            <ng-container matColumnDef="free-quantity">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "FreeQuantity" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  id="freeQuantity{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Cost Price Column -->
+            <ng-container matColumnDef="cost-price">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "CostPrice" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  id="costPrice{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Selling Price Column -->
+            <ng-container matColumnDef="selling-price">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "SellingPrice" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  id="sellingPrice{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- MRP Price Column -->
+            <ng-container matColumnDef="mrp-price">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "MRP" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  id="maximumRetailPrice{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Discount Rate Column -->
+            <ng-container matColumnDef="discount-rate">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "DiscountRate" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  id="discountRate{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Discount Amount Column -->
+            <ng-container matColumnDef="discount-amount">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "DiscountAmount" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                LKR. {{ element.discountAmount }}
+              </td>
+            </ng-container>
+
+            <!-- Line Total / Total Amount Column -->
+            <ng-container matColumnDef="line-amount">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "LineTotal" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element">
+                LKR. {{ element.lineTotal }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <!-- <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Actions" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-button color="accent" (click)="editBrand(element)">
+                  {{ "Edit" | localize }}
+                </button>
+                <button mat-button color="warn" (click)="delete(element)">
+                  {{ "Delete" | localize }}
+                </button>
+              </td>
+            </ng-container> -->
+
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
           </table>
         </ng-container>
       </div>
-
-      <tr
-        *ngFor="
-          let item of grnForm.controls.goodsReceivedProducts['controls'];
-          let i = index
-        "
-        [formGroupName]="i"
-      >
-        item
-      </tr>
 
       <div class="parent">
         <div class="child">
@@ -95,6 +235,7 @@
         </div>
         <div class="child">
           <input
+            type="number"
             matInput
             class="transaction-table-inputs"
             formControlName="taxRate"
@@ -107,6 +248,7 @@
         </div>
         <div class="child">
           <input
+            type="number"
             matInput
             class="transaction-table-inputs"
             formControlName="discountRate"
