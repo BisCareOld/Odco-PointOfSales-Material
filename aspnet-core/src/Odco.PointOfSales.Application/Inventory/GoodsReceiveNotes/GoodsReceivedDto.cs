@@ -1,9 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
+using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Inventory;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Transactions;
 
 namespace Odco.PointOfSales.Application.Inventory.GoodsReceiveNotes
 {

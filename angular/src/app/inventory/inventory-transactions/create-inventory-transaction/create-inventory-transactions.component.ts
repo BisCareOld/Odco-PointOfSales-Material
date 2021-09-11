@@ -57,18 +57,10 @@ export class CreateInventoryTransactionsComponent
     taxAmount: [0, Validators.required],
     grossAmount: [0, Validators.required],
     netAmount: [0, Validators.required],
-    //transactionStatus: [null, Validators.required],
+    transactionStatus: [1],
     remarks: [null],
-    //goodsReceivedProducts: CreateGoodsReceivedProductDto[] | undefined;
+    goodsReceivedProducts: this.fb.array([this.initItemRows()]),
   });
-
-  // referenceNumber: [
-  //   null,
-  //   Validators.compose([
-  //     Validators.required,
-  //     Validators.maxLength(10),
-  //   ]),
-  // ],
 
   constructor(
     private fb: FormBuilder,
@@ -78,6 +70,29 @@ export class CreateInventoryTransactionsComponent
     private _documentService: DocumentSequenceNumberManagerImplementationServiceProxy
   ) {
     super(injector);
+  }
+
+  initItemRows() {
+    return this.fb.group({
+      goodsRecievedNumber: [null, Validators.required],
+      sequenceNumber: [0, Validators.required],
+      productId: [null, Validators.required],
+      productCode: [null, Validators.required],
+      productName: [null, Validators.required],
+      warehouseId: [null, Validators.required],
+      warehouseCode: [null, Validators.required],
+      warehouseName: [null, Validators.required],
+      expiryDate: [null],
+      batchNumber: [null],
+      quantity: [0, Validators.required],
+      freeQuantity: [0, Validators.required],
+      costPrice: [0, Validators.required],
+      sellingPrice: [0, Validators.required],
+      maximumRetailPrice: [0, Validators.required],
+      discountRate: [0, Validators.required],
+      discountAmount: [0, Validators.required],
+      lineTotal: [0, Validators.required],
+    });
   }
 
   ngOnInit(): void {

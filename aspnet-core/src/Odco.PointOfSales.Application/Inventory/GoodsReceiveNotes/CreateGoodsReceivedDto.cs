@@ -1,10 +1,10 @@
 ﻿using Abp.AutoMapper;
 using Odco.PointOfSales.Application.Inventory.GoodsReceivedProducts;
+using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Inventory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Transactions;
 
 namespace Odco.PointOfSales.Application.Inventory.GoodsReceiveNotes
 {
