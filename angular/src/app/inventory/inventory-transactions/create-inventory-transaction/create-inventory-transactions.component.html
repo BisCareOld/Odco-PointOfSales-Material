@@ -1,35 +1,25 @@
-<form #createGRNForm="ngForm" novalidate (ngSubmit)="save()">
+<form [formGroup]="grnForm" novalidate (ngSubmit)="save()">
   <mat-card class="shipping-card">
     <mat-card-header>
       <mat-card-title>{{ "GoodsReceivedNotes" | localize }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <li *ngFor="let error of errors">{{ error }}</li>
-
       <div class="row">
         <div class="col">
           <partial-suppliers
             (selectedEvent)="selectedSupplier($event)"
           ></partial-suppliers>
         </div>
+
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label>{{ "GoodsReceivedNumber" | localize }}</mat-label>
             <input
               matInput
-              name="goodsReceivedNumber"
-              required
-              minlength="2"
-              maxlength="10"
-              [(ngModel)]="grn.goodsReceivedNumber"
-              #goodsReceivedNumberModel="ngModel"
-              #goodsReceivedNumberEl
+              formControlName="goodsReceivedNumber"
+              id="goodsReceivedNumber"
             />
           </mat-form-field>
-          <abp-validation-summary
-            [control]="goodsReceivedNumberModel"
-            [controlEl]="goodsReceivedNumberEl"
-          ></abp-validation-summary>
         </div>
       </div>
 
@@ -37,38 +27,19 @@
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label>{{ "Remarks" | localize }}</mat-label>
-            <input
-              matInput
-              name="remarks"
-              minlength="0"
-              maxlength="100"
-              [(ngModel)]="grn.remarks"
-              #remarksModel="ngModel"
-              #remarksEl
-            />
+            <input matInput formControlName="remarks" id="remarks" />
           </mat-form-field>
-          <abp-validation-summary
-            [control]="remarksModel"
-            [controlEl]="remarksEl"
-          ></abp-validation-summary>
         </div>
+
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label>{{ "ReferenceNumber" | localize }}</mat-label>
             <input
               matInput
-              name="referenceNumber"
-              minlength="2"
-              maxlength="10"
-              [(ngModel)]="grn.referenceNumber"
-              #referenceNumberModel="ngModel"
-              #referenceNumberEl
+              formControlName="referenceNumber"
+              id="referenceNumber"
             />
           </mat-form-field>
-          <abp-validation-summary
-            [control]="referenceNumberModel"
-            [controlEl]="referenceNumberEl"
-          ></abp-validation-summary>
         </div>
       </div>
 
@@ -80,312 +51,22 @@
         </div>
       </div>
 
-      <div class="mat-elevation-z8">
-        <table class="full-width-table" mat-table [dataSource]="dataSource">
-          <!--- Note that these columns can be defined in any order.
-                  The actual rendered columns are set as a property on the row definition" -->
-
-          <!-- Product Name Column -->
-          <ng-container matColumnDef="product-name">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "Product" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element">
-              {{ element.productCode }} - {{ element.productName }}
-            </td>
-          </ng-container>
-
-          <!-- Warehouse Column -->
-          <ng-container matColumnDef="warehouse">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "Warehouse" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              <select
-                matNativeControl
-                required
-                name="warehouseId{{ i }}"
-                id="warehouseId{{ i }}"
-                (change)="selectWarehouse($event, element)"
-                [(ngModel)]="element.warehouseId"
-                #warehouseIdModel="ngModel"
-                #warehouseIdEl
-              >
-                <option value="" selected></option>
-                <option *ngFor="let w of warehouses" [value]="w.id">
-                  {{ w.name }}
-                </option>
-              </select>
-              <abp-validation-summary
-                [control]="warehouseIdModel"
-                [controlEl]="warehouseIdEl"
-              ></abp-validation-summary>
-            </td>
-          </ng-container>
-
-          <!-- Quantity Column -->
-          <ng-container matColumnDef="quantity">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "Quantity" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              <input
-                type="number"
-                matInput
-                class="transaction-table-inputs"
-                required
-                name="quantity{{ i }}"
-                id="quantity{{ i }}"
-                min="1"
-                (change)="updateLineLevelCalculations(element)"
-                [(ngModel)]="element.quantity"
-                #quantityModel="ngModel"
-                #quantityEl
-              />
-              <abp-validation-summary
-                [control]="quantityModel"
-                [controlEl]="quantityEl"
-              ></abp-validation-summary>
-              <validate-min-max
-                [control]="quantityModel"
-                [minValue]="1"
-                [enteredValue]="element.quantity"
-              ></validate-min-max>
-            </td>
-          </ng-container>
-
-          <!-- Free Quantity Column -->
-          <ng-container matColumnDef="free-quantity">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "FreeQuantity" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              <input
-                type="number"
-                matInput
-                class="transaction-table-inputs"
-                required
-                name="freeQuantity{{ i }}"
-                id="freeQuantity{{ i }}"
-                min="1"
-                (change)="updateLineLevelCalculations(element)"
-                [(ngModel)]="element.freeQuantity"
-                #freeQuantityModel="ngModel"
-                #freeQuantityEl
-              />
-              <abp-validation-summary
-                [control]="freeQuantityModel"
-                [controlEl]="freeQuantityEl"
-              ></abp-validation-summary>
-              <validate-min-max
-                [control]="freeQuantityModel"
-                [minValue]="1"
-                [enteredValue]="element.freeQuantity"
-              ></validate-min-max>
-            </td>
-          </ng-container>
-
-          <!-- Cost Price Column -->
-          <ng-container matColumnDef="cost-price">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "CostPrice" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              <input
-                type="number"
-                matInput
-                class="transaction-table-inputs"
-                required
-                name="costPrice{{ i }}"
-                id="costPrice{{ i }}"
-                min="1"
-                (change)="updateLineLevelCalculations(element)"
-                [(ngModel)]="element.costPrice"
-                #costPriceModel="ngModel"
-                #costPriceEl
-              />
-              <abp-validation-summary
-                [control]="costPriceModel"
-                [controlEl]="costPriceEl"
-              ></abp-validation-summary>
-              <validate-min-max
-                [control]="costPriceModel"
-                [minValue]="1"
-                [enteredValue]="element.costPrice"
-              ></validate-min-max>
-            </td>
-          </ng-container>
-
-          <!-- Selling Price Column -->
-          <ng-container matColumnDef="selling-price">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "SellingPrice" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              <input
-                type="number"
-                matInput
-                class="transaction-table-inputs"
-                required
-                name="sellingPrice{{ i }}"
-                id="sellingPrice{{ i }}"
-                min="1"
-                (change)="updateLineLevelCalculations(element)"
-                [(ngModel)]="element.sellingPrice"
-                #sellingPriceModel="ngModel"
-                #sellingPriceEl
-              />
-              <abp-validation-summary
-                [control]="sellingPriceModel"
-                [controlEl]="sellingPriceEl"
-              ></abp-validation-summary>
-              <validate-min-max
-                [control]="sellingPriceModel"
-                [minValue]="1"
-                [enteredValue]="element.sellingPrice"
-              ></validate-min-max>
-            </td>
-          </ng-container>
-
-          <!-- MRP Price Column -->
-          <ng-container matColumnDef="mrp-price">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "MRP" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              <input
-                type="number"
-                matInput
-                class="transaction-table-inputs"
-                required
-                name="maximumRetailPrice{{ i }}"
-                id="maximumRetailPrice{{ i }}"
-                min="1"
-                (change)="updateLineLevelCalculations(element)"
-                [(ngModel)]="element.maximumRetailPrice"
-                #maximumRetailPriceModel="ngModel"
-                #maximumRetailPriceEl
-              />
-              <abp-validation-summary
-                [control]="maximumRetailPriceModel"
-                [controlEl]="maximumRetailPriceEl"
-              ></abp-validation-summary>
-              <validate-min-max
-                [control]="maximumRetailPriceModel"
-                [minValue]="1"
-                [enteredValue]="element.maximumRetailPrice"
-              ></validate-min-max>
-            </td>
-          </ng-container>
-
-          <!-- Discount Rate Column -->
-          <ng-container matColumnDef="discount-rate">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "DiscountRate" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              <input
-                type="number"
-                matInput
-                class="transaction-table-inputs"
-                required
-                name="discountRate{{ i }}"
-                id="discountRate{{ i }}"
-                min="1"
-                max="100"
-                (change)="updateLineLevelCalculations(element)"
-                [(ngModel)]="element.discountRate"
-                #discountRateModel="ngModel"
-                #discountRateEl
-              />
-              <abp-validation-summary
-                [control]="discountRateModel"
-                [controlEl]="discountRateEl"
-              ></abp-validation-summary>
-              <validate-min-max
-                [control]="discountRateModel"
-                [minValue]="1"
-                [maxValue]="100"
-                [enteredValue]="element.discountRate"
-              ></validate-min-max>
-            </td>
-          </ng-container>
-
-          <!-- Discount Amount Column -->
-          <ng-container matColumnDef="discount-amount">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "DiscountAmount" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-              LKR. {{ element.discountAmount }}
-            </td>
-          </ng-container>
-
-          <!-- Line Total / Total Amount Column -->
-          <ng-container matColumnDef="line-amount">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "LineTotal" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element">
-              LKR. {{ element.lineTotal }}
-            </td>
-          </ng-container>
-
-          <!-- Actions Column -->
-          <!-- <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "Actions" | localize }}
-            </th>
-            <td mat-cell *matCellDef="let element">
-              <button mat-button color="accent" (click)="editBrand(element)">
-                {{ "Edit" | localize }}
-              </button>
-
-              <button mat-button color="warn" (click)="delete(element)">
-                {{ "Delete" | localize }}
-              </button>
-            </td>
-          </ng-container> -->
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-      </div>
-
       <div class="parent">
         <div class="child">
           <mat-label>{{ "GrossAmount" | localize }}</mat-label>
         </div>
-        <div class="child">LKR. {{ grn.grossAmount }}</div>
+        <div class="child">LKR. {{ grossAmount.value }}</div>
 
         <div class="child">
           <mat-label>{{ "Taxes" | localize }}</mat-label>
         </div>
         <div class="child">
           <input
-            type="number"
             matInput
             class="transaction-table-inputs"
-            name="overallTaxRate"
-            id="overallTaxRate"
-            min="0"
-            max="100"
-            required
-            (change)="headerLevelCalculation()"
-            [(ngModel)]="grn.taxRate"
-            #overallTaxRateModel="ngModel"
-            #overallTaxRateEl
+            formControlName="taxRate"
+            id="taxRate"
           />
-          <abp-validation-summary
-            [control]="overallTaxRateModel"
-            [controlEl]="overallTaxRateEl"
-          ></abp-validation-summary>
-          <validate-min-max
-            [control]="overallTaxRateModel"
-            [minValue]="1"
-            [maxValue]="100"
-            [enteredValue]="grn.taxRate"
-          ></validate-min-max>
         </div>
 
         <div class="child">
@@ -393,40 +74,22 @@
         </div>
         <div class="child">
           <input
-            type="number"
             matInput
             class="transaction-table-inputs"
-            name="overallDiscountRate"
-            id="overallDiscountRate"
-            min="0"
-            max="100"
-            required
-            (change)="headerLevelCalculation()"
-            [(ngModel)]="grn.discountRate"
-            #overallDiscountRateModel="ngModel"
-            #overallDiscountRateEl
+            formControlName="discountRate"
+            id="discountRate"
           />
-          <abp-validation-summary
-            [control]="overallDiscountRateModel"
-            [controlEl]="overallDiscountRateEl"
-          ></abp-validation-summary>
-          <validate-min-max
-            [control]="overallDiscountRateModel"
-            [minValue]="1"
-            [maxValue]="100"
-            [enteredValue]="grn.discountRate"
-          ></validate-min-max>
         </div>
 
         <div class="child">
           <mat-label>{{ "TotalDiscount" | localize }}</mat-label>
         </div>
-        <div class="child">LKR. {{ grn.discountAmount }}</div>
+        <div class="child">LKR. {{ discountAmount.value }}</div>
 
         <div class="child">
           <mat-label>{{ "NetAmount" | localize }}</mat-label>
         </div>
-        <div class="child">LKR. {{ grn.netAmount }}</div>
+        <div class="child">LKR. {{ netAmount.value }}</div>
       </div>
     </mat-card-content>
 
@@ -436,10 +99,12 @@
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="!createGRNForm.form.valid || saving"
+        [disabled]="!grnForm.valid || saving"
       >
         {{ "Submit" | localize }}
       </button>
     </mat-card-actions>
   </mat-card>
 </form>
+
+{{ grnForm.value | json }}

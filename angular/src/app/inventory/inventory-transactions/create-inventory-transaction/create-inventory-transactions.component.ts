@@ -12,6 +12,7 @@ import {
 import { forEach as _forEach, map as _map } from "lodash-es";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { MatTableDataSource } from "@angular/material/table";
+import { FormBuilder, FormControl, Validators } from "@angular/forms";
 
 @Component({
   selector: "app-create-inventory-transactions",
@@ -44,7 +45,33 @@ export class CreateInventoryTransactionsComponent
   );
   errors: string[] = [];
 
+  grnForm = this.fb.group({
+    goodsReceivedNumber: [null, Validators.required],
+    referenceNumber: [null, Validators.maxLength(10)],
+    supplierId: [null, Validators.required],
+    supplierCode: [null, Validators.required],
+    supplierName: [null, Validators.required],
+    discountRate: [0, Validators.required],
+    discountAmount: [0, Validators.required],
+    taxRate: [0, Validators.required],
+    taxAmount: [0, Validators.required],
+    grossAmount: [0, Validators.required],
+    netAmount: [0, Validators.required],
+    //transactionStatus: [null, Validators.required],
+    remarks: [null],
+    //goodsReceivedProducts: CreateGoodsReceivedProductDto[] | undefined;
+  });
+
+  // referenceNumber: [
+  //   null,
+  //   Validators.compose([
+  //     Validators.required,
+  //     Validators.maxLength(10),
+  //   ]),
+  // ],
+
   constructor(
+    private fb: FormBuilder,
     injector: Injector,
     private _productionService: ProductionServiceProxy,
     private _inventoryService: InventoryServiceProxy,
@@ -86,9 +113,11 @@ export class CreateInventoryTransactionsComponent
   }
 
   selectedSupplier($event: CommonKeyValuePairDto) {
-    this.grn.supplierId = !$event.id ? null : $event.id;
-    this.grn.supplierCode = !$event.code ? null : $event.code;
-    this.grn.supplierName = !$event.name ? null : $event.name;
+    this.supplierId.setValue(!$event.id ? null : $event.id);
+    this.supplierCode.setValue(!$event.code ? null : $event.code);
+    this.supplierName.setValue(!$event.name ? null : $event.name);
+
+    console.log(this.grnForm);
   }
 
   isProductExist(productId): boolean {
@@ -211,4 +240,54 @@ export class CreateInventoryTransactionsComponent
         this.notify.info(this.l("SavedSuccessfully"));
       });
   }
+
+  //#region Propertises
+  get goodsReceivedNumber() {
+    return this.grnForm.get("goodsReceivedNumber") as FormControl;
+  }
+
+  get referenceNumber() {
+    return this.grnForm.get("referenceNumber") as FormControl;
+  }
+
+  get remarks() {
+    return this.grnForm.get("remarks") as FormControl;
+  }
+
+  get supplierId() {
+    return this.grnForm.get("supplierId") as FormControl;
+  }
+
+  get supplierCode() {
+    return this.grnForm.get("supplierCode") as FormControl;
+  }
+
+  get supplierName() {
+    return this.grnForm.get("supplierName") as FormControl;
+  }
+
+  get discountRate() {
+    return this.grnForm.get("discountRate") as FormControl;
+  }
+
+  get discountAmount() {
+    return this.grnForm.get("discountAmount") as FormControl;
+  }
+
+  get taxRate() {
+    return this.grnForm.get("taxRate") as FormControl;
+  }
+
+  get taxAmount() {
+    return this.grnForm.get("taxAmount") as FormControl;
+  }
+
+  get grossAmount() {
+    return this.grnForm.get("grossAmount") as FormControl;
+  }
+
+  get netAmount() {
+    return this.grnForm.get("netAmount") as FormControl;
+  }
+  //#endregion
 }
