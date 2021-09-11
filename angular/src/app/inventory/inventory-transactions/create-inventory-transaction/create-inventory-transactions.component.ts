@@ -54,7 +54,7 @@ export class CreateInventoryTransactionsComponent
     supplierCode: [null, Validators.required],
     supplierName: [null, Validators.required],
     discountRate: [
-      11,
+      0,
       Validators.compose([
         Validators.required,
         Validators.min(0),
@@ -63,7 +63,7 @@ export class CreateInventoryTransactionsComponent
     ],
     discountAmount: [0, Validators.required],
     taxRate: [
-      10,
+      0,
       Validators.compose([
         Validators.required,
         Validators.min(0),
@@ -175,7 +175,11 @@ export class CreateInventoryTransactionsComponent
         ],
         discountRate: [
           0,
-          Validators.compose([Validators.required, Validators.min(1)]),
+          Validators.compose([
+            Validators.required,
+            Validators.min(1),
+            Validators.max(100),
+          ]),
         ],
         discountAmount: [0, Validators.required],
         lineTotal: [0, Validators.required],
@@ -188,26 +192,59 @@ export class CreateInventoryTransactionsComponent
     }
   }
 
+  //#region Change methods in Line level Items
+  onChangeQuantity(item: FormGroup, quantity: HTMLInputElement) {
+    item.get("quantity").setValue(quantity.value);
+    this.updateLineLevelCalculations(item);
+  }
+
+  onChangeFreeQuantity(item: FormGroup, freeQty: HTMLInputElement) {
+    item.get("freeQuantity").setValue(freeQty.value);
+    this.updateLineLevelCalculations(item);
+  }
+
+  onChangeCostPrice(item: FormGroup, costPrice: HTMLInputElement) {
+    item.get("costPrice").setValue(costPrice.value);
+    this.updateLineLevelCalculations(item);
+  }
+
+  onChangeSellingPrice(item: FormGroup, sellingPrice: HTMLInputElement) {
+    item.get("sellingPrice").setValue(sellingPrice.value);
+    this.updateLineLevelCalculations(item);
+  }
+
+  onChangemaximumRetailPrice(
+    item: FormGroup,
+    maximumRetailPrice: HTMLInputElement
+  ) {
+    item.get("maximumRetailPrice").setValue(maximumRetailPrice.value);
+    this.updateLineLevelCalculations(item);
+  }
+
+  onChangeDiscountRate(item: FormGroup, discountRate: HTMLInputElement) {
+    item.get("discountRate").setValue(discountRate.value);
+    this.updateLineLevelCalculations(item);
+  }
+  //#endregion
+
   updateLineLevelCalculations(item: FormGroup) {
-    // let _quantity = grp.quantity;
-    // let _costPrice = parseFloat(grp.costPrice.toFixed(2));
-    // let _lineTotal = _quantity * _costPrice;
-    // let _discountRate = parseFloat(grp.discountRate.toFixed(2));
-    // let _discountAmount = parseFloat(
-    //   ((_lineTotal * _discountRate) / 100).toFixed(2)
-    // );
-    // grp.discountRate = _discountRate;
-    // grp.discountAmount = _discountAmount;
-    // grp.lineTotal = parseFloat((_lineTotal - _discountAmount).toFixed(2));
-    // this.headerLevelCalculation();
-    let _quantity = item.get("quantity").value;
-    let _costPrice = parseFloat(item.get("costPrice").value.toFixed(2));
-    let _lineTotal = _quantity * _costPrice;
-    let _discountRate = parseFloat(item.get("discountRate").value.toFixed(2));
+    let __costPrice = !item.get("costPrice").value
+      ? 0
+      : parseFloat(item.get("costPrice").value);
+
+    let __quantity = !item.get("quantity").value
+      ? 0
+      : parseFloat(item.get("quantity").value);
+
+    let __discountRate = !item.get("discountRate").value
+      ? 0
+      : parseFloat(item.get("discountRate").value);
+
+    let _lineTotal = __quantity * __costPrice;
     let _discountAmount = parseFloat(
-      ((_lineTotal * _discountRate) / 100).toFixed(2)
+      ((_lineTotal * __discountRate) / 100).toFixed(2)
     );
-    item.get("discountRate").setValue(_discountRate);
+    item.get("discountRate").setValue(__discountRate);
     item.get("discountAmount").setValue(_discountAmount);
     item
       .get("lineTotal")
@@ -222,6 +259,7 @@ export class CreateInventoryTransactionsComponent
       total += item.get("lineTotal").value;
     });
     this.grossAmount.setValue(parseFloat(total.toFixed(2)));
+    console.log(total);
     return total.toFixed(2);
   }
 
@@ -236,6 +274,8 @@ export class CreateInventoryTransactionsComponent
     this.taxAmount.setValue(tax);
     let netAmount = parseFloat((grossTotal + tax - discount).toFixed(2));
     this.netAmount.setValue(netAmount);
+    console.log(this.grnForm);
+    console.log(this.dataSource.data);
   }
 
   validateForm() {
