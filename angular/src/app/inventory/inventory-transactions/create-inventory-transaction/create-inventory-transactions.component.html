@@ -101,9 +101,9 @@
                   type="number"
                   matInput
                   class="transaction-table-inputs"
+                  formControlName="quantity"
                   id="quantity{{ i }}"
-                  (change)="onChangeQuantity(element, quantity)"
-                  #quantity
+                  (change)="updateLineLevelCalculations(element)"
                 />
               </td>
             </ng-container>
@@ -122,9 +122,9 @@
                   type="number"
                   matInput
                   class="transaction-table-inputs"
+                  formControlName="freeQuantity"
                   id="freeQuantity{{ i }}"
-                  (change)="onChangeFreeQuantity(element, freeQty)"
-                  #freeQty
+                  (change)="updateLineLevelCalculations(element)"
                 />
               </td>
             </ng-container>
@@ -143,9 +143,9 @@
                   type="number"
                   matInput
                   class="transaction-table-inputs"
+                  formControlName="costPrice"
                   id="costPrice{{ i }}"
-                  (change)="onChangeCostPrice(element, costPrice)"
-                  #costPrice
+                  (change)="updateLineLevelCalculations(element)"
                 />
               </td>
             </ng-container>
@@ -164,9 +164,9 @@
                   type="number"
                   matInput
                   class="transaction-table-inputs"
+                  formControlName="sellingPrice"
                   id="sellingPrice{{ i }}"
-                  (change)="onChangeSellingPrice(element, sellingPrice)"
-                  #sellingPrice
+                  (change)="updateLineLevelCalculations(element)"
                 />
               </td>
             </ng-container>
@@ -185,11 +185,9 @@
                   type="number"
                   matInput
                   class="transaction-table-inputs"
+                  formControlName="maximumRetailPrice"
                   id="maximumRetailPrice{{ i }}"
-                  (change)="
-                    onChangemaximumRetailPrice(element, maximumRetailPrice)
-                  "
-                  #maximumRetailPrice
+                  (change)="updateLineLevelCalculations(element)"
                 />
               </td>
             </ng-container>
@@ -208,9 +206,9 @@
                   type="number"
                   matInput
                   class="transaction-table-inputs"
+                  formControlName="discountRate"
                   id="discountRate{{ i }}"
-                  (change)="onChangeDiscountRate(element, discountRate)"
-                  #discountRate
+                  (change)="updateLineLevelCalculations(element)"
                 />
               </td>
             </ng-container>
@@ -280,6 +278,7 @@
             class="transaction-table-inputs"
             formControlName="taxRate"
             id="taxRate"
+            (change)="headerLevelCalculation()"
           />
         </div>
 
@@ -293,6 +292,7 @@
             class="transaction-table-inputs"
             formControlName="discountRate"
             id="discountRate"
+            (change)="headerLevelCalculation()"
           />
         </div>
 

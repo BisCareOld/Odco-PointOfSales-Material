@@ -192,41 +192,6 @@ export class CreateInventoryTransactionsComponent
     }
   }
 
-  //#region Change methods in Line level Items
-  onChangeQuantity(item: FormGroup, quantity: HTMLInputElement) {
-    item.get("quantity").setValue(quantity.value);
-    this.updateLineLevelCalculations(item);
-  }
-
-  onChangeFreeQuantity(item: FormGroup, freeQty: HTMLInputElement) {
-    item.get("freeQuantity").setValue(freeQty.value);
-    this.updateLineLevelCalculations(item);
-  }
-
-  onChangeCostPrice(item: FormGroup, costPrice: HTMLInputElement) {
-    item.get("costPrice").setValue(costPrice.value);
-    this.updateLineLevelCalculations(item);
-  }
-
-  onChangeSellingPrice(item: FormGroup, sellingPrice: HTMLInputElement) {
-    item.get("sellingPrice").setValue(sellingPrice.value);
-    this.updateLineLevelCalculations(item);
-  }
-
-  onChangemaximumRetailPrice(
-    item: FormGroup,
-    maximumRetailPrice: HTMLInputElement
-  ) {
-    item.get("maximumRetailPrice").setValue(maximumRetailPrice.value);
-    this.updateLineLevelCalculations(item);
-  }
-
-  onChangeDiscountRate(item: FormGroup, discountRate: HTMLInputElement) {
-    item.get("discountRate").setValue(discountRate.value);
-    this.updateLineLevelCalculations(item);
-  }
-  //#endregion
-
   updateLineLevelCalculations(item: FormGroup) {
     let __costPrice = !item.get("costPrice").value
       ? 0
@@ -259,7 +224,6 @@ export class CreateInventoryTransactionsComponent
       total += item.get("lineTotal").value;
     });
     this.grossAmount.setValue(parseFloat(total.toFixed(2)));
-    console.log(total);
     return total.toFixed(2);
   }
 
@@ -274,8 +238,6 @@ export class CreateInventoryTransactionsComponent
     this.taxAmount.setValue(tax);
     let netAmount = parseFloat((grossTotal + tax - discount).toFixed(2));
     this.netAmount.setValue(netAmount);
-    console.log(this.grnForm);
-    console.log(this.dataSource.data);
   }
 
   validateForm() {
@@ -359,7 +321,7 @@ export class CreateInventoryTransactionsComponent
   }
 
   get goodsReceivedProducts(): FormArray {
-    return this.grnForm.get("goodsReceivedProducts") as FormArray;
+    return this.grnForm.controls["goodsReceivedProducts"] as FormArray;
   }
   //#endregion
 }
