@@ -1,13 +1,12 @@
 import { Component, OnInit, Injector } from "@angular/core";
-import { finalize, map } from "rxjs/operators";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
   InventoryServiceProxy,
   ProductionServiceProxy,
-  CreateGoodsReceivedDto,
-  CreateGoodsReceivedProductDto,
   CommonKeyValuePairDto,
   DocumentSequenceNumberManagerImplementationServiceProxy,
+  CreateGoodsReceivedDto,
+  CreateGoodsReceivedProductDto,
 } from "@shared/service-proxies/service-proxies";
 import { forEach as _forEach, map as _map } from "lodash-es";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
@@ -126,15 +125,14 @@ export class CreateInventoryTransactionsComponent
   }
 
   isProductExist(productId): boolean {
-    // var lineLevelProduct = this.LINE_LEVEL_DATA.find(
-    //   (p) => p.productId == productId
-    // );
-    // if (!lineLevelProduct) {
-    //   return false;
-    // }
-    // this.notify.info(this.l("ProductIsAlreadyExist"));
-    // return true;
-    return false;
+    let product = this.goodsReceivedProducts.controls.find(
+      (p) => p.get("productId").value == productId
+    );
+    if (!product) {
+      return false;
+    }
+    this.notify.info(this.l("ProductIsAlreadyExist"));
+    return true;
   }
 
   selectedProducts($event: CommonKeyValuePairDto) {
