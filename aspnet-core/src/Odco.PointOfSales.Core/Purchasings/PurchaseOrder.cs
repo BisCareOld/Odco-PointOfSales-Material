@@ -49,36 +49,29 @@ namespace Odco.PointOfSales.Core.Common
         /// <summary>
         /// Percentage (0 - 100)
         /// </summary>
-        [Range(0, 999.99)]
         public decimal TaxRate { get; set; }
 
-        [Range(0, 99999999.99)]
         public decimal TaxAmount { get; set; }
 
         /// <summary>
         /// Percentage = Overall Total (0 - 100)%
         /// </summary>
-        [Range(0, 999.99)]
         public decimal DiscountRate { get; set; }
 
         /// <summary>
         /// Discount amount for bill => Overall Total
         /// </summary>
-        [Range(0, 99999999.99)]
         public decimal DiscountAmount { get; set; }
 
         [Required]
-        [Range(0, 99999999.99)]
         public decimal GrossAmount { get; set; }
 
         [Required]
-        [Range(0, 99999999.99)]
         public decimal NetAmount { get; set; }
 
         /// <summary>
         /// Create => Open, Update will be happen in GRN
         /// </summary>
-        [Required]
         public PurchaseOrderStatus Status { get; set; }
 
         [StringLength(100)]
