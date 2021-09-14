@@ -6082,17 +6082,7 @@ export enum PurchaseOrderStatus {
     _3 = 3,
 }
 
-export enum PurchaseOrderProductStatus {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-}
-
 export class CreatePurchaseOrderProductDto implements ICreatePurchaseOrderProductDto {
-    purchaseOrderId: string;
-    purchaseOrderNumber: string;
-    referenceNumber: string | undefined;
     sequenceNo: number;
     productId: string;
     productCode: string;
@@ -6107,7 +6097,6 @@ export class CreatePurchaseOrderProductDto implements ICreatePurchaseOrderProduc
     discountAmount: number;
     lineTotal: number;
     remarks: string | undefined;
-    status: PurchaseOrderProductStatus;
 
     constructor(data?: ICreatePurchaseOrderProductDto) {
         if (data) {
@@ -6120,9 +6109,6 @@ export class CreatePurchaseOrderProductDto implements ICreatePurchaseOrderProduc
 
     init(_data?: any) {
         if (_data) {
-            this.purchaseOrderId = _data["purchaseOrderId"];
-            this.purchaseOrderNumber = _data["purchaseOrderNumber"];
-            this.referenceNumber = _data["referenceNumber"];
             this.sequenceNo = _data["sequenceNo"];
             this.productId = _data["productId"];
             this.productCode = _data["productCode"];
@@ -6137,7 +6123,6 @@ export class CreatePurchaseOrderProductDto implements ICreatePurchaseOrderProduc
             this.discountAmount = _data["discountAmount"];
             this.lineTotal = _data["lineTotal"];
             this.remarks = _data["remarks"];
-            this.status = _data["status"];
         }
     }
 
@@ -6150,9 +6135,6 @@ export class CreatePurchaseOrderProductDto implements ICreatePurchaseOrderProduc
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["purchaseOrderId"] = this.purchaseOrderId;
-        data["purchaseOrderNumber"] = this.purchaseOrderNumber;
-        data["referenceNumber"] = this.referenceNumber;
         data["sequenceNo"] = this.sequenceNo;
         data["productId"] = this.productId;
         data["productCode"] = this.productCode;
@@ -6167,7 +6149,6 @@ export class CreatePurchaseOrderProductDto implements ICreatePurchaseOrderProduc
         data["discountAmount"] = this.discountAmount;
         data["lineTotal"] = this.lineTotal;
         data["remarks"] = this.remarks;
-        data["status"] = this.status;
         return data; 
     }
 
@@ -6180,9 +6161,6 @@ export class CreatePurchaseOrderProductDto implements ICreatePurchaseOrderProduc
 }
 
 export interface ICreatePurchaseOrderProductDto {
-    purchaseOrderId: string;
-    purchaseOrderNumber: string;
-    referenceNumber: string | undefined;
     sequenceNo: number;
     productId: string;
     productCode: string;
@@ -6197,7 +6175,6 @@ export interface ICreatePurchaseOrderProductDto {
     discountAmount: number;
     lineTotal: number;
     remarks: string | undefined;
-    status: PurchaseOrderProductStatus;
 }
 
 export class CreatePurchaseOrderDto implements ICreatePurchaseOrderDto {
