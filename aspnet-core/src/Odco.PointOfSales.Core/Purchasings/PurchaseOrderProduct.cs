@@ -21,13 +21,6 @@ namespace Odco.PointOfSales.Core.Common
         public string PurchaseOrderNumber { get; set; }
 
         /// <summary>
-        /// Quatation Referance Number
-        /// Should be editable
-        /// </summary>
-        [StringLength(15)]
-        public string ReferenceNumber { get; set; }
-
-        /// <summary>
         /// Line number of products starts from 1 - ......
         /// </summary>
         public int SequenceNo { get; set; }

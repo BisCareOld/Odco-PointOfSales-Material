@@ -161,10 +161,10 @@ namespace Odco.PointOfSales.Application.Purchasings
                 // Update Stock Balance Table
                 foreach (var lineLevel in created.PurchaseOrderProducts)
                 {
-                    lineLevel.ReferenceNumber = headerLevel.ReferenceNumber;
-
                     // Define Created PO number (Document Sequent number) again
                     lineLevel.PurchaseOrderNumber = headerLevel.PurchaseOrderNumber;
+
+                    lineLevel.Status = PurchaseOrderProductStatus.Pending;
 
                     // Two results should be generated
                     // 1. StockBalance with a warehouse
