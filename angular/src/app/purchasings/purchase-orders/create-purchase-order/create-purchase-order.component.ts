@@ -35,12 +35,12 @@ export class CreatePurchaseOrderComponent
   displayedColumns: string[] = [
     "product-name",
     "warehouse",
-    "quantity",
+    "order-quantity",
     "free-quantity",
     "cost-price",
     "discount-rate",
     "discount-amount",
-    "line-amount",
+    "line-total",
     "actions",
   ];
   dataSource = new MatTableDataSource<FormGroup>();
