@@ -10,6 +10,8 @@ using Odco.PointOfSales.Application.GeneralDto;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
+using Odco.PointOfSales.Application.Productions.Warehouses;
+using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
 using System;
 using System.Collections.Generic;
@@ -24,15 +26,21 @@ namespace Odco.PointOfSales.Application.Productions
         private readonly IRepository<Product, Guid> _productRepository;
         private readonly IRepository<Category, Guid> _categoryRepository;
         private readonly IRepository<Brand, Guid> _brandRepository;
+        private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
+        private readonly IRepository<Warehouse, Guid> _warehouseRepository;
 
-        public ProductionAppService(IRepository<Product, Guid> productRepository, 
+        public ProductionAppService(IRepository<Product, Guid> productRepository,
             IRepository<Category, Guid> categoryRepository,
-            IRepository<Brand, Guid> brandRepository)
+            IRepository<Brand, Guid> brandRepository,
+            IRepository<StockBalance, Guid> stockBalanceRepository,
+            IRepository<Warehouse, Guid> warehouseRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
             _brandRepository = brandRepository;
+            _stockBalanceRepository = stockBalanceRepository;
+            _warehouseRepository = warehouseRepository;
         }
 
         #region Product
@@ -42,6 +50,7 @@ namespace Odco.PointOfSales.Application.Productions
             {
                 var product = ObjectMapper.Map<Product>(input);
                 var created = await _productRepository.InsertAsync(product);
+                await CreateOrUpdateStockBalance(created.Id, created.Code, created.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(created);
             }
@@ -110,6 +119,7 @@ namespace Odco.PointOfSales.Application.Productions
                 var product = await _productRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
                 ObjectMapper.Map(input, product);
                 var updated = await _productRepository.UpdateAsync(product);
+                await CreateOrUpdateStockBalance(updated.Id, updated.Code, updated.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(updated);
             }
@@ -119,14 +129,14 @@ namespace Odco.PointOfSales.Application.Productions
             }
         }
 
-        public async Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword, Guid? supplierId)
+        public async Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))
                 return new List<CommonKeyValuePairDto>();
 
-            var products  = await _productRepository.GetAllListAsync();
+            var products = await _productRepository.GetAllListAsync();
 
-            return products.Where(p => p.Code.Contains(keyword) || p.Name.ToLower().Contains(keyword))
+            return products.Where(p => p.IsActive && (p.Code.Contains(keyword) || p.Name.ToLower().Contains(keyword)))
                 .OrderBy(p => p.Name)
                 .Take(PointOfSalesConsts.MaximumNumberOfReturnResults)
                 .Select(p => new CommonKeyValuePairDto
@@ -136,6 +146,105 @@ namespace Odco.PointOfSales.Application.Productions
                     Name = p.Name,
                 })
                 .ToList();
+        }
+        #endregion
+
+        #region Warehouse
+        public async Task<WarehouseDto> CreateWarehouseAsync(CreateWarehouseDto input)
+        {
+            try
+            {
+                var warehouse = ObjectMapper.Map<Warehouse>(input);
+                var created = await _warehouseRepository.InsertAsync(warehouse);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return ObjectMapper.Map<WarehouseDto>(created);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task DeleteWarehouseAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var warehouse = await _warehouseRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id); ;
+                await _warehouseRepository.DeleteAsync(warehouse);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<WarehouseDto> GetWarehouseAsync(EntityDto<Guid> input)
+        {
+            try
+            {
+                var warehouse = await _warehouseRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
+                var returnDto = ObjectMapper.Map<WarehouseDto>(warehouse);
+                return returnDto;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<PagedResultDto<WarehouseDto>> GetAllWarehousesAsync(PagedWarehouseResultRequestDto input)
+        {
+            try
+            {
+                var query = _warehouseRepository.GetAll()
+                        .WhereIf(!input.Keyword.IsNullOrWhiteSpace(),
+                        x => x.Name.Contains(input.Keyword));
+
+                var result = _asyncQueryableExecuter.ToListAsync
+                    (
+                        query.OrderBy(o => o.CreationTime)
+                             .PageBy(input.SkipCount, input.MaxResultCount)
+                    );
+
+                var count = await _asyncQueryableExecuter.CountAsync(query);
+
+                var resultDto = ObjectMapper.Map<List<WarehouseDto>>(result.Result);
+                return new PagedResultDto<WarehouseDto>(count, resultDto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<WarehouseDto> UpdateWarehouseAsync(UpdateWarehouseDto input)
+        {
+            try
+            {
+                var warehouse = await _warehouseRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
+                ObjectMapper.Map(input, warehouse);
+                var updated = await _warehouseRepository.UpdateAsync(warehouse);
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return ObjectMapper.Map<WarehouseDto>(updated);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<CommonKeyValuePairDto>> GetAllKeyValuePairWarehousesAsync()
+        {
+            return await _warehouseRepository.GetAll()
+                .Where(w => w.IsActive)
+                .OrderBy(w => w.Name)
+                .Select(w => new CommonKeyValuePairDto
+                {
+                    Id = w.Id,
+                    Code = w.Code,
+                    Name = w.Name,
+                })
+                .ToListAsync();
         }
         #endregion
 
@@ -324,5 +433,45 @@ namespace Odco.PointOfSales.Application.Productions
             }).ToListAsync();
         }
         #endregion
+
+        private async Task CreateOrUpdateStockBalance(Guid productId, string productCode, string productName)
+        {
+            var stockBalances = _stockBalanceRepository.GetAll().Where(sb => sb.ProductId == productId);
+
+            if (stockBalances.Count() > 0)
+            {
+                foreach (var sb in stockBalances)
+                {
+                    sb.ProductId = productId;
+                    sb.ProductCode = productCode;
+                    sb.ProductName = productName;
+                    await _stockBalanceRepository.UpdateAsync(sb);
+                }
+            }
+            else
+            {
+                // Warehouse summary
+                var warehouses = await GetAllKeyValuePairWarehousesAsync();
+
+                // Company summary
+                // Initializing with a Empty (Null) warehouse
+                warehouses.Add(new CommonKeyValuePairDto());
+
+                var newStockBalances = warehouses.Select(w => new StockBalance
+                {
+                    SequenceNumber = 0,
+                    ProductId = productId,
+                    ProductCode = productCode,
+                    ProductName = productName,
+                    WarehouseId = w.Id,
+                    WarehouseCode = w.Code,
+                    WarehouseName = w.Name
+                }).ToList();
+
+                foreach (var stockBalance in newStockBalances)
+                    await _stockBalanceRepository.InsertAsync(stockBalance);
+            }
+            await CurrentUnitOfWork.SaveChangesAsync();
+        }
     }
 }

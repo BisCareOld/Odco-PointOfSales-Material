@@ -12,6 +12,8 @@ import { ChangePasswordComponent } from "./users/change-password/change-password
 import { CategoriesComponent } from "./productions/categories/categories.component";
 import { BrandsComponent } from "./productions/brands/brands.component";
 import { SuppliersComponent } from "./purchasings/suppliers/suppliers.component";
+import { InventoryTransactionsComponent } from "./inventory/inventory-transactions/inventory-transactions.component";
+import { CreateInventoryTransactionsComponent } from "./inventory/inventory-transactions/create-inventory-transaction/create-inventory-transactions.component";
 
 @NgModule({
   imports: [
@@ -69,6 +71,12 @@ import { SuppliersComponent } from "./purchasings/suppliers/suppliers.component"
           {
             path: "suppliers",
             component: SuppliersComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "create-inventory-transactions",
+            component: CreateInventoryTransactionsComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },

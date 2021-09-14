@@ -4,6 +4,7 @@ using Odco.PointOfSales.Application.GeneralDto;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
+using Odco.PointOfSales.Application.Productions.Warehouses;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +19,16 @@ namespace Odco.PointOfSales.Application.Productions
         Task<ProductDto> GetProductAsync(EntityDto<Guid> input);
         Task<PagedResultDto<ProductDto>> GetAllProductsAsync(PagedProductResultRequestDto input);
         Task<ProductDto> UpdateProductAsync(UpdateProductDto input);
-        Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword, Guid? supplierId);
+        Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword);
+        #endregion
+
+        #region Warehouse
+        Task<WarehouseDto> CreateWarehouseAsync(CreateWarehouseDto input);
+        Task DeleteWarehouseAsync(EntityDto<Guid> input);
+        Task<WarehouseDto> GetWarehouseAsync(EntityDto<Guid> input);
+        Task<PagedResultDto<WarehouseDto>> GetAllWarehousesAsync(PagedWarehouseResultRequestDto input);
+        Task<WarehouseDto> UpdateWarehouseAsync(UpdateWarehouseDto input);
+        Task<List<CommonKeyValuePairDto>> GetAllKeyValuePairWarehousesAsync();
         #endregion
 
         #region Category

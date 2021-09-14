@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Productions;
 using Odco.PointOfSales.Sales.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -33,5 +34,9 @@ namespace Odco.PointOfSales.Core.Common
         public Guid? CustomerId { get; set; }
 
         public Customer Customer { get; set; }
+
+        public Guid? WarehouseId { get; set; }
+
+        public Warehouse Warehouse { get; set; }
     }
 }

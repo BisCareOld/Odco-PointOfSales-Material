@@ -1,0 +1,324 @@
+<form [formGroup]="grnForm" novalidate (ngSubmit)="save()">
+  <mat-card class="shipping-card">
+    <mat-card-header>
+      <mat-card-title>{{ "GoodsReceivedNotes" | localize }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <partial-suppliers
+            (selectedEvent)="selectedSupplier($event)"
+          ></partial-suppliers>
+        </div>
+
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>{{ "GoodsReceivedNumber" | localize }}</mat-label>
+            <input
+              matInput
+              formControlName="goodsReceivedNumber"
+              id="goodsReceivedNumber"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>{{ "Remarks" | localize }}</mat-label>
+            <input matInput formControlName="remarks" id="remarks" />
+          </mat-form-field>
+        </div>
+
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>{{ "ReferenceNumber" | localize }}</mat-label>
+            <input
+              matInput
+              formControlName="referenceNumber"
+              id="referenceNumber"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <partial-products
+            (selectedEvent)="selectedProducts($event)"
+          ></partial-products>
+        </div>
+      </div>
+
+      <div class="mat-elevation-z8">
+        <ng-container formArrayName="goodsReceivedProducts">
+          <table class="full-width-table" mat-table [dataSource]="dataSource">
+            <!--- Note that these columns can be defined in any order.
+                    The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Product Name Column -->
+            <ng-container matColumnDef="product-name">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Product" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element">
+                {{ element.get("productCode").value }} -
+                {{ element.get("productName").value }}
+              </td>
+            </ng-container>
+
+            <!-- Warehouse Column -->
+            <ng-container matColumnDef="warehouse">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Warehouse" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <select
+                  matNativeControl
+                  id="warehouseId{{ i }}"
+                  (change)="selectWarehouse($event, element)"
+                >
+                  <option value="" selected></option>
+                  <option *ngFor="let w of warehouses" [value]="w.id">
+                    {{ w.name }}
+                  </option>
+                </select>
+              </td>
+            </ng-container>
+
+            <!-- Quantity Column -->
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Quantity" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  formControlName="quantity"
+                  id="quantity{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Free Quantity Column -->
+            <ng-container matColumnDef="free-quantity">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "FreeQuantity" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  formControlName="freeQuantity"
+                  id="freeQuantity{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Cost Price Column -->
+            <ng-container matColumnDef="cost-price">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "CostPrice" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  formControlName="costPrice"
+                  id="costPrice{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Selling Price Column -->
+            <ng-container matColumnDef="selling-price">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "SellingPrice" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  formControlName="sellingPrice"
+                  id="sellingPrice{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- MRP Price Column -->
+            <ng-container matColumnDef="mrp-price">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "MRP" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  formControlName="maximumRetailPrice"
+                  id="maximumRetailPrice{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Discount Rate Column -->
+            <ng-container matColumnDef="discount-rate">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "DiscountRate" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                <input
+                  type="number"
+                  matInput
+                  class="transaction-table-inputs"
+                  formControlName="discountRate"
+                  id="discountRate{{ i }}"
+                  (change)="updateLineLevelCalculations(element)"
+                />
+              </td>
+            </ng-container>
+
+            <!-- Discount Amount Column -->
+            <ng-container matColumnDef="discount-amount">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "DiscountAmount" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                LKR. {{ element.get("discountAmount").value }}
+              </td>
+            </ng-container>
+
+            <!-- Line Total / Total Amount Column -->
+            <ng-container matColumnDef="line-amount">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "LineTotal" | localize }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
+                LKR. {{ element.get("lineTotal").value }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ "Actions" | localize }}
+              </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <mat-icon
+                  style="color: #d45959"
+                  (click)="removeProduct(i, element)"
+                  >delete_forever</mat-icon
+                >
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </ng-container>
+      </div>
+
+      <div class="parent">
+        <div class="child">
+          <mat-label>{{ "GrossAmount" | localize }}</mat-label>
+        </div>
+        <div class="child">LKR. {{ grossAmount.value }}</div>
+
+        <div class="child">
+          <mat-label>{{ "Taxes" | localize }}</mat-label>
+        </div>
+        <div class="child">
+          <input
+            type="number"
+            matInput
+            class="transaction-table-inputs"
+            formControlName="taxRate"
+            id="taxRate"
+            (change)="headerLevelCalculation()"
+          />
+        </div>
+
+        <div class="child">
+          <mat-label>{{ "Discount" | localize }}</mat-label>
+        </div>
+        <div class="child">
+          <input
+            type="number"
+            matInput
+            class="transaction-table-inputs"
+            formControlName="discountRate"
+            id="discountRate"
+            (change)="headerLevelCalculation()"
+          />
+        </div>
+
+        <div class="child">
+          <mat-label>{{ "TotalDiscount" | localize }}</mat-label>
+        </div>
+        <div class="child">LKR. {{ discountAmount.value }}</div>
+
+        <div class="child">
+          <mat-label>{{ "NetAmount" | localize }}</mat-label>
+        </div>
+        <div class="child">LKR. {{ netAmount.value }}</div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-button mat-dialog-close>{{ "Cancel" | localize }}</button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="!grnForm.valid || saving"
+      >
+        {{ "Submit" | localize }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>
+
+{{ grnForm.value | json }}

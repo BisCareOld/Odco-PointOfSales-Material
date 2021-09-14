@@ -27,6 +27,8 @@ import { CategoryModule } from "./productions/categories/category.module";
 import { BrandModule } from "./productions/brands/brand.module";
 // supplier
 import { SupplierModule } from "./purchasings/suppliers/supplier.module";
+// inventory-transaction
+import { InventoryTransactionModule } from "./inventory/inventory-transactions/inventory-transaction.module";
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
@@ -75,6 +77,7 @@ import { LayoutModule } from "@angular/cdk/layout";
     CategoryModule,
     BrandModule,
     SupplierModule,
+    InventoryTransactionModule,
   ],
   providers: [],
   entryComponents: [],

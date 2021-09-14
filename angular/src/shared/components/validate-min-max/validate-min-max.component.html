@@ -1,0 +1,10 @@
+<ng-container
+  *ngIf="enteredValue != null && (control.dirty || control.touched)"
+>
+  <span *ngIf="maxValue < enteredValue" class="mat-error">
+    Enter maximum {{ maxValue }}
+  </span>
+  <span *ngIf="minValue > enteredValue" class="mat-error">
+    Enter minimum {{ minValue }}
+  </span>
+</ng-container>

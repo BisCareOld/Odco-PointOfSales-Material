@@ -1,57 +1,31 @@
-<!-- <div class="wrapper">
-  <app-header></app-header>
-  <sidebar></sidebar>
-  <div class="content-wrapper">
-    <router-outlet></router-outlet>
-  </div>
-  <app-footer></app-footer>
-  <div id="sidebar-overlay" (click)="toggleSidebar()"></div>
-</div> -->
-
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>Odco Point Of Sales</span>
+    <span style="flex: auto"></span>
+    <mat-slide-toggle
+      labelPosition="before"
+      [(ngModel)]="isDarkTheme"
+      (change)="storeThemeSelection()"
+    >
+      <mat-icon>bedtime</mat-icon>
+    </mat-slide-toggle>
+  </mat-toolbar-row>
+</mat-toolbar>
 <mat-sidenav-container
   class="sidenav-container mat-app-background"
   [ngClass]="{ 'unicorn-dark-theme': isDarkTheme }"
 >
-  <mat-sidenav
-    #drawer
-    class="sidenav"
-    fixedInViewport
-    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="(isHandset$ | async) === false"
-  >
-    <mat-toolbar>Menu</mat-toolbar>
+  <mat-sidenav #sidenav opened="true" mode="side">
     <mat-nav-list>
-      <a mat-list-item href="#">Link 3</a>
       <sidebar-menu></sidebar-menu>
     </mat-nav-list>
-
-    <!-- ssss -->
-    <!-- <sidebar-user-panel></sidebar-user-panel> -->
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button
-        type="button"
-        aria-label="Toggle sidenav"
-        mat-icon-button
-        (click)="drawer.toggle()"
-        *ngIf="isHandset$ | async"
-      >
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-      </button>
-      <span>Point Of Sales</span>
-      <span style="flex: auto"></span>
-      <mat-slide-toggle
-        labelPosition="before"
-        [(ngModel)]="isDarkTheme"
-        (change)="storeThemeSelection()"
-      >
-        <mat-icon>bedtime</mat-icon>
-      </mat-slide-toggle>
-    </mat-toolbar>
-    <!-- Add Content Here -->
-
-    <router-outlet></router-outlet>
+    <div style="height: 90vh; padding: 0 15px">
+      <router-outlet></router-outlet>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

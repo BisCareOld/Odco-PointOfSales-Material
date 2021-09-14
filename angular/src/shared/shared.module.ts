@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { NgModule, ModuleWithProviders } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { AppSessionService } from "./session/app-session.service";
 import { AppUrlService } from "./nav/app-url.service";
@@ -17,9 +18,18 @@ import { LayoutStoreService } from "./layout/layout-store.service";
 import { BusyDirective } from "./directives/busy.directive";
 import { EqualValidator } from "./directives/equal-validator.directive";
 import { MaterialModule } from "./material/material.module";
+import { PartialSuppliersComponent } from "./components/partial-suppliers/partial-suppliers.component";
+import { PartialProductsComponent } from "./components/partial-products/partial-products.component";
+import { ValidateMinMaxComponent } from "./components/validate-min-max/validate-min-max.component";
 
 @NgModule({
-  imports: [CommonModule, RouterModule, MaterialModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   declarations: [
     AbpPaginationControlsComponent,
     AbpValidationSummaryComponent,
@@ -28,6 +38,9 @@ import { MaterialModule } from "./material/material.module";
     LocalizePipe,
     BusyDirective,
     EqualValidator,
+    PartialSuppliersComponent,
+    PartialProductsComponent,
+    ValidateMinMaxComponent,
   ],
   exports: [
     AbpPaginationControlsComponent,
@@ -38,6 +51,9 @@ import { MaterialModule } from "./material/material.module";
     BusyDirective,
     EqualValidator,
     MaterialModule,
+    PartialSuppliersComponent,
+    PartialProductsComponent,
+    ValidateMinMaxComponent,
   ],
 })
 export class SharedModule {

@@ -43,48 +43,54 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
 
   getMenuItems(): MenuItem[] {
     return [
-      new MenuItem(this.l("About"), "/app/about", "fas fa-info-circle"),
-      new MenuItem(this.l("HomePage"), "/app/home", "fas fa-home"),
+      new MenuItem(this.l("About"), "/app/about", "info"),
+      new MenuItem(this.l("HomePage"), "/app/home", "home"),
       new MenuItem(
         this.l("Roles"),
         "/app/roles",
-        "fas fa-theater-masks",
+        "verified_user",
         "Pages.Roles"
       ),
       new MenuItem(
         this.l("Tenants"),
         "/app/tenants",
-        "fas fa-building",
+        "account_balance",
         "Pages.Tenants"
       ),
       new MenuItem(
         this.l("Users"),
         "/app/users",
-        "fas fa-users",
+        "supervised_user_circle",
         "Pages.Users"
       ),
       new MenuItem(
         this.l("Products"),
         "/app/products",
-        "fas fa-users",
+        "shopping_cart",
         "Pages.Users"
       ),
       new MenuItem(
         this.l("Categories"),
         "/app/categories",
-        "fas fa-users",
+        "bookmarks",
         "Pages.Users"
       ),
       new MenuItem(
         this.l("Brands"),
         "/app/brands",
-        "fas fa-users",
+        "change_history",
         "Pages.Users"
       ),
       new MenuItem(
         this.l("Suppliers"),
         "/app/suppliers",
-        "fas fa-users",
+        "manage_accounts",
+        "Pages.Users"
+      ),
+      new MenuItem(
+        this.l("InventoryTransactions"),
+        "/app/create-inventory-transactions",
+        "add_shopping_cart",
         "Pages.Users"
       ),
       new MenuItem(this.l("MultiLevelMenu"), "", "fas fa-circle", "", [
