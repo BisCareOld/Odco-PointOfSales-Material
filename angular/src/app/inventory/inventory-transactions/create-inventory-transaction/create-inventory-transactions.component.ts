@@ -19,6 +19,8 @@ import {
   FormGroup,
   Validators,
 } from "@angular/forms";
+import { finalize } from "rxjs/operators";
+import { ThrowStmt } from "@angular/compiler";
 
 @Component({
   selector: "app-create-inventory-transactions",
@@ -43,8 +45,9 @@ export class CreateInventoryTransactionsComponent
     "discount-rate",
     "discount-amount",
     "line-amount",
+    "actions",
   ];
-  dataSource = new MatTableDataSource<AbstractControl>();
+  dataSource = new MatTableDataSource<FormGroup>();
 
   grnForm = this.fb.group({
     goodsReceivedNumber: [null, Validators.required],
@@ -175,7 +178,7 @@ export class CreateInventoryTransactionsComponent
           0,
           Validators.compose([
             Validators.required,
-            Validators.min(1),
+            Validators.min(0),
             Validators.max(100),
           ]),
         ],
@@ -188,6 +191,14 @@ export class CreateInventoryTransactionsComponent
 
       return (this.dataSource.filter = "");
     }
+  }
+
+  removeProduct(itemIndex: number, item: FormGroup) {
+    console.log(this.grnForm);
+    console.log(this.dataSource);
+    this.goodsReceivedProducts.removeAt(itemIndex);
+    this.dataSource.data.splice(itemIndex, 1);
+    this.dataSource._updateChangeSubscription();
   }
 
   updateLineLevelCalculations(item: FormGroup) {
@@ -249,24 +260,27 @@ export class CreateInventoryTransactionsComponent
   }
 
   save() {
-    // this.validateForm();
-    // if (this.errors.length > 0) {
-    //   return;
-    // }
-    // this.grn.goodsReceivedProducts = this.LINE_LEVEL_DATA;
-    // this.saving = true;
-    // const _grn = new CreateGoodsReceivedDto();
-    // _grn.init(this.grn);
-    // this._inventoryService
-    //   .createGoodsReceivedNote(_grn)
-    //   .pipe(
-    //     finalize(() => {
-    //       this.saving = false;
-    //     })
-    //   )
-    //   .subscribe(() => {
-    //     this.notify.info(this.l("SavedSuccessfully"));
-    //   });
+    this.saving = true;
+    if (this.goodsReceivedProducts.length <= 0) {
+      this.notify.error(this.l("SelectAtleastOneProduct"));
+      this.saving = false;
+      return;
+    }
+
+    if (this.grnForm.valid) {
+      this._inventoryService
+        .createGoodsReceivedNote(this.grnForm.value)
+        .pipe(
+          finalize(() => {
+            this.saving = false;
+          })
+        )
+        .subscribe(() => {
+          this.notify.info(this.l("SavedSuccessfully"));
+        });
+    } else {
+      this.notify.error(this.l("FormIsNotValid"));
+    }
   }
 
   //#region Propertises
