@@ -21,6 +21,13 @@ namespace Odco.PointOfSales.Core.Common
         public string PurchaseOrderNumber { get; set; }
 
         /// <summary>
+        /// Quatation Referance Number
+        /// Should be editable
+        /// </summary>
+        [StringLength(15)]
+        public string ReferenceNumber { get; set; }
+
+        /// <summary>
         /// Line number of products starts from 1 - ......
         /// </summary>
         public int SequenceNo { get; set; }
@@ -45,30 +52,39 @@ namespace Odco.PointOfSales.Core.Common
         public string ProductName { get; set; }
 
         /// <summary>
+        ///     Warehouse Id *FK
+        ///     1 : M
+        ///     from which warehouse should receive the goods
+        /// </summary>
+        public Guid WarehouseId { get; set; }
+
+        [StringLength(10)]
+        public string WarehouseCode { get; set; }
+
+        [StringLength(100)]
+        public string WarehouseName { get; set; }
+
+        /// <summary>
         /// Entering price for single product
         /// </summary>
-        public decimal UnitPrice { get; set; }
+        public decimal CostPrice { get; set; }
 
         public decimal OrderQuantity { get; set; }
+        
+        public decimal FreeQuantity { get; set; }
 
         public decimal DiscountRate { get; set; }
 
         public decimal DiscountAmount { get; set; }
-
-        public PurchaseOrderProductStatus Status { get; set; }
 
         /// <summary>
         /// Price * Quantity - Discount
         /// </summary>
         public decimal LineTotal { get; set; }
 
-        [StringLength(50)]
+        [StringLength(100)]
         public string Remarks { get; set; }
 
-        public Guid? CanceledEmployeeId { get; set; }
-
-        public string CanceledEmployeeCode { get; set; }
-
-        public string CanceledEmployeeName { get; set; }
+        public PurchaseOrderProductStatus Status { get; set; }
     }
 }
