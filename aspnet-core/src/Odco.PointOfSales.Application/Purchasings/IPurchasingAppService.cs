@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Purchasings.PurchaseOrders;
 using Odco.PointOfSales.Application.Purchasings.Suppliers;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,10 @@ namespace Odco.PointOfSales.Application.Purchasings
         Task<SupplierDto> GetSupplierAsync(EntityDto<Guid> input);
         Task<SupplierDto> UpdateSupplierAsync(SupplierDto input);
         Task<List<CommonKeyValuePairDto>> GetPartialSuppliersAsync(string keyword);
+        #endregion
+
+        #region Purchase Order
+        Task<PurchaseOrderDto> CreatePurchaseOrderAsync(CreatePurchaseOrderDto createPurchaseOrderDto);
         #endregion
     }
 }

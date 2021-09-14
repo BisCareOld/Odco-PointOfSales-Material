@@ -83,8 +83,14 @@ namespace Odco.PointOfSales.Core.Inventory
         /// <summary>
         ///     GRN Number
         /// </summary>
-        [StringLength(10)]
+        [StringLength(15)]
         public string GoodsRecievedNumber { get; set; }
+
+        /// <summary>
+        ///     PO Number
+        /// </summary>
+        [StringLength(15)]
+        public string PurchaseOrderNumber { get; set; }
     }
 }
 
