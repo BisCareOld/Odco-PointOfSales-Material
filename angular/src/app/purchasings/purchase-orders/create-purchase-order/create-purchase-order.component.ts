@@ -1,7 +1,6 @@
 import { Component, OnInit, Injector } from "@angular/core";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  InventoryServiceProxy,
   ProductionServiceProxy,
   CommonKeyValuePairDto,
   DocumentSequenceNumberManagerImplementationServiceProxy,
@@ -11,7 +10,6 @@ import { forEach as _forEach, map as _map } from "lodash-es";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { MatTableDataSource } from "@angular/material/table";
 import {
-  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
@@ -231,7 +229,29 @@ export class CreatePurchaseOrderComponent
     this.netAmount.setValue(netAmount);
   }
 
-  save() {}
+  save() {
+    this.saving = true;
+    if (this.purchaseOrderProducts.length <= 0) {
+      this.notify.error(this.l("SelectAtleastOneProduct"));
+      this.saving = false;
+      return;
+    }
+
+    if (this.poForm.valid) {
+      this._purchasingService
+        .createPurchaseOrder(this.poForm.value)
+        .pipe(
+          finalize(() => {
+            this.saving = false;
+          })
+        )
+        .subscribe(() => {
+          this.notify.info(this.l("SavedSuccessfully"));
+        });
+    } else {
+      this.notify.error(this.l("FormIsNotValid"));
+    }
+  }
 
   //#region Propertises
   get purchaseOrderNumber() {
