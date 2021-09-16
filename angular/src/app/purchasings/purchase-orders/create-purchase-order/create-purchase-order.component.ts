@@ -42,38 +42,29 @@ export class CreatePurchaseOrderComponent
     "actions",
   ];
   dataSource = new MatTableDataSource<FormGroup>();
+  poForm;
+  validationMessages = {
+    purchaseOrderNumber: {
+      required: "This field is required",
+      maxlength: "Purchase order number should contain maximum 15 characters",
+    },
+    referenceNumber: {
+      maxlength: "Reference number should contain maximum 10 characters",
+    },
+    remarks: {
+      maxlength: "Remark should contain maximum 100 characters",
+    },
+    supplierId: {
+      required: "This field is required",
+    },
+  };
 
-  poForm = this.fb.group({
-    purchaseOrderNumber: [null, Validators.required],
-    referenceNumber: [null, Validators.maxLength(10)],
-    expectedDeliveryDate: [null],
-    supplierId: [null, Validators.required],
-    supplierCode: [null, Validators.required],
-    supplierName: [null, Validators.required],
-    discountRate: [
-      0,
-      Validators.compose([
-        Validators.required,
-        Validators.min(0),
-        Validators.max(100),
-      ]),
-    ],
-    discountAmount: [0, Validators.required],
-    taxRate: [
-      0,
-      Validators.compose([
-        Validators.required,
-        Validators.min(0),
-        Validators.max(100),
-      ]),
-    ],
-    taxAmount: [0, Validators.required],
-    grossAmount: [0, Validators.required],
-    netAmount: [0, Validators.required],
-    status: [1],
-    remarks: [null, Validators.maxLength(100)],
-    purchaseOrderProducts: this.fb.array([]),
-  });
+  formErrors = {
+    purchaseOrderNumber: "",
+    referenceNumber: "",
+    remarks: "",
+    supplierId: "",
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -90,6 +81,84 @@ export class CreatePurchaseOrderComponent
     this._documentService.getNextDocumentNumber(1).subscribe((result) => {
       this.purchaseOrderNumber.setValue(result);
     });
+
+    this.poForm = this.fb.group({
+      purchaseOrderNumber: [
+        null,
+        Validators.compose([Validators.required, Validators.maxLength(15)]),
+      ],
+      referenceNumber: [null, Validators.maxLength(10)],
+      expectedDeliveryDate: [null],
+      supplierId: [null, Validators.required],
+      supplierCode: [null, Validators.required],
+      supplierName: [null, Validators.required],
+      discountRate: [
+        0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      discountAmount: [0, Validators.required],
+      taxRate: [
+        0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      taxAmount: [0, Validators.required],
+      grossAmount: [0, Validators.required],
+      netAmount: [0, Validators.required],
+      status: [1],
+      remarks: [null, Validators.maxLength(100)],
+      purchaseOrderProducts: this.fb.array([]),
+    });
+
+    this.poForm.valueChanges.subscribe((data) => {
+      this.logValidationErrors(this.poForm);
+    });
+  }
+
+  logValidationErrors(group: FormGroup = this.poForm): void {
+    // Loop through each control key in the FormGroup
+    Object.keys(group.controls).forEach((key: string) => {
+      // Get the control. The control can be a nested form group
+      const abstractControl = group.get(key);
+      // If the control is nested form group, recursively call
+      // this same method
+      if (abstractControl instanceof FormGroup) {
+        this.logValidationErrors(abstractControl);
+        // If the control is a FormControl
+      } else {
+        // Clear the existing validation errors
+        this.formErrors[key] = "";
+        if (
+          abstractControl &&
+          !abstractControl.valid &&
+          (abstractControl.touched || abstractControl.dirty)
+        ) {
+          // Get all the validation messages of the form control
+          // that has failed the validation
+          const messages = this.validationMessages[key];
+          // Find which validation has failed. For example required,
+          // minlength or maxlength. Store that error message in the
+          // formErrors object. The UI will bind to this object to
+          // display the validation errors
+          for (const errorKey in abstractControl.errors) {
+            if (errorKey) {
+              this.formErrors[key] += messages[errorKey] + " ";
+            }
+          }
+        }
+      }
+    });
+  }
+
+  onLoadDataClick(): void {
+    this.logValidationErrors(this.poForm);
   }
 
   getAllWarehouses() {

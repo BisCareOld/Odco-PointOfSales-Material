@@ -19,6 +19,9 @@
               formControlName="purchaseOrderNumber"
               id="purchaseOrderNumber"
             />
+            <mat-error *ngIf="formErrors.purchaseOrderNumber">{{
+              formErrors.purchaseOrderNumber
+            }}</mat-error>
           </mat-form-field>
         </div>
       </div>
@@ -28,6 +31,9 @@
           <mat-form-field class="full-width">
             <mat-label>{{ "Remarks" | localize }}</mat-label>
             <input matInput formControlName="remarks" id="remarks" />
+            <mat-error *ngIf="formErrors.remarks">{{
+              formErrors.remarks
+            }}</mat-error>
           </mat-form-field>
         </div>
 
@@ -39,6 +45,9 @@
               formControlName="referenceNumber"
               id="referenceNumber"
             />
+            <mat-error *ngIf="formErrors.referenceNumber">{{
+              formErrors.referenceNumber
+            }}</mat-error>
           </mat-form-field>
         </div>
       </div>
