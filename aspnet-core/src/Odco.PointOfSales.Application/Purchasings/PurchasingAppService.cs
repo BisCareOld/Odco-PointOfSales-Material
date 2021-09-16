@@ -6,9 +6,13 @@ using Abp.Extensions;
 using Abp.Linq;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Odco.PointOfSales.Application.Common.SequenceNumbers;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Purchasings.PurchaseOrders;
 using Odco.PointOfSales.Application.Purchasings.Suppliers;
 using Odco.PointOfSales.Core.Common;
+using Odco.PointOfSales.Core.Enums;
+using Odco.PointOfSales.Core.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +23,21 @@ namespace Odco.PointOfSales.Application.Purchasings
     public class PurchasingAppService : ApplicationService, IPurchasingAppService
     {
         private readonly IAsyncQueryableExecuter _asyncQueryableExecuter;
+        private readonly IDocumentSequenceNumberManager _documentSequenceNumberManager;
         private readonly IRepository<Supplier, Guid> _supplierRepository;
+        private readonly IRepository<PurchaseOrder, Guid> _purchaseOrderRepository;
+        private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
 
-        public PurchasingAppService(IRepository<Supplier, Guid> supplierRepository)
+        public PurchasingAppService(IDocumentSequenceNumberManager documentSequenceNumberManager, 
+            IRepository<Supplier, Guid> supplierRepository,
+            IRepository<PurchaseOrder, Guid> purchaseOrderRepository,
+            IRepository<StockBalance, Guid> stockBalanceRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
+            _documentSequenceNumberManager = documentSequenceNumberManager;
             _supplierRepository = supplierRepository;
+            _purchaseOrderRepository = purchaseOrderRepository;
+            _stockBalanceRepository = stockBalanceRepository;
         }
 
 
@@ -132,6 +145,69 @@ namespace Odco.PointOfSales.Application.Purchasings
             }).ToList();
         }
         #endregion
+
+        #region Purchase Order
+        public async Task<PurchaseOrderDto> CreatePurchaseOrderAsync(CreatePurchaseOrderDto headerLevel)
+        {
+            try
+            {
+                headerLevel.PurchaseOrderNumber = 
+                    await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.PurchaseOrder);
+
+                var purchaseOrder = ObjectMapper.Map<PurchaseOrder>(headerLevel);
+
+                var created = await _purchaseOrderRepository.InsertAsync(purchaseOrder);
+
+                // Update Stock Balance Table
+                foreach (var lineLevel in created.PurchaseOrderProducts)
+                {
+                    // Define Created PO number (Document Sequent number) again
+                    lineLevel.PurchaseOrderNumber = headerLevel.PurchaseOrderNumber;
+
+                    lineLevel.Status = PurchaseOrderProductStatus.Pending;
+
+                    // Two results should be generated
+                    // 1. StockBalance with a warehouse
+                    // 2. StockBalance without a warehouse
+                    var stockBalances = await GetStockBalancesAsync(lineLevel.ProductId, lineLevel.WarehouseId);
+
+                    // Company & Warehouse summary
+                    foreach (var sb in stockBalances)
+                    {
+                        sb.OnOrderQuantity = sb.OnOrderQuantity + lineLevel.OrderQuantity;
+                        sb.PurchaseOrderNumber = lineLevel.PurchaseOrderNumber;
+
+                        await _stockBalanceRepository.UpdateAsync(sb);
+                    }
+                }
+
+                await CurrentUnitOfWork.SaveChangesAsync();
+
+                return new PurchaseOrderDto { Id = created.Id, PurchaseOrderNumber = created.PurchaseOrderNumber};
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Company & Warehouse summary
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="warehouseId"></param>
+        /// <returns></returns>
+        private async Task<List<StockBalance>> GetStockBalancesAsync(Guid productId, Guid warehouseId)
+        {
+            return await _stockBalanceRepository
+                .GetAll()
+                .Where(sb => sb.SequenceNumber == 0 
+                    && sb.ProductId == productId
+                    && (sb.WarehouseId.HasValue || sb.WarehouseId == warehouseId))
+                .ToListAsync();
+        }
+        #endregion
+
 
     }
 }

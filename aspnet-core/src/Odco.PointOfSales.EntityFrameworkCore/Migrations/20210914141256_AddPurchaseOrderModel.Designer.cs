@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odco.PointOfSales.EntityFrameworkCore;
 
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    partial class PointOfSalesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210914141256_AddPurchaseOrderModel")]
+    partial class AddPurchaseOrderModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1971,6 +1973,10 @@ namespace Odco.PointOfSales.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<string>("ReferenceNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
                     b.Property<string>("Remarks")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -2490,8 +2496,8 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("GoodsRecievedNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -2524,10 +2530,6 @@ namespace Odco.PointOfSales.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PurchaseOrderNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
 
                     b.Property<decimal>("ReceivedQuantity")
                         .HasColumnType("decimal(18,2)");

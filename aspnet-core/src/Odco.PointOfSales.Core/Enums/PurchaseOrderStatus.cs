@@ -3,7 +3,7 @@
     public enum PurchaseOrderStatus : byte
     {
         Open = 1,
-        Completed = 2,
-        PartiallyReceived = 3
+        PartiallyReceived = 2,
+        Completed = 3
     }
 }

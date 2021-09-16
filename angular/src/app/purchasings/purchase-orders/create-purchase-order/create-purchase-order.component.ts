@@ -1,18 +1,15 @@
 import { Component, OnInit, Injector } from "@angular/core";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  InventoryServiceProxy,
   ProductionServiceProxy,
   CommonKeyValuePairDto,
   DocumentSequenceNumberManagerImplementationServiceProxy,
-  CreateGoodsReceivedDto,
-  CreateGoodsReceivedProductDto,
+  PurchasingServiceProxy,
 } from "@shared/service-proxies/service-proxies";
 import { forEach as _forEach, map as _map } from "lodash-es";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { MatTableDataSource } from "@angular/material/table";
 import {
-  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
@@ -22,12 +19,12 @@ import {
 import { finalize } from "rxjs/operators";
 
 @Component({
-  selector: "app-create-inventory-transactions",
-  templateUrl: "./create-inventory-transactions.component.html",
-  styleUrls: ["./create-inventory-transactions.component.scss"],
+  selector: "app-create-purchase-order",
+  templateUrl: "./create-purchase-order.component.html",
+  styleUrls: ["./create-purchase-order.component.scss"],
   animations: [appModuleAnimation()],
 })
-export class CreateInventoryTransactionsComponent
+export class CreatePurchaseOrderComponent
   extends AppComponentBase
   implements OnInit
 {
@@ -36,54 +33,58 @@ export class CreateInventoryTransactionsComponent
   displayedColumns: string[] = [
     "product-name",
     "warehouse",
-    "quantity",
+    "order-quantity",
     "free-quantity",
     "cost-price",
-    "selling-price",
-    "mrp-price",
     "discount-rate",
     "discount-amount",
-    "line-amount",
+    "line-total",
     "actions",
   ];
   dataSource = new MatTableDataSource<FormGroup>();
 
-  grnForm = this.fb.group({
-    goodsReceivedNumber: [null, Validators.required],
-    referenceNumber: [null, Validators.maxLength(10)],
-    supplierId: [null, Validators.required],
-    supplierCode: [null, Validators.required],
-    supplierName: [null, Validators.required],
-    discountRate: [
-      0,
-      Validators.compose([
-        Validators.required,
-        Validators.min(0),
-        Validators.max(100),
-      ]),
-    ],
-    discountAmount: [0, Validators.required],
-    taxRate: [
-      0,
-      Validators.compose([
-        Validators.required,
-        Validators.min(0),
-        Validators.max(100),
-      ]),
-    ],
-    taxAmount: [0, Validators.required],
-    grossAmount: [0, Validators.required],
-    netAmount: [0, Validators.required],
-    transactionStatus: [1],
-    remarks: [null],
-    goodsReceivedProducts: this.fb.array([]),
-  });
+  poForm;
+
+  validationMessages = {
+    purchaseOrderNumber: {
+      required: "This field is required",
+      maxlength: "Purchase order number should contain maximum 15 characters",
+    },
+    referenceNumber: {
+      maxlength: "Reference number should contain maximum 10 characters",
+    },
+    remarks: {
+      maxlength: "Remark should contain maximum 100 characters",
+    },
+    supplierId: {
+      required: "This field is required",
+    },
+    taxRate: {
+      required: "This field is required",
+      min: "Tax rate should contain minimum 0",
+      max: "Tax rate should contain maximum 100",
+    },
+    discountRate: {
+      required: "This field is required",
+      min: "Discount rate should contain minimum 0",
+      max: "Discount rate should contain maximum 100",
+    },
+  };
+
+  formErrors = {
+    purchaseOrderNumber: "",
+    referenceNumber: "",
+    remarks: "",
+    supplierId: "",
+    taxRate: "",
+    discountRate: "",
+  };
 
   constructor(
     private fb: FormBuilder,
     injector: Injector,
     private _productionService: ProductionServiceProxy,
-    private _inventoryService: InventoryServiceProxy,
+    private _purchasingService: PurchasingServiceProxy,
     private _documentService: DocumentSequenceNumberManagerImplementationServiceProxy
   ) {
     super(injector);
@@ -91,8 +92,82 @@ export class CreateInventoryTransactionsComponent
 
   ngOnInit(): void {
     this.getAllWarehouses();
-    this._documentService.getNextDocumentNumber(2).subscribe((result) => {
-      this.goodsReceivedNumber.setValue(result);
+    this._documentService.getNextDocumentNumber(1).subscribe((result) => {
+      this.purchaseOrderNumber.setValue(result);
+    });
+
+    this.poForm = this.fb.group({
+      purchaseOrderNumber: [
+        null,
+        Validators.compose([Validators.required, Validators.maxLength(15)]),
+      ],
+      referenceNumber: [null, Validators.maxLength(10)],
+      expectedDeliveryDate: [null],
+      supplierId: [null, Validators.required],
+      supplierCode: [null, Validators.required],
+      supplierName: [null, Validators.required],
+      discountRate: [
+        0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      discountAmount: [0, Validators.required],
+      taxRate: [
+        0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      taxAmount: [0, Validators.required],
+      grossAmount: [0, Validators.required],
+      netAmount: [0, Validators.required],
+      status: [1],
+      remarks: [null, Validators.maxLength(100)],
+      purchaseOrderProducts: this.fb.array([]),
+    });
+
+    this.poForm.valueChanges.subscribe((data) => {
+      this.logValidationErrors(this.poForm);
+    });
+  }
+
+  logValidationErrors(group: FormGroup = this.poForm): void {
+    // Loop through each control key in the FormGroup
+    Object.keys(group.controls).forEach((key: string) => {
+      // Get the control. The control can be a nested form group
+      const abstractControl = group.get(key);
+      // If the control is nested form group, recursively call
+      // this same method
+      if (abstractControl instanceof FormGroup) {
+        this.logValidationErrors(abstractControl);
+        // If the control is a FormControl
+      } else {
+        // Clear the existing validation errors
+        this.formErrors[key] = "";
+        if (
+          abstractControl &&
+          !abstractControl.valid &&
+          (abstractControl.touched || abstractControl.dirty)
+        ) {
+          // Get all the validation messages of the form control
+          // that has failed the validation
+          const messages = this.validationMessages[key];
+          // Find which validation has failed. For example required,
+          // minlength or maxlength. Store that error message in the
+          // formErrors object. The UI will bind to this object to
+          // display the validation errors
+          for (const errorKey in abstractControl.errors) {
+            if (errorKey) {
+              this.formErrors[key] += messages[errorKey] + " ";
+            }
+          }
+        }
+      }
     });
   }
 
@@ -127,7 +202,7 @@ export class CreateInventoryTransactionsComponent
   }
 
   isProductExist(productId): boolean {
-    let product = this.goodsReceivedProducts.controls.find(
+    let product = this.purchaseOrderProducts.controls.find(
       (p) => p.get("productId").value == productId
     );
     if (!product) {
@@ -140,20 +215,14 @@ export class CreateInventoryTransactionsComponent
   selectedProducts($event: CommonKeyValuePairDto) {
     if (!this.isProductExist($event.id)) {
       let item = this.fb.group({
-        goodsRecievedNumber: [
-          this.goodsReceivedNumber.value,
-          Validators.required,
-        ],
-        sequenceNumber: [0, Validators.required],
+        sequenceNo: [0, Validators.required],
         productId: [$event.id, Validators.required],
         productCode: [$event.code, Validators.required],
         productName: [$event.name, Validators.required],
         warehouseId: [null, Validators.required],
         warehouseCode: [null, Validators.required],
         warehouseName: [null, Validators.required],
-        expiryDate: [null],
-        batchNumber: [null],
-        quantity: [
+        orderQuantity: [
           0,
           Validators.compose([Validators.required, Validators.min(1)]),
         ],
@@ -162,14 +231,6 @@ export class CreateInventoryTransactionsComponent
           Validators.compose([Validators.required, Validators.min(0)]),
         ],
         costPrice: [
-          0,
-          Validators.compose([Validators.required, Validators.min(1)]),
-        ],
-        sellingPrice: [
-          0,
-          Validators.compose([Validators.required, Validators.min(1)]),
-        ],
-        maximumRetailPrice: [
           0,
           Validators.compose([Validators.required, Validators.min(1)]),
         ],
@@ -183,9 +244,10 @@ export class CreateInventoryTransactionsComponent
         ],
         discountAmount: [0, Validators.required],
         lineTotal: [0, Validators.required],
+        remarks: [null, Validators.maxLength(100)],
       });
 
-      this.goodsReceivedProducts.push(item);
+      this.purchaseOrderProducts.push(item);
       this.dataSource.data.push(item);
 
       return (this.dataSource.filter = "");
@@ -193,9 +255,7 @@ export class CreateInventoryTransactionsComponent
   }
 
   removeProduct(itemIndex: number, item: FormGroup) {
-    console.log(this.grnForm);
-    console.log(this.dataSource);
-    this.goodsReceivedProducts.removeAt(itemIndex);
+    this.purchaseOrderProducts.removeAt(itemIndex);
     this.dataSource.data.splice(itemIndex, 1);
     this.dataSource._updateChangeSubscription();
   }
@@ -205,15 +265,15 @@ export class CreateInventoryTransactionsComponent
       ? 0
       : parseFloat(item.get("costPrice").value);
 
-    let __quantity = !item.get("quantity").value
+    let __orderQuantity = !item.get("orderQuantity").value
       ? 0
-      : parseFloat(item.get("quantity").value);
+      : parseFloat(item.get("orderQuantity").value);
 
     let __discountRate = !item.get("discountRate").value
       ? 0
       : parseFloat(item.get("discountRate").value);
 
-    let _lineTotal = __quantity * __costPrice;
+    let _lineTotal = __orderQuantity * __costPrice;
     let _discountAmount = parseFloat(
       ((_lineTotal * __discountRate) / 100).toFixed(2)
     );
@@ -223,12 +283,11 @@ export class CreateInventoryTransactionsComponent
       .get("lineTotal")
       .setValue(parseFloat((_lineTotal - _discountAmount).toFixed(2)));
     this.headerLevelCalculation();
-    console.log(item);
   }
 
   calculateLineLevelTotal() {
     let total = 0;
-    this.goodsReceivedProducts.controls.forEach(function (item) {
+    this.purchaseOrderProducts.controls.forEach(function (item) {
       total += item.get("lineTotal").value;
     });
     this.grossAmount.setValue(parseFloat(total.toFixed(2)));
@@ -248,27 +307,17 @@ export class CreateInventoryTransactionsComponent
     this.netAmount.setValue(netAmount);
   }
 
-  validateForm() {
-    // this.errors = [];
-    // if (!this.grn.supplierId) {
-    //   this.errors.push(this.l("SupplierIsRequired!"));
-    // }
-    // if (this.LINE_LEVEL_DATA.length == 0) {
-    //   this.errors.push(this.l("SelectAtleastOneProduct!"));
-    // }
-  }
-
   save() {
     this.saving = true;
-    if (this.goodsReceivedProducts.length <= 0) {
+    if (this.purchaseOrderProducts.length <= 0) {
       this.notify.error(this.l("SelectAtleastOneProduct"));
       this.saving = false;
       return;
     }
 
-    if (this.grnForm.valid) {
-      this._inventoryService
-        .createGoodsReceivedNote(this.grnForm.value)
+    if (this.poForm.valid) {
+      this._purchasingService
+        .createPurchaseOrder(this.poForm.value)
         .pipe(
           finalize(() => {
             this.saving = false;
@@ -283,56 +332,60 @@ export class CreateInventoryTransactionsComponent
   }
 
   //#region Propertises
-  get goodsReceivedNumber() {
-    return this.grnForm.get("goodsReceivedNumber") as FormControl;
+  get purchaseOrderNumber() {
+    return this.poForm.get("purchaseOrderNumber") as FormControl;
   }
 
   get referenceNumber() {
-    return this.grnForm.get("referenceNumber") as FormControl;
+    return this.poForm.get("referenceNumber") as FormControl;
   }
 
-  get remarks() {
-    return this.grnForm.get("remarks") as FormControl;
+  get expectedDeliveryDate() {
+    return this.poForm.get("expectedDeliveryDate") as FormControl;
   }
 
   get supplierId() {
-    return this.grnForm.get("supplierId") as FormControl;
+    return this.poForm.get("supplierId") as FormControl;
   }
 
   get supplierCode() {
-    return this.grnForm.get("supplierCode") as FormControl;
+    return this.poForm.get("supplierCode") as FormControl;
   }
 
   get supplierName() {
-    return this.grnForm.get("supplierName") as FormControl;
+    return this.poForm.get("supplierName") as FormControl;
   }
 
   get discountRate() {
-    return this.grnForm.get("discountRate") as FormControl;
+    return this.poForm.get("discountRate") as FormControl;
   }
 
   get discountAmount() {
-    return this.grnForm.get("discountAmount") as FormControl;
+    return this.poForm.get("discountAmount") as FormControl;
   }
 
   get taxRate() {
-    return this.grnForm.get("taxRate") as FormControl;
+    return this.poForm.get("taxRate") as FormControl;
   }
 
   get taxAmount() {
-    return this.grnForm.get("taxAmount") as FormControl;
+    return this.poForm.get("taxAmount") as FormControl;
   }
 
   get grossAmount() {
-    return this.grnForm.get("grossAmount") as FormControl;
+    return this.poForm.get("grossAmount") as FormControl;
   }
 
   get netAmount() {
-    return this.grnForm.get("netAmount") as FormControl;
+    return this.poForm.get("netAmount") as FormControl;
   }
 
-  get goodsReceivedProducts(): FormArray {
-    return this.grnForm.controls["goodsReceivedProducts"] as FormArray;
+  get remarks() {
+    return this.poForm.get("remarks") as FormControl;
+  }
+
+  get purchaseOrderProducts(): FormArray {
+    return this.poForm.controls["purchaseOrderProducts"] as FormArray;
   }
   //#endregion
 }
