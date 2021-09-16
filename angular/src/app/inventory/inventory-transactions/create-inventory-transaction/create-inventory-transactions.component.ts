@@ -48,36 +48,42 @@ export class CreateInventoryTransactionsComponent
   ];
   dataSource = new MatTableDataSource<FormGroup>();
 
-  grnForm = this.fb.group({
-    goodsReceivedNumber: [null, Validators.required],
-    referenceNumber: [null, Validators.maxLength(10)],
-    supplierId: [null, Validators.required],
-    supplierCode: [null, Validators.required],
-    supplierName: [null, Validators.required],
-    discountRate: [
-      0,
-      Validators.compose([
-        Validators.required,
-        Validators.min(0),
-        Validators.max(100),
-      ]),
-    ],
-    discountAmount: [0, Validators.required],
-    taxRate: [
-      0,
-      Validators.compose([
-        Validators.required,
-        Validators.min(0),
-        Validators.max(100),
-      ]),
-    ],
-    taxAmount: [0, Validators.required],
-    grossAmount: [0, Validators.required],
-    netAmount: [0, Validators.required],
-    transactionStatus: [1],
-    remarks: [null],
-    goodsReceivedProducts: this.fb.array([]),
-  });
+  grnForm;
+
+  validationMessages = {
+    goodsReceivedNumber: {
+      required: "This field is required",
+      maxlength: "goods received number should contain maximum 15 characters",
+    },
+    referenceNumber: {
+      maxlength: "Reference number should contain maximum 10 characters",
+    },
+    remarks: {
+      maxlength: "Remark should contain maximum 100 characters",
+    },
+    supplierId: {
+      required: "This field is required",
+    },
+    taxRate: {
+      required: "This field is required",
+      min: "Tax rate should contain minimum 0",
+      max: "Tax rate should contain maximum 100",
+    },
+    discountRate: {
+      required: "This field is required",
+      min: "Discount rate should contain minimum 0",
+      max: "Discount rate should contain maximum 100",
+    },
+  };
+
+  formErrors = {
+    goodsReceivedNumber: "",
+    referenceNumber: "",
+    remarks: "",
+    supplierId: "",
+    taxRate: "",
+    discountRate: "",
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -93,6 +99,79 @@ export class CreateInventoryTransactionsComponent
     this.getAllWarehouses();
     this._documentService.getNextDocumentNumber(2).subscribe((result) => {
       this.goodsReceivedNumber.setValue(result);
+    });
+
+    this.grnForm = this.fb.group({
+      goodsReceivedNumber: [
+        null,
+        Validators.compose([Validators.required, Validators.maxLength(15)]),
+      ],
+      referenceNumber: [null, Validators.maxLength(10)],
+      supplierId: [null, Validators.required],
+      supplierCode: [null, Validators.required],
+      supplierName: [null, Validators.required],
+      discountRate: [
+        0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      discountAmount: [0, Validators.required],
+      taxRate: [
+        0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      taxAmount: [0, Validators.required],
+      grossAmount: [0, Validators.required],
+      netAmount: [0, Validators.required],
+      transactionStatus: [1],
+      remarks: [null, Validators.maxLength(100)],
+      goodsReceivedProducts: this.fb.array([]),
+    });
+
+    this.grnForm.valueChanges.subscribe((data) => {
+      this.logValidationErrors(this.grnForm);
+    });
+  }
+
+  logValidationErrors(group: FormGroup = this.grnForm): void {
+    // Loop through each control key in the FormGroup
+    Object.keys(group.controls).forEach((key: string) => {
+      // Get the control. The control can be a nested form group
+      const abstractControl = group.get(key);
+      // If the control is nested form group, recursively call
+      // this same method
+      if (abstractControl instanceof FormGroup) {
+        this.logValidationErrors(abstractControl);
+        // If the control is a FormControl
+      } else {
+        // Clear the existing validation errors
+        this.formErrors[key] = "";
+        if (
+          abstractControl &&
+          !abstractControl.valid &&
+          (abstractControl.touched || abstractControl.dirty)
+        ) {
+          // Get all the validation messages of the form control
+          // that has failed the validation
+          const messages = this.validationMessages[key];
+          // Find which validation has failed. For example required,
+          // minlength or maxlength. Store that error message in the
+          // formErrors object. The UI will bind to this object to
+          // display the validation errors
+          for (const errorKey in abstractControl.errors) {
+            if (errorKey) {
+              this.formErrors[key] += messages[errorKey] + " ";
+            }
+          }
+        }
+      }
     });
   }
 
