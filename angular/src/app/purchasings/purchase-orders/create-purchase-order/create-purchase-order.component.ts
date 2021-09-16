@@ -42,7 +42,9 @@ export class CreatePurchaseOrderComponent
     "actions",
   ];
   dataSource = new MatTableDataSource<FormGroup>();
+
   poForm;
+
   validationMessages = {
     purchaseOrderNumber: {
       required: "This field is required",
@@ -57,6 +59,16 @@ export class CreatePurchaseOrderComponent
     supplierId: {
       required: "This field is required",
     },
+    taxRate: {
+      required: "This field is required",
+      min: "Tax rate should contain minimum 0",
+      max: "Tax rate should contain maximum 100",
+    },
+    discountRate: {
+      required: "This field is required",
+      min: "Discount rate should contain minimum 0",
+      max: "Discount rate should contain maximum 100",
+    },
   };
 
   formErrors = {
@@ -64,6 +76,8 @@ export class CreatePurchaseOrderComponent
     referenceNumber: "",
     remarks: "",
     supplierId: "",
+    taxRate: "",
+    discountRate: "",
   };
 
   constructor(
@@ -155,10 +169,6 @@ export class CreatePurchaseOrderComponent
         }
       }
     });
-  }
-
-  onLoadDataClick(): void {
-    this.logValidationErrors(this.poForm);
   }
 
   getAllWarehouses() {
@@ -273,7 +283,6 @@ export class CreatePurchaseOrderComponent
       .get("lineTotal")
       .setValue(parseFloat((_lineTotal - _discountAmount).toFixed(2)));
     this.headerLevelCalculation();
-    console.log(item);
   }
 
   calculateLineLevelTotal() {
