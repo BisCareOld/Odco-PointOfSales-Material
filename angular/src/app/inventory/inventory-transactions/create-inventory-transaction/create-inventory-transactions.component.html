@@ -19,6 +19,9 @@
               formControlName="goodsReceivedNumber"
               id="goodsReceivedNumber"
             />
+            <mat-error *ngIf="formErrors.goodsReceivedNumber">{{
+              formErrors.goodsReceivedNumber
+            }}</mat-error>
           </mat-form-field>
         </div>
       </div>
@@ -28,6 +31,9 @@
           <mat-form-field class="full-width">
             <mat-label>{{ "Remarks" | localize }}</mat-label>
             <input matInput formControlName="remarks" id="remarks" />
+            <mat-error *ngIf="formErrors.remarks">{{
+              formErrors.remarks
+            }}</mat-error>
           </mat-form-field>
         </div>
 
@@ -39,6 +45,9 @@
               formControlName="referenceNumber"
               id="referenceNumber"
             />
+            <mat-error *ngIf="formErrors.referenceNumber">{{
+              formErrors.referenceNumber
+            }}</mat-error>
           </mat-form-field>
         </div>
       </div>
@@ -73,9 +82,14 @@
               <th mat-header-cell *matHeaderCellDef>
                 {{ "Warehouse" | localize }}
               </th>
-              <td mat-cell *matCellDef="let element; let i = index">
+              <td
+                mat-cell
+                *matCellDef="let element; let i = index"
+                [formGroupName]="i"
+              >
                 <select
                   matNativeControl
+                  formControlName="warehouseId"
                   id="warehouseId{{ i }}"
                   (change)="selectWarehouse($event, element)"
                 >
@@ -84,6 +98,11 @@
                     {{ w.name }}
                   </option>
                 </select>
+                <span *ngIf="element.get('warehouseId').touched">
+                  <mat-error *ngIf="element.get('warehouseId').errors?.required"
+                    >Warehouse is required.</mat-error
+                  >
+                </span>
               </td>
             </ng-container>
 
@@ -105,6 +124,14 @@
                   id="quantity{{ i }}"
                   (change)="updateLineLevelCalculations(element)"
                 />
+                <span *ngIf="element.get('quantity').touched">
+                  <mat-error *ngIf="element.get('quantity').errors?.required"
+                    >Quantity is required.</mat-error
+                  >
+                  <mat-error *ngIf="element.get('quantity').errors?.min"
+                    >Should be minimum 1.</mat-error
+                  >
+                </span>
               </td>
             </ng-container>
 
@@ -126,6 +153,15 @@
                   id="freeQuantity{{ i }}"
                   (change)="updateLineLevelCalculations(element)"
                 />
+                <span *ngIf="element.get('freeQuantity').touched">
+                  <mat-error
+                    *ngIf="element.get('freeQuantity').errors?.required"
+                    >Free quantity is required.</mat-error
+                  >
+                  <mat-error *ngIf="element.get('freeQuantity').errors?.min"
+                    >Should be minimum 0.</mat-error
+                  >
+                </span>
               </td>
             </ng-container>
 
@@ -147,6 +183,14 @@
                   id="costPrice{{ i }}"
                   (change)="updateLineLevelCalculations(element)"
                 />
+                <span *ngIf="element.get('costPrice').touched">
+                  <mat-error *ngIf="element.get('costPrice').errors?.required"
+                    >Cost price is required.</mat-error
+                  >
+                  <mat-error *ngIf="element.get('costPrice').errors?.min"
+                    >Should be minimum 1.</mat-error
+                  >
+                </span>
               </td>
             </ng-container>
 
@@ -168,6 +212,15 @@
                   id="sellingPrice{{ i }}"
                   (change)="updateLineLevelCalculations(element)"
                 />
+                <span *ngIf="element.get('sellingPrice').touched">
+                  <mat-error
+                    *ngIf="element.get('sellingPrice').errors?.required"
+                    >Selling price is required.</mat-error
+                  >
+                  <mat-error *ngIf="element.get('sellingPrice').errors?.min"
+                    >Should be minimum 1.</mat-error
+                  >
+                </span>
               </td>
             </ng-container>
 
@@ -189,6 +242,16 @@
                   id="maximumRetailPrice{{ i }}"
                   (change)="updateLineLevelCalculations(element)"
                 />
+                <span *ngIf="element.get('maximumRetailPrice').touched">
+                  <mat-error
+                    *ngIf="element.get('maximumRetailPrice').errors?.required"
+                    >MRP is required.</mat-error
+                  >
+                  <mat-error
+                    *ngIf="element.get('maximumRetailPrice').errors?.min"
+                    >Should be minimum 1.</mat-error
+                  >
+                </span>
               </td>
             </ng-container>
 
@@ -210,6 +273,18 @@
                   id="discountRate{{ i }}"
                   (change)="updateLineLevelCalculations(element)"
                 />
+                <span *ngIf="element.get('discountRate').touched">
+                  <mat-error
+                    *ngIf="element.get('discountRate').errors?.required"
+                    >Discount rate is required.</mat-error
+                  >
+                  <mat-error *ngIf="element.get('discountRate').errors?.min"
+                    >Should be minimum 0.</mat-error
+                  >
+                  <mat-error *ngIf="element.get('discountRate').errors?.max"
+                    >Should be maximum 100.</mat-error
+                  >
+                </span>
               </td>
             </ng-container>
 
@@ -279,6 +354,9 @@
             id="taxRate"
             (change)="headerLevelCalculation()"
           />
+          <mat-error *ngIf="formErrors.taxRate">{{
+            formErrors.taxRate
+          }}</mat-error>
         </div>
 
         <div class="child">
@@ -293,6 +371,9 @@
             id="discountRate"
             (change)="headerLevelCalculation()"
           />
+          <mat-error *ngIf="formErrors.discountRate">{{
+            formErrors.discountRate
+          }}</mat-error>
         </div>
 
         <div class="child">
