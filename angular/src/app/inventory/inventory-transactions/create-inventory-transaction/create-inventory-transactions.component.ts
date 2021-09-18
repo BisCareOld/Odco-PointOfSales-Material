@@ -36,6 +36,8 @@ export class CreateInventoryTransactionsComponent
   displayedColumns: string[] = [
     "product-name",
     "warehouse",
+    "batch-no",
+    "expiry-date",
     "quantity",
     "free-quantity",
     "cost-price",
@@ -86,8 +88,8 @@ export class CreateInventoryTransactionsComponent
   };
 
   constructor(
-    private fb: FormBuilder,
     injector: Injector,
+    private fb: FormBuilder,
     private _productionService: ProductionServiceProxy,
     private _inventoryService: InventoryServiceProxy,
     private _documentService: DocumentSequenceNumberManagerImplementationServiceProxy
@@ -414,4 +416,7 @@ export class CreateInventoryTransactionsComponent
     return this.grnForm.controls["goodsReceivedProducts"] as FormArray;
   }
   //#endregion
+}
+function IsValidDate(): any {
+  throw new Error("Function not implemented.");
 }

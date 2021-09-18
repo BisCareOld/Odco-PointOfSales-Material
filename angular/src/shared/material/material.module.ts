@@ -18,6 +18,9 @@ import { MatGridListModule } from "@angular/material/grid-list";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatSelectModule } from "@angular/material/select";
 import { MatRadioModule } from "@angular/material/radio";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatNativeDateModule } from "@angular/material/core";
+import { MatMomentDateModule } from "@angular/material-moment-adapter";
 
 const AngularMaterialComponents = [
   MatFormFieldModule,
@@ -38,6 +41,9 @@ const AngularMaterialComponents = [
   MatAutocompleteModule,
   MatSelectModule,
   MatRadioModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatMomentDateModule,
 ];
 
 @NgModule({
