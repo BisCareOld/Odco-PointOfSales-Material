@@ -82,6 +82,12 @@ import { CreatePurchaseOrderComponent } from "./purchasings/purchase-orders/crea
             canActivate: [AppRouteGuard],
           },
           {
+            path: "inventory-transactions",
+            component: InventoryTransactionsComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
             path: "create-inventory-transactions",
             component: CreateInventoryTransactionsComponent,
             data: { permission: "Pages.Tenants" },

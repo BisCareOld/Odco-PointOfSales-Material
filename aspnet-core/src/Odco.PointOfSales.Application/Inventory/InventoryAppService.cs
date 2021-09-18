@@ -1,5 +1,10 @@
 ﻿using Abp.Application.Services;
+using Abp.Application.Services.Dto;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.Linq;
+using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.Common.SequenceNumbers;
 using Odco.PointOfSales.Application.Inventory.GoodsReceiveNotes;
@@ -15,6 +20,7 @@ namespace Odco.PointOfSales.Application.Inventory
 {
     public class InventoryAppService : ApplicationService, IInventoryAppService
     {
+        private readonly IAsyncQueryableExecuter _asyncQueryableExecuter;
         private readonly IRepository<GoodsReceived, Guid> _goodsReceivedRepository;
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
         private readonly IDocumentSequenceNumberManager _documentSequenceNumberManager;
@@ -27,6 +33,7 @@ namespace Odco.PointOfSales.Application.Inventory
             IRepository<Product, Guid> productRepository,
             IRepository<Warehouse, Guid> warehouseRepository)
         {
+            _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _goodsReceivedRepository = goodsReceivedRepository;
             _stockBalanceRepository = stockBalanceRepository;
             _documentSequenceNumberManager = documentSequenceNumberManager;
@@ -98,6 +105,31 @@ namespace Odco.PointOfSales.Application.Inventory
                 throw ex;
             }
         }
+
+        public async Task<PagedResultDto<GoodsReceivedDto>> GetAllGoodsReceivedProductsAsync(PagedGRNResultRequestDto input)
+        {
+            try
+            {
+                var query = _goodsReceivedRepository.GetAll()
+                        .WhereIf(!input.Keyword.IsNullOrWhiteSpace(),
+                        x => x.GoodsReceivedNumber.Contains(input.Keyword));
+
+                var result = _asyncQueryableExecuter.ToListAsync
+                    (
+                        query.OrderByDescending(o => o.CreationTime)
+                             .PageBy(input.SkipCount, input.MaxResultCount)
+                    );
+
+                var count = await _asyncQueryableExecuter.CountAsync(query);
+
+                var resultDto = ObjectMapper.Map<List<GoodsReceivedDto>>(result.Result);
+                return new PagedResultDto<GoodsReceivedDto>(count, resultDto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
         #region Stock Balance
@@ -155,6 +187,7 @@ namespace Odco.PointOfSales.Application.Inventory
         }
         #endregion
 
+        #region Private Methods
         /// <summary>
         /// Company summary + Warehouse summaries + GRN summaries
         /// </summary>
@@ -168,5 +201,7 @@ namespace Odco.PointOfSales.Application.Inventory
                 .Where(sb => sb.ProductId == productId && (!sb.WarehouseId.HasValue || sb.WarehouseId == warehouseId))
                 .ToListAsync();
         }
+        #endregion
+
     }
 }
