@@ -5,6 +5,7 @@ using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
 using Odco.PointOfSales.Application.Productions.Warehouses;
+using Odco.PointOfSales.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace Odco.PointOfSales.Application.Productions
         Task<PagedResultDto<ProductDto>> GetAllProductsAsync(PagedProductResultRequestDto input);
         Task<ProductDto> UpdateProductAsync(UpdateProductDto input);
         Task<List<CommonKeyValuePairDto>> GetPartialProductsAsync(string keyword);
+        Task<List<ProductSearchResultDto>> GetPartialProductsByTypesAsync(ProductSearchType type, string keyword);
         #endregion
 
         #region Warehouse
