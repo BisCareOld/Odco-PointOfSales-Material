@@ -1,0 +1,35 @@
+.parent {
+  margin: 10px;
+  display: grid;
+  height: 95%;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 10% 70% 20%;
+  grid-row-gap: 10px;
+}
+.child:nth-child(odd) {
+  background-color: #018383;
+  color: white;
+  padding: 10px;
+  border: 1px solid white;
+  font-size: 20px;
+}
+
+.child:nth-child(even) {
+  background-color: #02a8a8;
+  color: white;
+  padding: 10px;
+  border: 1px solid white;
+  font-size: 20px;
+}
+
+.product-search {
+  grid-column: 1/3;
+}
+
+// .product-display {
+// }
+
+.sales-options {
+  grid-column: 2/3;
+  grid-row: 2/4;
+}

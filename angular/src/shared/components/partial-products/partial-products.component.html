@@ -19,6 +19,7 @@
   >
     <mat-icon>close</mat-icon>
   </button>
+  <mat-icon *ngIf="!searchKeyword" matSuffix>search</mat-icon>
 
   <mat-autocomplete #auto="matAutocomplete">
     <mat-option
