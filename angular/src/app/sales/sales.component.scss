@@ -6,6 +6,7 @@
   grid-template-rows: 10% 70% 20%;
   grid-row-gap: 10px;
 }
+
 .child:nth-child(odd) {
   //background-color: #018383;
   //color: white;
@@ -28,6 +29,8 @@
 
   .product-search {
     width: 100%;
+    font-size: 14px;
+    margin-left: 10px;
   }
 }
 
@@ -37,4 +40,9 @@
 .sales-options {
   grid-column: 2/3;
   grid-row: 2/4;
+}
+
+.active {
+  background-color: #3f51b5;
+  color: #fff;
 }

@@ -1,0 +1,40 @@
+<mat-form-field>
+  <input
+    type="text"
+    aria-label="Product"
+    matInput
+    [(ngModel)]="searchKeyword"
+    (keyup)="changeKeyword()"
+    [matAutocomplete]="auto"
+    [placeholder]="
+      type == 1
+        ? 'Search product by barcode'
+        : type == 2
+        ? 'Search product by code '
+        : type == 3
+        ? 'Search product by name'
+        : ''
+    "
+  />
+
+  <button
+    *ngIf="searchKeyword"
+    matSuffix
+    mat-icon-button
+    aria-label="Clear"
+    (click)="clearSelectedProduct()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+  <mat-icon *ngIf="!searchKeyword" matSuffix>search</mat-icon>
+
+  <mat-autocomplete #auto="matAutocomplete">
+    <mat-option
+      (onSelectionChange)="selectProduct(option)"
+      *ngFor="let option of filteredOptions | async"
+      [value]="option.name"
+    >
+      {{ option.code }} - {{ option.name }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

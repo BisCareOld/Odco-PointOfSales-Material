@@ -1,9 +1,31 @@
 <div class="parent">
   <div class="child product-search-panel">
-    <button mat-icon-button><mat-icon>qr_code</mat-icon></button>
-    <button mat-icon-button><mat-icon>numbers</mat-icon></button>
-    <button mat-icon-button><mat-icon>local_offer</mat-icon></button>
-    <div class="box product-search"></div>
+    <button
+      mat-icon-button
+      (click)="selectedSearchProductType = 1"
+      [class]="selectedSearchProductType == 1 ? 'active' : ''"
+    >
+      <mat-icon>qr_code</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="selectedSearchProductType = 2"
+      [class]="selectedSearchProductType == 2 ? 'active' : ''"
+    >
+      <mat-icon>numbers</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="selectedSearchProductType = 3"
+      [class]="selectedSearchProductType == 3 ? 'active' : ''"
+    >
+      <mat-icon>local_offer</mat-icon>
+    </button>
+    <div class="box product-search">
+      <partial-products-by-type
+        [type]="selectedSearchProductType"
+      ></partial-products-by-type>
+    </div>
   </div>
   <div class="child product-display">2</div>
   <div class="child sales-options">3</div>
