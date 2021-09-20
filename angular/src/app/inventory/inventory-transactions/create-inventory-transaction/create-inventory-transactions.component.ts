@@ -5,14 +5,11 @@ import {
   ProductionServiceProxy,
   CommonKeyValuePairDto,
   DocumentSequenceNumberManagerImplementationServiceProxy,
-  CreateGoodsReceivedDto,
-  CreateGoodsReceivedProductDto,
 } from "@shared/service-proxies/service-proxies";
 import { forEach as _forEach, map as _map } from "lodash-es";
 import { appModuleAnimation } from "@shared/animations/routerTransition";
 import { MatTableDataSource } from "@angular/material/table";
 import {
-  AbstractControl,
   FormArray,
   FormBuilder,
   FormControl,
@@ -416,7 +413,4 @@ export class CreateInventoryTransactionsComponent
     return this.grnForm.controls["goodsReceivedProducts"] as FormArray;
   }
   //#endregion
-}
-function IsValidDate(): any {
-  throw new Error("Function not implemented.");
 }
