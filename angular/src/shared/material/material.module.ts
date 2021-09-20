@@ -21,6 +21,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
+import { MatBadgeModule } from "@angular/material/badge";
 
 const AngularMaterialComponents = [
   MatFormFieldModule,
@@ -44,6 +45,7 @@ const AngularMaterialComponents = [
   MatDatepickerModule,
   MatNativeDateModule,
   MatMomentDateModule,
+  MatBadgeModule,
 ];
 
 @NgModule({

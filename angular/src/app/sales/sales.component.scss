@@ -38,33 +38,23 @@
   color: #fff;
 }
 
-// .common-functions {
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: space-around;
-//   flex-wrap: wrap;
-
-//   .option {
-//     border: 1px solid grey;
-//     padding: 35px;
-//   }
-// }
-
 .common-functions {
   display: grid;
+  height: 50%;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 50%;
 
-  .option {
+  button {
     border: 1px solid grey;
-    padding: 35px;
-    background-color: #424242;
-    color: rgb(235, 231, 231);
-    font-size: 14px;
+    text-align: center;
+    border-radius: 0;
+    line-height: 5rem;
 
     mat-icon {
-      font-size: 50px;
-      text-align: center;
-      padding-right: 25px;
+      display: grid;
+      margin: auto;
+      width: 100%;
+      font-size: 53px;
     }
   }
 }
@@ -76,7 +66,7 @@
   gap: 5px;
 
   button {
-    border: 1px solid rgb(214, 180, 180);
+    border: 1px solid grey;
     text-align: center;
     border-radius: 0;
 
@@ -86,6 +76,7 @@
       margin: auto;
       width: 50%;
       font-size: 35px;
+      font-weight: bold;
     }
   }
 }
@@ -98,4 +89,10 @@
 .void-button {
   background-color: rgb(238, 43, 43);
   color: rgb(255, 255, 255);
+}
+
+.remove-product-button {
+  border: 0;
+  color: #fff;
+  background-color: rgb(238, 43, 43);
 }
