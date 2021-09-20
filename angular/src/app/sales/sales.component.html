@@ -1,4 +1,5 @@
 <div class="parent">
+  <!-- 1. PRODUCT SEARCH PANEL -->
   <div class="child product-search-panel">
     <button
       mat-icon-button
@@ -27,7 +28,44 @@
       ></partial-products-by-type>
     </div>
   </div>
+
+  <!-- 2. SELECTED PRODUCT TABLE -->
   <div class="child product-display">2</div>
-  <div class="child sales-options">3</div>
-  <div class="child">4</div>
+
+  <!-- 3. SALES OPTIONS -->
+  <div class="child sales-options">
+    <div class="common-functions">
+      <button class="option"><mat-icon>close</mat-icon>Delete</button>
+      <button class="option"><mat-icon>search</mat-icon>Search</button>
+      <button class="option">
+        <mat-icon>add_shopping_cart</mat-icon>Quantity
+      </button>
+      <button class="option"><mat-icon>add</mat-icon>New Sales</button>
+    </div>
+
+    <div class="below-functions">
+      <button mat-button><mat-icon>local_offer</mat-icon>Discount</button>
+      <button mat-button><mat-icon>comment</mat-icon>Comment</button>
+      <button mat-button><mat-icon>move_to_inbox</mat-icon>Cash drawer</button>
+      <button mat-button><span class="shortcut-key">F9</span> Save Sale</button>
+      <button mat-button><mat-icon>redo</mat-icon>Refund</button>
+      <button mat-button class="payment-button">
+        <span class="shortcut-key">F10</span>Payment
+      </button>
+      <button mat-button><mat-icon>lock</mat-icon>Lock</button>
+      <button mat-button><mat-icon>sync_alt</mat-icon>Transfer</button>
+      <button mat-button class="void-button">
+        <mat-icon>delete</mat-icon>Void order
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. CALCULATION PANEL -->
+  <div class="child">
+    <!-- <button mat-button><mat-icon>mic</mat-icon> Start Recording</button>
+    <br />
+    <button mat-raised-button color="accent">
+      <mat-icon>mic</mat-icon> Start Recording
+    </button> -->
+  </div>
 </div>
