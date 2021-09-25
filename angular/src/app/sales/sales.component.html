@@ -254,5 +254,26 @@
   </div>
 
   <!-- 4. CALCULATION PANEL -->
-  <div class="child"></div>
+  <div class="child">
+    <div class="calculation-row">
+      <div class="calculation-column">Gross Amount</div>
+      <div class="calculation-column calculation-value">
+        LKR. {{ grossAmount.value }}
+      </div>
+    </div>
+    <div class="calculation-row">
+      <div class="calculation-column">Discount</div>
+      <div class="calculation-column">
+        0%
+        <span class="calculation-value">(LKR. {{ discountAmount.value }})</span>
+      </div>
+    </div>
+    <hr style="border: 1px dashed" />
+    <div class="calculation-row">
+      <div class="calculation-column">Net Amount</div>
+      <div class="calculation-column calculation-value">
+        LKR. {{ netAmount.value }}
+      </div>
+    </div>
+  </div>
 </div>

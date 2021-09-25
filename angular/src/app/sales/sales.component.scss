@@ -95,3 +95,21 @@
   color: #fff;
   background-color: rgb(238, 43, 43);
 }
+
+.calculation-column {
+  float: left;
+  width: 50%;
+  text-align: right;
+  font-size: 14px;
+}
+
+.calculation-value {
+  font-size: 18px;
+}
+
+/* Clear floats after the columns */
+.calculation-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
