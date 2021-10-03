@@ -201,6 +201,7 @@
       </ng-container>
     </div>
   </form>
+
   <!-- 3. SALES OPTIONS -->
   <div class="child sales-options">
     <div class="common-functions">
@@ -240,7 +241,9 @@
       </button>
       <button mat-button><mat-icon>redo</mat-icon>Refund</button>
       <button mat-button class="payment-button">
-        <span class="shortcut-key">F10</span>Payment
+        <span class="shortcut-key">
+          <a [routerLink]="['/app/payment-component']">F10</a> </span
+        >Payment
       </button>
       <button mat-button><mat-icon>lock</mat-icon>Lock</button>
       <button mat-button>

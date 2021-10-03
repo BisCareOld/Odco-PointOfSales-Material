@@ -1,0 +1,59 @@
+<div class="parent-grid">
+  <!-- 1. HEADING: ITEM -->
+  <div class="child-grid">Items</div>
+
+  <!-- 2. HEADING: ACTIONS -->
+  <div class="child-grid">Actions</div>
+
+  <!-- 3. ITEM LIST -->
+  <div class="child-grid">
+    <table>
+      <tr>
+        <td>Anchor</td>
+        <!-- This cell will take up space on
+                two rows -->
+        <td rowspan="2">540.00</td>
+      </tr>
+      <tr>
+        <td>2 x 280.00</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 4. PAYMENT METHODS -->
+  <div class="child-grid">
+    <div>Cancel</div>
+    <div>Customer</div>
+
+    <div class="payment-grid">
+      <div class="payment-child-grid payment-type">
+        Payment Type
+        <div><button mat-button>Cash</button></div>
+        <div><button mat-button>Credit Card</button></div>
+        <div><button mat-button>Debit Card</button></div>
+        <div><button mat-button>Cheque</button></div>
+        <div><button mat-button>Voucher</button></div>
+        <div><button mat-button>Gift Card</button></div>
+        <div>
+          <button mat-button>
+            <mat-icon matSuffix>add</mat-icon> Split Payments
+          </button>
+        </div>
+      </div>
+
+      <div class="payment-child-grid">
+        Payment
+        <div style="margin-top: 15px">
+          Total: <span style="float: right">580.75</span>
+        </div>
+        <div style="margin-top: 15px">
+          <mat-form-field class="example-full-width">
+            <mat-label>Paid Amount</mat-label>
+            <input type="nuber" matInput style="text-align: right" />
+            <mat-icon matSuffix>mode_edit</mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

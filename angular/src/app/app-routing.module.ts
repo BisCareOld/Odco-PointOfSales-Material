@@ -16,6 +16,7 @@ import { InventoryTransactionsComponent } from "./inventory/inventory-transactio
 import { CreateInventoryTransactionsComponent } from "./inventory/inventory-transactions/create-inventory-transaction/create-inventory-transactions.component";
 import { CreatePurchaseOrderComponent } from "./purchasings/purchase-orders/create-purchase-order/create-purchase-order.component";
 import { SalesComponent } from "./sales/sales.component";
+import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.component";
 
 @NgModule({
   imports: [
@@ -97,6 +98,12 @@ import { SalesComponent } from "./sales/sales.component";
           {
             path: "sales",
             component: SalesComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "payment-component",
+            component: PaymentPanelComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
