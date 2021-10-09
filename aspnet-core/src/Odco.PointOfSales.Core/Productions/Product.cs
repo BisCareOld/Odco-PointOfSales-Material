@@ -60,6 +60,12 @@ namespace Odco.PointOfSales.Core.Productions
         [Required]
         public decimal ReOrderQuantity { get; set; }
 
+        public decimal CostPrice { get; set; }
+        
+        public decimal RetailPrice { get; set; }
+
+        public decimal WholeSalePrice { get; set; }
+
         public bool IsActive { get; set; }
 
         public virtual ICollection<SupplierProduct> SupplierProducts { get; set; }

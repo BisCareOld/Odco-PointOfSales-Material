@@ -2659,6 +2659,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -2702,6 +2705,12 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ReOrderQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("RetailPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("WholeSalePrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -2749,6 +2758,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")

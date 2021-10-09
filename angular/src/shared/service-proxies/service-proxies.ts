@@ -5057,6 +5057,9 @@ export class CreateProductDto implements ICreateProductDto {
     reOrderLevel: number;
     discountRate: number | undefined;
     reOrderQuantity: number;
+    costPrice: number;
+    retailPrice: number;
+    wholeSalePrice: number;
     isActive: boolean;
     supplierIds: string[] | undefined;
 
@@ -5081,6 +5084,9 @@ export class CreateProductDto implements ICreateProductDto {
             this.reOrderLevel = _data["reOrderLevel"];
             this.discountRate = _data["discountRate"];
             this.reOrderQuantity = _data["reOrderQuantity"];
+            this.costPrice = _data["costPrice"];
+            this.retailPrice = _data["retailPrice"];
+            this.wholeSalePrice = _data["wholeSalePrice"];
             this.isActive = _data["isActive"];
             if (Array.isArray(_data["supplierIds"])) {
                 this.supplierIds = [] as any;
@@ -5109,6 +5115,9 @@ export class CreateProductDto implements ICreateProductDto {
         data["reOrderLevel"] = this.reOrderLevel;
         data["discountRate"] = this.discountRate;
         data["reOrderQuantity"] = this.reOrderQuantity;
+        data["costPrice"] = this.costPrice;
+        data["retailPrice"] = this.retailPrice;
+        data["wholeSalePrice"] = this.wholeSalePrice;
         data["isActive"] = this.isActive;
         if (Array.isArray(this.supplierIds)) {
             data["supplierIds"] = [];
@@ -5137,6 +5146,9 @@ export interface ICreateProductDto {
     reOrderLevel: number;
     discountRate: number | undefined;
     reOrderQuantity: number;
+    costPrice: number;
+    retailPrice: number;
+    wholeSalePrice: number;
     isActive: boolean;
     supplierIds: string[] | undefined;
 }
@@ -5152,6 +5164,9 @@ export class ProductDto implements IProductDto {
     reOrderLevel: number;
     discountRate: number | undefined;
     reOrderQuantity: number;
+    costPrice: number;
+    retailPrice: number;
+    wholeSalePrice: number;
     isActive: boolean;
     id: string;
 
@@ -5176,6 +5191,9 @@ export class ProductDto implements IProductDto {
             this.reOrderLevel = _data["reOrderLevel"];
             this.discountRate = _data["discountRate"];
             this.reOrderQuantity = _data["reOrderQuantity"];
+            this.costPrice = _data["costPrice"];
+            this.retailPrice = _data["retailPrice"];
+            this.wholeSalePrice = _data["wholeSalePrice"];
             this.isActive = _data["isActive"];
             this.id = _data["id"];
         }
@@ -5200,6 +5218,9 @@ export class ProductDto implements IProductDto {
         data["reOrderLevel"] = this.reOrderLevel;
         data["discountRate"] = this.discountRate;
         data["reOrderQuantity"] = this.reOrderQuantity;
+        data["costPrice"] = this.costPrice;
+        data["retailPrice"] = this.retailPrice;
+        data["wholeSalePrice"] = this.wholeSalePrice;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
         return data; 
@@ -5224,6 +5245,9 @@ export interface IProductDto {
     reOrderLevel: number;
     discountRate: number | undefined;
     reOrderQuantity: number;
+    costPrice: number;
+    retailPrice: number;
+    wholeSalePrice: number;
     isActive: boolean;
     id: string;
 }
@@ -5294,6 +5318,9 @@ export class UpdateProductDto implements IUpdateProductDto {
     reOrderLevel: number;
     discountRate: number | undefined;
     reOrderQuantity: number;
+    costPrice: number;
+    retailPrice: number;
+    wholeSalePrice: number;
     isActive: boolean;
     supplierIds: string[] | undefined;
     id: string;
@@ -5319,6 +5346,9 @@ export class UpdateProductDto implements IUpdateProductDto {
             this.reOrderLevel = _data["reOrderLevel"];
             this.discountRate = _data["discountRate"];
             this.reOrderQuantity = _data["reOrderQuantity"];
+            this.costPrice = _data["costPrice"];
+            this.retailPrice = _data["retailPrice"];
+            this.wholeSalePrice = _data["wholeSalePrice"];
             this.isActive = _data["isActive"];
             if (Array.isArray(_data["supplierIds"])) {
                 this.supplierIds = [] as any;
@@ -5348,6 +5378,9 @@ export class UpdateProductDto implements IUpdateProductDto {
         data["reOrderLevel"] = this.reOrderLevel;
         data["discountRate"] = this.discountRate;
         data["reOrderQuantity"] = this.reOrderQuantity;
+        data["costPrice"] = this.costPrice;
+        data["retailPrice"] = this.retailPrice;
+        data["wholeSalePrice"] = this.wholeSalePrice;
         data["isActive"] = this.isActive;
         if (Array.isArray(this.supplierIds)) {
             data["supplierIds"] = [];
@@ -5377,6 +5410,9 @@ export interface IUpdateProductDto {
     reOrderLevel: number;
     discountRate: number | undefined;
     reOrderQuantity: number;
+    costPrice: number;
+    retailPrice: number;
+    wholeSalePrice: number;
     isActive: boolean;
     supplierIds: string[] | undefined;
     id: string;
@@ -5505,6 +5541,7 @@ export class CreateWarehouseDto implements ICreateWarehouseDto {
     contactPersonName: string | undefined;
     contactNumber: string | undefined;
     isActive: boolean;
+    isDefault: boolean;
 
     constructor(data?: ICreateWarehouseDto) {
         if (data) {
@@ -5523,6 +5560,7 @@ export class CreateWarehouseDto implements ICreateWarehouseDto {
             this.contactPersonName = _data["contactPersonName"];
             this.contactNumber = _data["contactNumber"];
             this.isActive = _data["isActive"];
+            this.isDefault = _data["isDefault"];
         }
     }
 
@@ -5541,6 +5579,7 @@ export class CreateWarehouseDto implements ICreateWarehouseDto {
         data["contactPersonName"] = this.contactPersonName;
         data["contactNumber"] = this.contactNumber;
         data["isActive"] = this.isActive;
+        data["isDefault"] = this.isDefault;
         return data; 
     }
 
@@ -5559,6 +5598,7 @@ export interface ICreateWarehouseDto {
     contactPersonName: string | undefined;
     contactNumber: string | undefined;
     isActive: boolean;
+    isDefault: boolean;
 }
 
 export class WarehouseDto implements IWarehouseDto {
@@ -5568,6 +5608,7 @@ export class WarehouseDto implements IWarehouseDto {
     contactPersonName: string | undefined;
     contactNumber: string | undefined;
     isActive: boolean;
+    isDefault: boolean;
     id: string;
 
     constructor(data?: IWarehouseDto) {
@@ -5587,6 +5628,7 @@ export class WarehouseDto implements IWarehouseDto {
             this.contactPersonName = _data["contactPersonName"];
             this.contactNumber = _data["contactNumber"];
             this.isActive = _data["isActive"];
+            this.isDefault = _data["isDefault"];
             this.id = _data["id"];
         }
     }
@@ -5606,6 +5648,7 @@ export class WarehouseDto implements IWarehouseDto {
         data["contactPersonName"] = this.contactPersonName;
         data["contactNumber"] = this.contactNumber;
         data["isActive"] = this.isActive;
+        data["isDefault"] = this.isDefault;
         data["id"] = this.id;
         return data; 
     }
@@ -5625,6 +5668,7 @@ export interface IWarehouseDto {
     contactPersonName: string | undefined;
     contactNumber: string | undefined;
     isActive: boolean;
+    isDefault: boolean;
     id: string;
 }
 
@@ -5690,6 +5734,7 @@ export class UpdateWarehouseDto implements IUpdateWarehouseDto {
     contactPersonName: string | undefined;
     contactNumber: string | undefined;
     isActive: boolean;
+    isDefault: boolean;
     id: string;
 
     constructor(data?: IUpdateWarehouseDto) {
@@ -5709,6 +5754,7 @@ export class UpdateWarehouseDto implements IUpdateWarehouseDto {
             this.contactPersonName = _data["contactPersonName"];
             this.contactNumber = _data["contactNumber"];
             this.isActive = _data["isActive"];
+            this.isDefault = _data["isDefault"];
             this.id = _data["id"];
         }
     }
@@ -5728,6 +5774,7 @@ export class UpdateWarehouseDto implements IUpdateWarehouseDto {
         data["contactPersonName"] = this.contactPersonName;
         data["contactNumber"] = this.contactNumber;
         data["isActive"] = this.isActive;
+        data["isDefault"] = this.isDefault;
         data["id"] = this.id;
         return data; 
     }
@@ -5747,6 +5794,7 @@ export interface IUpdateWarehouseDto {
     contactPersonName: string | undefined;
     contactNumber: string | undefined;
     isActive: boolean;
+    isDefault: boolean;
     id: string;
 }
 

@@ -2,7 +2,6 @@
 using Abp.AutoMapper;
 using Odco.PointOfSales.Core.Productions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Odco.PointOfSales.Application.Productions.Products
@@ -38,13 +37,12 @@ namespace Odco.PointOfSales.Application.Productions.Products
         [Required]
         public decimal ReOrderQuantity { get; set; }
 
+        public decimal CostPrice { get; set; }
+
+        public decimal RetailPrice { get; set; }
+
+        public decimal WholeSalePrice { get; set; }
+
         public bool IsActive { get; set; }
-
-        //public ICollection<SupplierDto> Suppliers { get; set; }
-
-        //public ProductDto()
-        //{
-        //    Suppliers = new HashSet<SupplierDto>();
-        //}
     }
 }

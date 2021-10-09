@@ -25,5 +25,7 @@ namespace Odco.PointOfSales.Application.Productions.Warehouses
         public string ContactNumber { get; set; }
 
         public bool IsActive { get; set; }
+
+        public bool IsDefault { get; set; }
     }
 }

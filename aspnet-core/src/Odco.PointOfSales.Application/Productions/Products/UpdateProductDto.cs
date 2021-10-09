@@ -37,6 +37,12 @@ namespace Odco.PointOfSales.Application.Productions.Products
         [Required]
         public decimal ReOrderQuantity { get; set; }
 
+        public decimal CostPrice { get; set; }
+
+        public decimal RetailPrice { get; set; }
+
+        public decimal WholeSalePrice { get; set; }
+
         public bool IsActive { get; set; }
 
         public Guid[] SupplierIds { get; set; }

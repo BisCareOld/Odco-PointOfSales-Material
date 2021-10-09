@@ -10,8 +10,8 @@ using Odco.PointOfSales.EntityFrameworkCore;
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    [Migration("20210905021024_AddWarehouseModel")]
-    partial class AddWarehouseModel
+    [Migration("20211009010544_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1832,40 +1832,6 @@ namespace Odco.PointOfSales.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApprovalApprovalEmployeeCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("ApprovalApprovalEmployeeName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("ApprovalEmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BillingAddressCity")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)");
-
-                    b.Property<Guid>("BillingAddressId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BillingAddressLine1")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("BillingAddressLine2")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("BillingAddressPostalCode")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -1887,6 +1853,9 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<DateTime?>("ExpectedDeliveryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("GrossAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1898,17 +1867,6 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<decimal>("NetAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("OnbehalfOfEmployeeCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<Guid?>("OnbehalfOfEmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("OnbehalfOfEmployeeName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PurchaseOrderNumber")
                         .IsRequired()
@@ -1945,9 +1903,6 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<decimal>("TaxRate")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Purchasing.PurchaseOrder");
@@ -1959,14 +1914,8 @@ namespace Odco.PointOfSales.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CanceledEmployeeCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("CanceledEmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CanceledEmployeeName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1984,6 +1933,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("DiscountRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("FreeQuantity")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsDeleted")
@@ -2022,8 +1974,8 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("Remarks")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SequenceNo")
                         .HasColumnType("int");
@@ -2031,8 +1983,16 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<byte>("Status")
                         .HasColumnType("tinyint");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("WarehouseCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WarehouseName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -2469,6 +2429,19 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<int>("SequenceNumber")
                         .HasColumnType("int");
 
+                    b.Property<string>("WarehouseCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WarehouseName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GoodsRecievedId");
@@ -2519,8 +2492,8 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("GoodsRecievedNumber")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -2554,6 +2527,10 @@ namespace Odco.PointOfSales.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("PurchaseOrderNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
                     b.Property<decimal>("ReceivedQuantity")
                         .HasColumnType("decimal(18,2)");
 
@@ -2566,6 +2543,17 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<int>("SequenceNumber")
                         .HasColumnType("int");
+
+                    b.Property<string>("WarehouseCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<Guid?>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WarehouseName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -2673,6 +2661,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -2718,6 +2709,12 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<decimal>("ReOrderQuantity")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("RetailPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("WholeSalePrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
@@ -2732,6 +2729,11 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("ContactNumber")
                         .HasMaxLength(15)
@@ -2758,6 +2760,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
