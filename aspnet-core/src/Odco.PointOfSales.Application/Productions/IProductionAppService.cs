@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
@@ -47,6 +48,10 @@ namespace Odco.PointOfSales.Application.Productions
         Task<BrandDto> GetBrandAsync(EntityDto<Guid> input);
         Task<PagedResultDto<BrandDto>> GetAllBrandsAsync(PagedBrandsResultRequestDto input);
         Task<BrandDto> UpdateBrandAsync(BrandDto input);
+        #endregion
+
+        #region Stock Balance
+        Task<ResponseDto<ProductStockBalanceDto>> GetStockBalancesByProductIdAsync(Guid productId);
         #endregion
     }
 }

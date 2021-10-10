@@ -7,6 +7,7 @@ using Abp.Linq;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
@@ -153,10 +154,10 @@ namespace Odco.PointOfSales.Application.Productions
         {
             if (string.IsNullOrEmpty(keyword))
                 return new List<ProductSearchResultDto>();
-            
+
             List<Product> products = new List<Product>();
 
-            if(type == ProductSearchType.Barcode)
+            if (type == ProductSearchType.Barcode)
             {
                 products = await _productRepository
                     .GetAll()
@@ -165,7 +166,7 @@ namespace Odco.PointOfSales.Application.Productions
                     .Take(PointOfSalesConsts.MaximumNumberOfReturnResults)
                     .ToListAsync();
             }
-            else if(type == ProductSearchType.Code)
+            else if (type == ProductSearchType.Code)
             {
                 products = await _productRepository
                     .GetAll()
@@ -477,6 +478,40 @@ namespace Odco.PointOfSales.Application.Productions
                 Id = c.Id,
                 Name = c.Name
             }).ToListAsync();
+        }
+        #endregion
+
+        #region Stock Balance
+        public async Task<ResponseDto<ProductStockBalanceDto>> GetStockBalancesByProductIdAsync(Guid productId)
+        {
+            var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsDefault);
+            if (warehouse == null) return new ResponseDto<ProductStockBalanceDto>
+            {
+                StatusCode = 404,
+                Message = "Default warehouse is not defined",
+                Items = new ProductStockBalanceDto[] { }
+            };
+
+            var stockBalances = _stockBalanceRepository.GetAll()
+                .Where(sb => sb.ProductId == productId && sb.WarehouseId == warehouse.Id && sb.BookBalanceQuantity > 0)
+                .Select(sb => new ProductStockBalanceDto
+                {
+                    StockBalanceId = sb.Id,
+                    ProductId = sb.ProductId,
+                    ExpiryDate = sb.ExpiryDate,
+                    BatchNumber = sb.BatchNumber,
+                    BookBalanceQuantity = sb.BookBalanceQuantity,
+                    BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
+                    CostPrice = sb.CostPrice,
+                    SellingPrice = sb.SellingPrice,
+                    MaximumRetailPrice = sb.MaximumRetailPrice
+                });
+            return new ResponseDto<ProductStockBalanceDto>
+            {
+                StatusCode = 200,
+                Message = "",
+                Items = stockBalances.ToArray()
+            };
         }
         #endregion
 

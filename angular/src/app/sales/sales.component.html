@@ -107,35 +107,6 @@
             </td>
           </ng-container>
 
-          <!-- Free Quantity Column -->
-          <ng-container matColumnDef="free-quantity">
-            <th mat-header-cell *matHeaderCellDef>
-              {{ "FreeQuantity" | localize }}
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let element; let i = index"
-              [formGroupName]="i"
-            >
-              <input
-                type="number"
-                matInput
-                class="transaction-table-inputs"
-                formControlName="freeQuantity"
-                id="freeQuantity{{ i }}"
-                (change)="updateLineLevelCalculations(element)"
-              />
-              <span *ngIf="element.get('freeQuantity').touched">
-                <mat-error *ngIf="element.get('freeQuantity').errors?.required"
-                  >Free quantity is required.</mat-error
-                >
-                <mat-error *ngIf="element.get('freeQuantity').errors?.min"
-                  >Should be minimum 0.</mat-error
-                >
-              </span>
-            </td>
-          </ng-container>
-
           <!-- Discount Rate Column -->
           <ng-container matColumnDef="discount">
             <th mat-header-cell *matHeaderCellDef>

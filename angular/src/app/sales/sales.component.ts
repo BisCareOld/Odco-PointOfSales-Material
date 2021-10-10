@@ -8,7 +8,11 @@ import {
 } from "@angular/forms";
 import { MatTableDataSource } from "@angular/material/table";
 import { AppComponentBase } from "@shared/app-component-base";
-import { ProductSearchResultDto } from "@shared/service-proxies/service-proxies";
+import {
+  ProductionServiceProxy,
+  ProductSearchResultDto,
+  ProductStockBalanceDto,
+} from "@shared/service-proxies/service-proxies";
 
 @Component({
   selector: "app-sales",
@@ -22,13 +26,12 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     "product-name",
     "sold-price",
     "quantity",
-    "free-quantity",
     "discount",
     "line-amount",
     "actions",
   ];
   dataSource = new MatTableDataSource<FormGroup>();
-
+  productStockBalances: ProductStockBalanceDto[] = [];
   validationMessages = {
     goodsReceivedNumber: {
       required: "This field is required",
@@ -64,7 +67,11 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     discountRate: "",
   };
 
-  constructor(injector: Injector, private fb: FormBuilder) {
+  constructor(
+    injector: Injector,
+    private fb: FormBuilder,
+    private _productionService: ProductionServiceProxy
+  ) {
     super(injector);
   }
 
@@ -155,6 +162,15 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
   selectedProducts($event: ProductSearchResultDto) {
     console.log($event);
+
+    this._productionService
+      .getStockBalancesByProductId($event.id)
+      .subscribe((response) => {
+        if (response.statusCode != 200)
+          this.notify.info(response.message, "404");
+        this.productStockBalances = response.items;
+      });
+
     if (!this.isProductExist($event.id)) {
       let item = this.fb.group({
         productId: [$event.id, Validators.required],
@@ -251,6 +267,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   save() {}
+
   //#region Propertises
   get salesNumber() {
     return this.salePanelForm.get("salesNumber") as FormControl;
