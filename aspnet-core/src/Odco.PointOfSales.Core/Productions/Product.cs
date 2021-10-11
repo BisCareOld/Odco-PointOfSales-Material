@@ -34,7 +34,7 @@ namespace Odco.PointOfSales.Core.Productions
 
         public Category Category { get; set; }
 
-        [StringLength(100)]
+        [StringLength(15)]
         public string BarCode { get; set; }
 
         /// <summary>

@@ -8,6 +8,8 @@ using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.GeneralDto;
 using Odco.PointOfSales.Application.Sales.Customers;
+using Odco.PointOfSales.Application.Sales.TemporarySalesHeaders;
+using Odco.PointOfSales.Core.Sales;
 using Odco.PointOfSales.Sales.Common;
 using System;
 using System.Collections.Generic;
@@ -20,11 +22,13 @@ namespace Odco.PointOfSales.Application.Sales
     {
         private readonly IAsyncQueryableExecuter _asyncQueryableExecuter;
         private readonly IRepository<Customer, Guid> _customerRepository;
+        private readonly IRepository<TempSalesHeader, int> _tempSalesHeaderRepository;
 
-        public SalesAppService(IRepository<Customer, Guid> customerRepository)
+        public SalesAppService(IRepository<Customer, Guid> customerRepository, IRepository<TempSalesHeader, int> tempSalesHeaderRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _customerRepository = customerRepository;
+            _tempSalesHeaderRepository = tempSalesHeaderRepository;
         }
 
         #region Customer
@@ -132,5 +136,22 @@ namespace Odco.PointOfSales.Application.Sales
         }
         #endregion
 
+        #region TemporarySales Header + Products
+        public async Task<TempSalesHeaderDto> CreateTempSalesAsync(CreateTempSalesHeaderDto input)
+        {
+            var temp = ObjectMapper.Map<TempSalesHeader>(input);
+            var created = await _tempSalesHeaderRepository.InsertAsync(temp);
+            await CurrentUnitOfWork.SaveChangesAsync();
+            return ObjectMapper.Map<TempSalesHeaderDto>(created);
+        }
+
+        public async Task<TempSalesHeaderDto> GetTempSalesAsync(int tempSalesHeaderId)
+        {
+            var temp = await _tempSalesHeaderRepository
+                .GetAllIncluding(t => t.TempSalesProducts)
+                .FirstOrDefaultAsync(t => t.Id == tempSalesHeaderId);
+            return ObjectMapper.Map<TempSalesHeaderDto>(temp);
+        }
+        #endregion
     }
 }
