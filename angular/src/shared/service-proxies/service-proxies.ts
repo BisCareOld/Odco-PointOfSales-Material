@@ -6170,6 +6170,7 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
     costPrice: number;
     sellingPrice: number;
     maximumRetailPrice: number;
+    isSelected: boolean;
 
     constructor(data?: IProductStockBalanceDto) {
         if (data) {
@@ -6191,6 +6192,7 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
             this.costPrice = _data["costPrice"];
             this.sellingPrice = _data["sellingPrice"];
             this.maximumRetailPrice = _data["maximumRetailPrice"];
+            this.isSelected = _data["isSelected"];
         }
     }
 
@@ -6212,6 +6214,7 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
         data["costPrice"] = this.costPrice;
         data["sellingPrice"] = this.sellingPrice;
         data["maximumRetailPrice"] = this.maximumRetailPrice;
+        data["isSelected"] = this.isSelected;
         return data; 
     }
 
@@ -6233,6 +6236,7 @@ export interface IProductStockBalanceDto {
     costPrice: number;
     sellingPrice: number;
     maximumRetailPrice: number;
+    isSelected: boolean;
 }
 
 export class ProductStockBalanceDtoResponseDto implements IProductStockBalanceDtoResponseDto {

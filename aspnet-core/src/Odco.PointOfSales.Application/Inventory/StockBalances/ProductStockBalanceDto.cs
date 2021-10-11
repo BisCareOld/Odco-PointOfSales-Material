@@ -24,6 +24,8 @@ namespace Odco.PointOfSales.Application.Inventory.StockBalances
         public decimal SellingPrice { get; set; }
 
         public decimal MaximumRetailPrice { get; set; }
+
+        public bool IsSelected { get; set; }
     }
 }
 

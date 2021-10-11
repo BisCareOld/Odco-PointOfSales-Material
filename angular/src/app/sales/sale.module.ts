@@ -7,9 +7,14 @@ import { SharedModule } from "@shared/shared.module";
 
 import { SalesComponent } from "./sales.component";
 import { PaymentPanelComponent } from "./payment-panel/payment-panel.component";
+import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 
 @NgModule({
-  declarations: [SalesComponent, PaymentPanelComponent],
+  declarations: [
+    SalesComponent,
+    PaymentPanelComponent,
+    StockBalanceDialogComponent,
+  ],
   imports: [
     CommonModule,
     RouterModule,
@@ -17,5 +22,6 @@ import { PaymentPanelComponent } from "./payment-panel/payment-panel.component";
     ReactiveFormsModule,
     SharedModule,
   ],
+  entryComponents: [StockBalanceDialogComponent],
 })
 export class SaleModule {}

@@ -1,0 +1,67 @@
+<h1 style="display: inline">{{ data.productName }}</h1>
+<span>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="cancel()"
+    style="float: right; margin: 0px 5px"
+  >
+    {{ "Cancel" | localize }}
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="submit()"
+    style="float: right"
+  >
+    {{ "Submit" | localize }}
+  </button>
+</span>
+
+<table class="full-width-table" mat-table [dataSource]="productStockBalances">
+  <!--- Note that these columns can be defined in any order.
+      The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- Batch No Column -->
+  <ng-container matColumnDef="batch-number">
+    <th mat-header-cell *matHeaderCellDef>{{ "BatchNumber" | localize }}</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.batchNumber ? element.batchNumber : "N/A" }}
+    </td>
+  </ng-container>
+
+  <!-- Expiry Date -->
+  <ng-container matColumnDef="expiry-date">
+    <th mat-header-cell *matHeaderCellDef>{{ "ExpiryDate" | localize }}</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.expiryDate ? element.expiryDate : "N/A" }}
+    </td>
+  </ng-container>
+
+  <!-- Quantity -->
+  <ng-container matColumnDef="quantity">
+    <th mat-header-cell *matHeaderCellDef>{{ "Quantity" | localize }}</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.bookBalanceQuantity }}
+    </td>
+  </ng-container>
+
+  <!-- Selling Price Column -->
+  <ng-container matColumnDef="selling-price">
+    <th mat-header-cell *matHeaderCellDef>
+      {{ "SellingPrice" | localize }}
+    </th>
+    <td mat-cell *matCellDef="let element">{{ element.sellingPrice }}</td>
+  </ng-container>
+
+  <!-- Actions Column -->
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
+    <td mat-cell *matCellDef="let element">
+      <mat-checkbox [(ngModel)]="element.isSelected"></mat-checkbox>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>

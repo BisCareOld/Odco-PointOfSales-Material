@@ -6,6 +6,7 @@ import {
   FormGroup,
   Validators,
 } from "@angular/forms";
+import { MatDialog } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
@@ -13,6 +14,7 @@ import {
   ProductSearchResultDto,
   ProductStockBalanceDto,
 } from "@shared/service-proxies/service-proxies";
+import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 
 @Component({
   selector: "app-sales",
@@ -66,11 +68,13 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     taxRate: "",
     discountRate: "",
   };
+  tempProducts;
 
   constructor(
     injector: Injector,
     private fb: FormBuilder,
-    private _productionService: ProductionServiceProxy
+    private _productionService: ProductionServiceProxy,
+    private _matDialogService: MatDialog
   ) {
     super(injector);
   }
@@ -149,9 +153,9 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     });
   }
 
-  isProductExist(productId): boolean {
+  isStockBalanceExist(stockBalanceId): boolean {
     let product = this.salesProducts.controls.find(
-      (p) => p.get("productId").value == productId
+      (p) => p.get("stockBalanceId").value == stockBalanceId
     );
     if (!product) {
       return false;
@@ -160,54 +164,76 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     return true;
   }
 
+  showStockBalanceDialog(product: ProductSearchResultDto) {
+    let materialDialog = this._matDialogService.open(
+      StockBalanceDialogComponent,
+      {
+        data: { id: product.id, productName: product.name },
+        width: "70%",
+      }
+    );
+
+    materialDialog.afterClosed().subscribe((result) => {
+      // "SelectedProduct" came from Dialog
+      if (result && result.event == "SelectedProduct") {
+        this.addProductToTable(product, result.data);
+      }
+    });
+  }
+
   selectedProducts($event: ProductSearchResultDto) {
-    console.log($event);
+    this.showStockBalanceDialog($event);
+  }
 
-    this._productionService
-      .getStockBalancesByProductId($event.id)
-      .subscribe((response) => {
-        if (response.statusCode != 200)
-          this.notify.info(response.message, "404");
-        this.productStockBalances = response.items;
-      });
+  addProductToTable(
+    product: ProductSearchResultDto,
+    stockBalances: ProductStockBalanceDto[]
+  ) {
+    for (let i = 0; i < stockBalances.length; i++) {
+      const sb = stockBalances[i];
 
-    if (!this.isProductExist($event.id)) {
-      let item = this.fb.group({
-        productId: [$event.id, Validators.required],
-        productCode: [$event.code, Validators.required],
-        productName: [$event.name, Validators.required],
-        warehouseId: [null, Validators.required],
-        warehouseCode: [null, Validators.required],
-        warehouseName: [null, Validators.required],
-        quantity: [
-          0,
-          Validators.compose([Validators.required, Validators.min(1)]),
-        ],
-        freeQuantity: [
-          0,
-          Validators.compose([Validators.required, Validators.min(0)]),
-        ],
-        soldPrice: [
-          0,
-          Validators.compose([Validators.required, Validators.min(1)]),
-        ],
-        discountRate: [
-          0,
-          Validators.compose([
-            Validators.required,
-            Validators.min(0),
-            Validators.max(100),
-          ]),
-        ],
-        discountAmount: [0, Validators.required],
-        lineTotal: [0, Validators.required],
-      });
-
-      this.salesProducts.push(item);
-      this.dataSource.data.push(item);
-
-      return (this.dataSource.filter = "");
+      if (!this.isStockBalanceExist(sb.stockBalanceId)) {
+        let item = this.fb.group({
+          stockBalanceId: [sb.stockBalanceId],
+          productId: [product.id, Validators.required],
+          productCode: [product.code, Validators.required],
+          productName: [product.name, Validators.required],
+          warehouseId: [null, Validators.required],
+          warehouseCode: [null, Validators.required],
+          warehouseName: [null, Validators.required],
+          quantity: [
+            0,
+            Validators.compose([
+              Validators.required,
+              Validators.min(1),
+              Validators.max(sb.bookBalanceQuantity),
+            ]),
+          ],
+          freeQuantity: [
+            0,
+            Validators.compose([Validators.required, Validators.min(0)]),
+          ],
+          soldPrice: [
+            sb.sellingPrice,
+            Validators.compose([Validators.required, Validators.min(1)]),
+          ],
+          discountRate: [
+            0,
+            Validators.compose([
+              Validators.required,
+              Validators.min(0),
+              Validators.max(100),
+            ]),
+          ],
+          discountAmount: [0, Validators.required],
+          lineTotal: [0, Validators.required],
+          stockBalance: sb,
+        });
+        this.salesProducts.push(item);
+        this.dataSource.data.push(item);
+      }
     }
+    return (this.dataSource.filter = "");
   }
 
   removeProduct(itemIndex: number, item: FormGroup) {

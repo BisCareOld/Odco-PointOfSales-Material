@@ -493,7 +493,7 @@ namespace Odco.PointOfSales.Application.Productions
             };
 
             var stockBalances = _stockBalanceRepository.GetAll()
-                .Where(sb => sb.ProductId == productId && sb.WarehouseId == warehouse.Id && sb.BookBalanceQuantity > 0)
+                .Where(sb => sb.SequenceNumber > 0 && sb.ProductId == productId && sb.WarehouseId == warehouse.Id && sb.BookBalanceQuantity > 0)
                 .Select(sb => new ProductStockBalanceDto
                 {
                     StockBalanceId = sb.Id,

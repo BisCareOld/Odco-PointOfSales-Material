@@ -103,6 +103,10 @@
                 <mat-error *ngIf="element.get('quantity').errors?.min"
                   >Should be minimum 1.</mat-error
                 >
+                <mat-error *ngIf="element.get('quantity').errors?.max"
+                  >Should be below
+                  {{ element.get("quantity").errors?.max.max }}.</mat-error
+                >
               </span>
             </td>
           </ng-container>
