@@ -7865,6 +7865,7 @@ export class CreateTempSalesProductDto implements ICreateTempSalesProductDto {
     discountRate: number;
     discountAmount: number;
     quantity: number;
+    lineTotal: number;
     isActive: boolean;
 
     constructor(data?: ICreateTempSalesProductDto) {
@@ -7897,6 +7898,7 @@ export class CreateTempSalesProductDto implements ICreateTempSalesProductDto {
             this.discountRate = _data["discountRate"];
             this.discountAmount = _data["discountAmount"];
             this.quantity = _data["quantity"];
+            this.lineTotal = _data["lineTotal"];
             this.isActive = _data["isActive"];
         }
     }
@@ -7929,6 +7931,7 @@ export class CreateTempSalesProductDto implements ICreateTempSalesProductDto {
         data["discountRate"] = this.discountRate;
         data["discountAmount"] = this.discountAmount;
         data["quantity"] = this.quantity;
+        data["lineTotal"] = this.lineTotal;
         data["isActive"] = this.isActive;
         return data; 
     }
@@ -7961,6 +7964,7 @@ export interface ICreateTempSalesProductDto {
     discountRate: number;
     discountAmount: number;
     quantity: number;
+    lineTotal: number;
     isActive: boolean;
 }
 
@@ -8080,6 +8084,7 @@ export class TempSalesProductDto implements ITempSalesProductDto {
     discountRate: number;
     discountAmount: number;
     quantity: number;
+    lineTotal: number;
     isActive: boolean;
     id: number;
 
@@ -8114,6 +8119,7 @@ export class TempSalesProductDto implements ITempSalesProductDto {
             this.discountRate = _data["discountRate"];
             this.discountAmount = _data["discountAmount"];
             this.quantity = _data["quantity"];
+            this.lineTotal = _data["lineTotal"];
             this.isActive = _data["isActive"];
             this.id = _data["id"];
         }
@@ -8148,6 +8154,7 @@ export class TempSalesProductDto implements ITempSalesProductDto {
         data["discountRate"] = this.discountRate;
         data["discountAmount"] = this.discountAmount;
         data["quantity"] = this.quantity;
+        data["lineTotal"] = this.lineTotal;
         data["isActive"] = this.isActive;
         data["id"] = this.id;
         return data; 
@@ -8182,6 +8189,7 @@ export interface ITempSalesProductDto {
     discountRate: number;
     discountAmount: number;
     quantity: number;
+    lineTotal: number;
     isActive: boolean;
     id: number;
 }

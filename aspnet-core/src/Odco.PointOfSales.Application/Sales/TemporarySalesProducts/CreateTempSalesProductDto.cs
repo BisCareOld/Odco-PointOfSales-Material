@@ -65,6 +65,8 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
         /// Needed / Allocated Quantity
         /// </summary>
         public decimal Quantity { get; set; }
+
+        public decimal LineTotal { get; set; }
         #endregion
 
         public bool IsActive { get; set; }

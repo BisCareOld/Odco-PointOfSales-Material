@@ -72,6 +72,8 @@ namespace Odco.PointOfSales.Sales.Common
         /// Needed / Allocated Quantity
         /// </summary>
         public decimal Quantity { get; set; }
+
+        public decimal LineTotal { get; set; }
         #endregion
 
         public bool IsActive { get; set; }

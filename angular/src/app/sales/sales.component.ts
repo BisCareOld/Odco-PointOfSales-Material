@@ -343,6 +343,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       _lineLevel.discountRate = item.discountRate;
       _lineLevel.discountAmount = item.discountAmount;
       _lineLevel.quantity = item.quantity;
+      _lineLevel.lineTotal = item.lineTotal;
       _lineLevel.isActive = true;
 
       _header.tempSalesProducts.push(_lineLevel);
