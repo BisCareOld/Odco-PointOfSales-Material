@@ -13,9 +13,11 @@ import { AppComponentBase } from "@shared/app-component-base";
 import {
   CreateTempSalesHeaderDto,
   CreateTempSalesProductDto,
+  TempSalesHeaderDto,
   ProductSearchResultDto,
   ProductStockBalanceDto,
   SalesServiceProxy,
+  TempSalesProductDto,
 } from "@shared/service-proxies/service-proxies";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 
@@ -85,95 +87,124 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
+    let tempSalesHeaderId =
+      +this.route.snapshot.queryParamMap.get("salesHeaderId");
+    if (!tempSalesHeaderId) this.popoulateSalesHeaderDetails(true, null);
+    if (tempSalesHeaderId) this.getTemporarySalesDetails(tempSalesHeaderId);
+  }
+
+  getTemporarySalesDetails(id: number) {
+    this._salesService
+      .getTempSales(id)
+      .subscribe((result: TempSalesHeaderDto) => {
+        console.log(result);
+
+        this.popoulateSalesHeaderDetails(false, result);
+
+        result.tempSalesProducts.forEach((value, i) => {
+          let item = this.fb.group({
+            stockBalanceId: [value.stockBalanceId],
+            productId: [value.id, Validators.required],
+            productCode: [value.code, Validators.required],
+            productName: [value.name, Validators.required],
+            warehouseId: [value.warehouseId, Validators.required],
+            warehouseCode: [value.warehouseCode, Validators.required],
+            warehouseName: [value.warehouseName, Validators.required],
+            quantity: [
+              value.quantity,
+              Validators.compose([
+                Validators.required,
+                Validators.min(1),
+                Validators.max(value.bookBalanceQuantity),
+              ]),
+            ],
+            freeQuantity: [
+              0,
+              Validators.compose([Validators.required, Validators.min(0)]),
+            ],
+            soldPrice: [
+              value.sellingPrice,
+              Validators.compose([Validators.required, Validators.min(1)]),
+            ],
+            discountRate: [
+              value.discountAmount,
+              Validators.compose([
+                Validators.required,
+                Validators.min(0),
+                Validators.max(100),
+              ]),
+            ],
+            discountAmount: [value.discountAmount, Validators.required],
+            lineTotal: [value.lineTotal, Validators.required],
+            //stockBalance: , // TODO: No needed I guess
+          });
+          this.salesProducts.push(item);
+          this.dataSource.data.push(item);
+        });
+
+        this.notify.info(this.l("ProductRetreivedSuccessfully"));
+        return (this.dataSource.filter = "");
+      });
+  }
+
+  // If "salesheader: Exist => Came from Query string else a new One
+  private popoulateSalesHeaderDetails(
+    isNewSale: boolean,
+    salesheader: TempSalesHeaderDto
+  ) {
     this.salePanelForm = this.fb.group({
       salesNumber: [
         null,
         Validators.compose([Validators.required, Validators.maxLength(15)]),
       ],
       referenceNumber: [null, Validators.maxLength(10)],
-      customerId: [null],
-      customerCode: [null],
-      customerName: [null],
+      customerId: [isNewSale ? null : salesheader.customerId],
+      customerCode: [isNewSale ? null : salesheader.customerCode],
+      customerName: [isNewSale ? null : salesheader.customerName],
       discountRate: [
-        0,
+        isNewSale ? 0 : salesheader.discountRate,
         Validators.compose([
           Validators.required,
           Validators.min(0),
           Validators.max(100),
         ]),
       ],
-      discountAmount: [0, Validators.required],
+      discountAmount: [
+        isNewSale ? 0 : salesheader.discountAmount,
+        Validators.required,
+      ],
       taxRate: [
-        0,
+        isNewSale ? 0 : salesheader.taxRate,
         Validators.compose([
           Validators.required,
           Validators.min(0),
           Validators.max(100),
         ]),
       ],
-      taxAmount: [0, Validators.required],
-      grossAmount: [0, Validators.required],
-      netAmount: [0, Validators.required],
-      comments: [null, Validators.maxLength(100)],
+      taxAmount: [isNewSale ? 0 : salesheader.taxAmount, Validators.required],
+      grossAmount: [
+        isNewSale ? 0 : salesheader.grossAmount,
+        Validators.required,
+      ],
+      netAmount: [isNewSale ? 0 : salesheader.netAmount, Validators.required],
+      comments: [
+        isNewSale ? null : salesheader.remarks,
+        Validators.maxLength(100),
+      ],
       salesProducts: this.fb.array([]),
     });
+
+    console.log(this.salePanelForm);
 
     this.salePanelForm.valueChanges.subscribe((data) => {
       this.logValidationErrors(this.salePanelForm);
     });
-
-    let id = +this.route.snapshot.queryParamMap.get("salesHeaderId");
-    if (id) this.fillDatasToTable(id);
   }
 
-  fillDatasToTable(id: number) {
-    this._salesService.getTempSales(id).subscribe((result) => {
-      console.log(result);
-      result.tempSalesProducts.forEach((value, i) => {
-        let item = this.fb.group({
-          stockBalanceId: [value.stockBalanceId],
-          productId: [value.id, Validators.required],
-          productCode: [value.code, Validators.required],
-          productName: [value.name, Validators.required],
-          warehouseId: [value.warehouseId, Validators.required],
-          warehouseCode: [value.warehouseCode, Validators.required],
-          warehouseName: [value.warehouseName, Validators.required],
-          quantity: [
-            value.quantity,
-            Validators.compose([
-              Validators.required,
-              Validators.min(1),
-              Validators.max(value.bookBalanceQuantity),
-            ]),
-          ],
-          freeQuantity: [
-            0,
-            Validators.compose([Validators.required, Validators.min(0)]),
-          ],
-          soldPrice: [
-            value.sellingPrice,
-            Validators.compose([Validators.required, Validators.min(1)]),
-          ],
-          discountRate: [
-            value.discountAmount,
-            Validators.compose([
-              Validators.required,
-              Validators.min(0),
-              Validators.max(100),
-            ]),
-          ],
-          discountAmount: [value.discountAmount, Validators.required],
-          lineTotal: [value.lineTotal, Validators.required],
-          //stockBalance: , // TODO: No needed I guess
-        });
-        this.salesProducts.push(item);
-        this.dataSource.data.push(item);
-      });
-
-      this.notify.info(this.l("ProductRetreivedSuccessfully"));
-      return (this.dataSource.filter = "");
-    });
-  }
+  // private populateSalesProductDetails(
+  //   isNewSale: boolean,
+  //   value: TempSalesProductDto
+  // ) {}
 
   logValidationErrors(group: FormGroup = this.salePanelForm): void {
     // Loop through each control key in the FormGroup
