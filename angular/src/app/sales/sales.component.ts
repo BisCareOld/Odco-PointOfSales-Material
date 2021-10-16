@@ -8,7 +8,7 @@ import {
 } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
   CreateTempSalesHeaderDto,
@@ -78,7 +78,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     private fb: FormBuilder,
     private _matDialogService: MatDialog,
     private _salesService: SalesServiceProxy,
-    private route: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     super(injector);
   }
@@ -119,6 +120,58 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
     this.salePanelForm.valueChanges.subscribe((data) => {
       this.logValidationErrors(this.salePanelForm);
+    });
+
+    let id = +this.route.snapshot.queryParamMap.get("salesHeaderId");
+    if (id) this.fillDatasToTable(id);
+  }
+
+  fillDatasToTable(id: number) {
+    this._salesService.getTempSales(id).subscribe((result) => {
+      console.log(result);
+      result.tempSalesProducts.forEach((value, i) => {
+        let item = this.fb.group({
+          stockBalanceId: [value.stockBalanceId],
+          productId: [value.id, Validators.required],
+          productCode: [value.code, Validators.required],
+          productName: [value.name, Validators.required],
+          warehouseId: [value.warehouseId, Validators.required],
+          warehouseCode: [value.warehouseCode, Validators.required],
+          warehouseName: [value.warehouseName, Validators.required],
+          quantity: [
+            value.quantity,
+            Validators.compose([
+              Validators.required,
+              Validators.min(1),
+              Validators.max(value.bookBalanceQuantity),
+            ]),
+          ],
+          freeQuantity: [
+            0,
+            Validators.compose([Validators.required, Validators.min(0)]),
+          ],
+          soldPrice: [
+            value.sellingPrice,
+            Validators.compose([Validators.required, Validators.min(1)]),
+          ],
+          discountRate: [
+            value.discountAmount,
+            Validators.compose([
+              Validators.required,
+              Validators.min(0),
+              Validators.max(100),
+            ]),
+          ],
+          discountAmount: [value.discountAmount, Validators.required],
+          lineTotal: [value.lineTotal, Validators.required],
+          //stockBalance: , // TODO: No needed I guess
+        });
+        this.salesProducts.push(item);
+        this.dataSource.data.push(item);
+      });
+
+      this.notify.info(this.l("ProductRetreivedSuccessfully"));
+      return (this.dataSource.filter = "");
     });
   }
 
@@ -296,6 +349,10 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     this.netAmount.setValue(netAmount);
   }
 
+  newSale() {
+    this.router.navigate(["/app/sales"]);
+  }
+
   payment() {
     // 1. Create a Temp Sales Header & Product
     // 2. Get the Id when creating it
@@ -353,7 +410,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     this._salesService.createTempSales(_header).subscribe((i) => {
       console.log(i.id);
       this.notify.info(this.l("SavedSuccessfully"));
-      this.route.navigate(["/app/payment-component", i.id]);
+      this.router.navigate(["/app/payment-component", i.id]);
     });
   }
 
