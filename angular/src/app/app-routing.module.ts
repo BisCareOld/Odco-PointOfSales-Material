@@ -102,7 +102,7 @@ import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.compo
             canActivate: [AppRouteGuard],
           },
           {
-            path: "payment-component",
+            path: "payment-component/:tempSalesId",
             component: PaymentPanelComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],

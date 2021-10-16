@@ -8,11 +8,14 @@ import {
 } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
+import { Router } from "@angular/router";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  ProductionServiceProxy,
+  CreateTempSalesHeaderDto,
+  CreateTempSalesProductDto,
   ProductSearchResultDto,
   ProductStockBalanceDto,
+  SalesServiceProxy,
 } from "@shared/service-proxies/service-proxies";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 
@@ -73,8 +76,9 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   constructor(
     injector: Injector,
     private fb: FormBuilder,
-    private _productionService: ProductionServiceProxy,
-    private _matDialogService: MatDialog
+    private _matDialogService: MatDialog,
+    private _salesService: SalesServiceProxy,
+    private route: Router
   ) {
     super(injector);
   }
@@ -290,6 +294,66 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     this.taxAmount.setValue(tax);
     let netAmount = parseFloat((grossTotal + tax - discount).toFixed(2));
     this.netAmount.setValue(netAmount);
+  }
+
+  payment() {
+    // 1. Create a Temp Sales Header & Product
+    // 2. Get the Id when creating it
+    // 3. From the returned Id navigate to payment page
+    if (this.salePanelForm.value.salesProducts.length <= 0) {
+      this.notify.info(this.l("SelectAtleasetOneProduct"));
+      return;
+    }
+
+    console.log(this.salePanelForm.value);
+
+    let _header = new CreateTempSalesHeaderDto();
+    _header.customerId = this.salePanelForm.value.customerId;
+    _header.customerCode = this.salePanelForm.value.customerCode;
+    _header.customerName = this.salePanelForm.value.customerName;
+    _header.discountRate = this.salePanelForm.value.discountRate;
+    _header.discountAmount = this.salePanelForm.value.discountAmount;
+    _header.taxRate = this.salePanelForm.value.taxRate;
+    _header.taxAmount = this.salePanelForm.value.taxAmount;
+    _header.grossAmount = this.salePanelForm.value.grossAmount;
+    _header.netAmount = this.salePanelForm.value.netAmount;
+    _header.remarks = this.salePanelForm.value.comments;
+    _header.isActive = true;
+    _header.tempSalesProducts = [];
+
+    this.salePanelForm.value.salesProducts.forEach((item, index) => {
+      let _lineLevel = new CreateTempSalesProductDto();
+      _lineLevel.productId = item.productId;
+      // y.barCode = item.; // missing in item.
+      _lineLevel.code = item.productCode;
+      _lineLevel.name = item.productName;
+      _lineLevel.stockBalanceId = item.stockBalance.stockBalanceId;
+      _lineLevel.expiryDate = item.stockBalance.expiryDate;
+      _lineLevel.batchNumber = item.stockBalance.batchNumber;
+      _lineLevel.warehouseId = null;
+      _lineLevel.warehouseCode = null;
+      _lineLevel.warehouseName = null;
+      _lineLevel.bookBalanceQuantity = item.stockBalance.bookBalanceQuantity;
+      _lineLevel.bookBalanceUnitOfMeasureUnit =
+        item.stockBalance.bookBalanceUnitOfMeasureUnit;
+      _lineLevel.costPrice = item.stockBalance.costPrice;
+      _lineLevel.sellingPrice = item.stockBalance.sellingPrice;
+      _lineLevel.maximumRetailPrice = item.stockBalance.maximumRetailPrice;
+      _lineLevel.isSelected = item.stockBalance.isSelected;
+      _lineLevel.discountRate = item.discountRate;
+      _lineLevel.discountAmount = item.discountAmount;
+      _lineLevel.quantity = item.quantity;
+      _lineLevel.isActive = true;
+
+      _header.tempSalesProducts.push(_lineLevel);
+    });
+
+    console.log(_header);
+    this._salesService.createTempSales(_header).subscribe((i) => {
+      console.log(i.id);
+      this.notify.info(this.l("SavedSuccessfully"));
+      this.route.navigate(["/app/payment-component", i.id]);
+    });
   }
 
   save() {}

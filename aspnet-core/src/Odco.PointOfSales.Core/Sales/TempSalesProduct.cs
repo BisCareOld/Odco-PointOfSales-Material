@@ -38,6 +38,14 @@ namespace Odco.PointOfSales.Sales.Common
         [StringLength(15)]
         public string BatchNumber { get; set; }
 
+        public Guid? WarehouseId { get; set; }
+
+        [StringLength(10)]
+        public string WarehouseCode { get; set; }
+
+        [StringLength(100)]
+        public string WarehouseName { get; set; }
+
         /// <summary>
         /// Store when the time being
         /// </summary>
@@ -56,6 +64,10 @@ namespace Odco.PointOfSales.Sales.Common
         #endregion
 
         #region Sales
+        public decimal DiscountRate { get; set; }
+
+        public decimal DiscountAmount { get; set; }
+
         /// <summary>
         /// Needed / Allocated Quantity
         /// </summary>

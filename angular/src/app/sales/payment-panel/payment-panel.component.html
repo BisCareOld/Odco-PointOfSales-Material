@@ -7,17 +7,25 @@
 
   <!-- 3. ITEM LIST -->
   <div class="child-grid">
-    <table>
-      <tr>
-        <td>Anchor</td>
-        <!-- This cell will take up space on
-                two rows -->
-        <td rowspan="2">540.00</td>
-      </tr>
-      <tr>
-        <td>2 x 280.00</td>
-      </tr>
-    </table>
+    <ng-container
+      *ngIf="
+        tempSalesHeader &&
+        tempSalesHeader.tempSalesProducts &&
+        tempSalesHeader.tempSalesProducts.length > 0
+      "
+    >
+      <table *ngFor="let item of tempSalesHeader.tempSalesProducts">
+        <tr>
+          <td>{{ item.name }}</td>
+          <!-- This cell will take up space on
+                  two rows -->
+          <td rowspan="2">{{ item.sellingPrice }}</td>
+        </tr>
+        <tr>
+          <td>{{ item.quantity }} x {{ item.sellingPrice }}</td>
+        </tr>
+      </table>
+    </ng-container>
   </div>
 
   <!-- 4. PAYMENT METHODS -->

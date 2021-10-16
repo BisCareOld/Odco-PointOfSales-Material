@@ -3309,6 +3309,118 @@ export class SalesServiceProxy {
         }
         return _observableOf<CommonKeyValuePairDto[]>(<any>null);
     }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createTempSales(body: CreateTempSalesHeaderDto | undefined): Observable<TempSalesHeaderDto> {
+        let url_ = this.baseUrl + "/api/services/app/Sales/CreateTempSales";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateTempSales(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateTempSales(<any>response_);
+                } catch (e) {
+                    return <Observable<TempSalesHeaderDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TempSalesHeaderDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateTempSales(response: HttpResponseBase): Observable<TempSalesHeaderDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TempSalesHeaderDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TempSalesHeaderDto>(<any>null);
+    }
+
+    /**
+     * @param tempSalesHeaderId (optional) 
+     * @return Success
+     */
+    getTempSales(tempSalesHeaderId: number | undefined): Observable<TempSalesHeaderDto> {
+        let url_ = this.baseUrl + "/api/services/app/Sales/GetTempSales?";
+        if (tempSalesHeaderId === null)
+            throw new Error("The parameter 'tempSalesHeaderId' cannot be null.");
+        else if (tempSalesHeaderId !== undefined)
+            url_ += "tempSalesHeaderId=" + encodeURIComponent("" + tempSalesHeaderId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTempSales(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTempSales(<any>response_);
+                } catch (e) {
+                    return <Observable<TempSalesHeaderDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TempSalesHeaderDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTempSales(response: HttpResponseBase): Observable<TempSalesHeaderDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TempSalesHeaderDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TempSalesHeaderDto>(<any>null);
+    }
 }
 
 @Injectable()
@@ -7731,6 +7843,446 @@ export class CustomerDtoPagedResultDto implements ICustomerDtoPagedResultDto {
 export interface ICustomerDtoPagedResultDto {
     totalCount: number;
     items: CustomerDto[] | undefined;
+}
+
+export class CreateTempSalesProductDto implements ICreateTempSalesProductDto {
+    productId: string;
+    barCode: string | undefined;
+    code: string;
+    name: string;
+    stockBalanceId: string;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    bookBalanceQuantity: number;
+    bookBalanceUnitOfMeasureUnit: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    isSelected: boolean;
+    discountRate: number;
+    discountAmount: number;
+    quantity: number;
+    isActive: boolean;
+
+    constructor(data?: ICreateTempSalesProductDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.productId = _data["productId"];
+            this.barCode = _data["barCode"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.stockBalanceId = _data["stockBalanceId"];
+            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
+            this.batchNumber = _data["batchNumber"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
+            this.bookBalanceQuantity = _data["bookBalanceQuantity"];
+            this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
+            this.costPrice = _data["costPrice"];
+            this.sellingPrice = _data["sellingPrice"];
+            this.maximumRetailPrice = _data["maximumRetailPrice"];
+            this.isSelected = _data["isSelected"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.quantity = _data["quantity"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): CreateTempSalesProductDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateTempSalesProductDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productId"] = this.productId;
+        data["barCode"] = this.barCode;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["stockBalanceId"] = this.stockBalanceId;
+        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
+        data["batchNumber"] = this.batchNumber;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
+        data["bookBalanceQuantity"] = this.bookBalanceQuantity;
+        data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
+        data["costPrice"] = this.costPrice;
+        data["sellingPrice"] = this.sellingPrice;
+        data["maximumRetailPrice"] = this.maximumRetailPrice;
+        data["isSelected"] = this.isSelected;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["quantity"] = this.quantity;
+        data["isActive"] = this.isActive;
+        return data; 
+    }
+
+    clone(): CreateTempSalesProductDto {
+        const json = this.toJSON();
+        let result = new CreateTempSalesProductDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateTempSalesProductDto {
+    productId: string;
+    barCode: string | undefined;
+    code: string;
+    name: string;
+    stockBalanceId: string;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    bookBalanceQuantity: number;
+    bookBalanceUnitOfMeasureUnit: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    isSelected: boolean;
+    discountRate: number;
+    discountAmount: number;
+    quantity: number;
+    isActive: boolean;
+}
+
+export class CreateTempSalesHeaderDto implements ICreateTempSalesHeaderDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    isActive: boolean;
+    tempSalesProducts: CreateTempSalesProductDto[] | undefined;
+
+    constructor(data?: ICreateTempSalesHeaderDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.taxRate = _data["taxRate"];
+            this.taxAmount = _data["taxAmount"];
+            this.grossAmount = _data["grossAmount"];
+            this.netAmount = _data["netAmount"];
+            this.remarks = _data["remarks"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["tempSalesProducts"])) {
+                this.tempSalesProducts = [] as any;
+                for (let item of _data["tempSalesProducts"])
+                    this.tempSalesProducts.push(CreateTempSalesProductDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateTempSalesHeaderDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateTempSalesHeaderDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["taxRate"] = this.taxRate;
+        data["taxAmount"] = this.taxAmount;
+        data["grossAmount"] = this.grossAmount;
+        data["netAmount"] = this.netAmount;
+        data["remarks"] = this.remarks;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.tempSalesProducts)) {
+            data["tempSalesProducts"] = [];
+            for (let item of this.tempSalesProducts)
+                data["tempSalesProducts"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): CreateTempSalesHeaderDto {
+        const json = this.toJSON();
+        let result = new CreateTempSalesHeaderDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateTempSalesHeaderDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    isActive: boolean;
+    tempSalesProducts: CreateTempSalesProductDto[] | undefined;
+}
+
+export class TempSalesProductDto implements ITempSalesProductDto {
+    tempSalesHeaderId: number;
+    productId: string;
+    barCode: string | undefined;
+    code: string;
+    name: string;
+    stockBalanceId: string;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    bookBalanceQuantity: number;
+    bookBalanceUnitOfMeasureUnit: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    isSelected: boolean;
+    discountRate: number;
+    discountAmount: number;
+    quantity: number;
+    isActive: boolean;
+    id: number;
+
+    constructor(data?: ITempSalesProductDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tempSalesHeaderId = _data["tempSalesHeaderId"];
+            this.productId = _data["productId"];
+            this.barCode = _data["barCode"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.stockBalanceId = _data["stockBalanceId"];
+            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
+            this.batchNumber = _data["batchNumber"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
+            this.bookBalanceQuantity = _data["bookBalanceQuantity"];
+            this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
+            this.costPrice = _data["costPrice"];
+            this.sellingPrice = _data["sellingPrice"];
+            this.maximumRetailPrice = _data["maximumRetailPrice"];
+            this.isSelected = _data["isSelected"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.quantity = _data["quantity"];
+            this.isActive = _data["isActive"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): TempSalesProductDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TempSalesProductDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tempSalesHeaderId"] = this.tempSalesHeaderId;
+        data["productId"] = this.productId;
+        data["barCode"] = this.barCode;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["stockBalanceId"] = this.stockBalanceId;
+        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
+        data["batchNumber"] = this.batchNumber;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
+        data["bookBalanceQuantity"] = this.bookBalanceQuantity;
+        data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
+        data["costPrice"] = this.costPrice;
+        data["sellingPrice"] = this.sellingPrice;
+        data["maximumRetailPrice"] = this.maximumRetailPrice;
+        data["isSelected"] = this.isSelected;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["quantity"] = this.quantity;
+        data["isActive"] = this.isActive;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): TempSalesProductDto {
+        const json = this.toJSON();
+        let result = new TempSalesProductDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ITempSalesProductDto {
+    tempSalesHeaderId: number;
+    productId: string;
+    barCode: string | undefined;
+    code: string;
+    name: string;
+    stockBalanceId: string;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    bookBalanceQuantity: number;
+    bookBalanceUnitOfMeasureUnit: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    isSelected: boolean;
+    discountRate: number;
+    discountAmount: number;
+    quantity: number;
+    isActive: boolean;
+    id: number;
+}
+
+export class TempSalesHeaderDto implements ITempSalesHeaderDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    isActive: boolean;
+    tempSalesProducts: TempSalesProductDto[] | undefined;
+    id: number;
+
+    constructor(data?: ITempSalesHeaderDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.taxRate = _data["taxRate"];
+            this.taxAmount = _data["taxAmount"];
+            this.grossAmount = _data["grossAmount"];
+            this.netAmount = _data["netAmount"];
+            this.remarks = _data["remarks"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["tempSalesProducts"])) {
+                this.tempSalesProducts = [] as any;
+                for (let item of _data["tempSalesProducts"])
+                    this.tempSalesProducts.push(TempSalesProductDto.fromJS(item));
+            }
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): TempSalesHeaderDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TempSalesHeaderDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["taxRate"] = this.taxRate;
+        data["taxAmount"] = this.taxAmount;
+        data["grossAmount"] = this.grossAmount;
+        data["netAmount"] = this.netAmount;
+        data["remarks"] = this.remarks;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.tempSalesProducts)) {
+            data["tempSalesProducts"] = [];
+            for (let item of this.tempSalesProducts)
+                data["tempSalesProducts"].push(item.toJSON());
+        }
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): TempSalesHeaderDto {
+        const json = this.toJSON();
+        let result = new TempSalesHeaderDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ITempSalesHeaderDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    isActive: boolean;
+    tempSalesProducts: TempSalesProductDto[] | undefined;
+    id: number;
 }
 
 export class ApplicationInfoDto implements IApplicationInfoDto {

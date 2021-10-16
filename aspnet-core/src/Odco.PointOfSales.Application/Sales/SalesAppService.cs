@@ -9,12 +9,16 @@ using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.GeneralDto;
 using Odco.PointOfSales.Application.Sales.Customers;
 using Odco.PointOfSales.Application.Sales.TemporarySalesHeaders;
+using Odco.PointOfSales.Core.Inventory;
+using Odco.PointOfSales.Core.Productions;
 using Odco.PointOfSales.Core.Sales;
 using Odco.PointOfSales.Sales.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Odco.PointOfSales.Application.Inventory.StockBalances;
 
 namespace Odco.PointOfSales.Application.Sales
 {
@@ -23,12 +27,19 @@ namespace Odco.PointOfSales.Application.Sales
         private readonly IAsyncQueryableExecuter _asyncQueryableExecuter;
         private readonly IRepository<Customer, Guid> _customerRepository;
         private readonly IRepository<TempSalesHeader, int> _tempSalesHeaderRepository;
+        private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
+        private readonly IRepository<Warehouse, Guid> _warehouseRepository;
 
-        public SalesAppService(IRepository<Customer, Guid> customerRepository, IRepository<TempSalesHeader, int> tempSalesHeaderRepository)
+        public SalesAppService(IRepository<Customer, Guid> customerRepository, 
+            IRepository<TempSalesHeader, int> tempSalesHeaderRepository,
+            IRepository<StockBalance, Guid> stockBalanceRepository,
+            IRepository<Warehouse, Guid> warehouseRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _customerRepository = customerRepository;
             _tempSalesHeaderRepository = tempSalesHeaderRepository;
+            _stockBalanceRepository = stockBalanceRepository;
+            _warehouseRepository = warehouseRepository;
         }
 
         #region Customer
@@ -137,8 +148,43 @@ namespace Odco.PointOfSales.Application.Sales
         #endregion
 
         #region TemporarySales Header + Products
+        /// <summary>
+        /// 1. Create Temporary Sales Header & Product
+        /// 2. StockBalance: Shift sales quantity to allocated quantity
+        /// 3. Set Default warehouse to selected products (Line Level Products)
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public async Task<TempSalesHeaderDto> CreateTempSalesAsync(CreateTempSalesHeaderDto input)
         {
+            var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
+            var stockBalances = new List<StockBalance>();
+
+            // Set Warehouse Details to Line level 
+            foreach (var lineLevel in input.TempSalesProducts)
+            {
+                lineLevel.WarehouseId = warehouse.Id;
+                lineLevel.WarehouseCode = warehouse.Code;
+                lineLevel.WarehouseName = warehouse.Name;
+
+                stockBalances = await GetStockBalancesAsync(lineLevel.ProductId, warehouse.Id);
+
+                // * Increase in Allocated Qty & Decrease in Book Balance Qty
+                // 1. Company Summary
+                // 2. Warehouse Summary
+                // 3. GRN Summary reduce (specific)
+                foreach (var sb in stockBalances)
+                {
+                    if (sb.SequenceNumber > 0 || sb.Id == lineLevel.StockBalanceId)
+                    {
+                        sb.AllocatedQuantity += lineLevel.Quantity;
+                        sb.BookBalanceQuantity -= lineLevel.Quantity;
+                        await _stockBalanceRepository.UpdateAsync(sb);
+                    }
+                }
+
+            }
+
             var temp = ObjectMapper.Map<TempSalesHeader>(input);
             var created = await _tempSalesHeaderRepository.InsertAsync(temp);
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -151,6 +197,22 @@ namespace Odco.PointOfSales.Application.Sales
                 .GetAllIncluding(t => t.TempSalesProducts)
                 .FirstOrDefaultAsync(t => t.Id == tempSalesHeaderId);
             return ObjectMapper.Map<TempSalesHeaderDto>(temp);
+        }
+        #endregion
+
+        #region Stock Balance
+        /// <summary>
+        /// Company summary + Warehouse summaries + GRN summaries
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="warehouseId"></param>
+        /// <returns></returns>
+        private async Task<List<StockBalance>> GetStockBalancesAsync(Guid productId, Guid warehouseId)
+        {
+            return await _stockBalanceRepository
+                .GetAll()
+                .Where(sb => sb.ProductId == productId && (!sb.WarehouseId.HasValue || sb.WarehouseId == warehouseId))
+                .ToListAsync();
         }
         #endregion
     }
