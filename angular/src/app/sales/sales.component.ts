@@ -90,7 +90,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   ngOnInit(): void {
     let _tempSalesHeaderId = (this.tempSalesHeaderId =
       +this.route.snapshot.queryParamMap.get("salesHeaderId"));
-    if (!_tempSalesHeaderId) this.popoulateSalesHeaderDetails(true, null);
+    if (!_tempSalesHeaderId) this.populateSalesHeaderDetails(true, null);
     if (_tempSalesHeaderId) this.getTemporarySalesDetails(_tempSalesHeaderId);
   }
 
@@ -100,7 +100,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       .subscribe((result: TempSalesHeaderDto) => {
         console.log(result);
 
-        this.popoulateSalesHeaderDetails(false, result);
+        this.populateSalesHeaderDetails(false, result);
 
         let stockBalanceIds: string[] = [];
         result.tempSalesProducts.forEach((value) => {
@@ -133,7 +133,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   // If "salesheader: Exist => Came from Query string else a new One
-  private popoulateSalesHeaderDetails(
+  private populateSalesHeaderDetails(
     isNewSale: boolean,
     salesheader: TempSalesHeaderDto
   ) {
