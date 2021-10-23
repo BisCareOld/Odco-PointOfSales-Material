@@ -29,6 +29,8 @@ namespace Odco.PointOfSales.Core.Productions
 
         public bool IsActive { get; set; }
 
+        public bool IsDefault { get; set; }
+
         public ICollection<Address> Addresses { get; set; }
 
         public Warehouse()

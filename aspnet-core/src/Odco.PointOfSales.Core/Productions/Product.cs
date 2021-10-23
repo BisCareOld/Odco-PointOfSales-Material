@@ -34,7 +34,7 @@ namespace Odco.PointOfSales.Core.Productions
 
         public Category Category { get; set; }
 
-        [StringLength(100)]
+        [StringLength(15)]
         public string BarCode { get; set; }
 
         /// <summary>
@@ -59,6 +59,12 @@ namespace Odco.PointOfSales.Core.Productions
         /// </summary>
         [Required]
         public decimal ReOrderQuantity { get; set; }
+
+        public decimal CostPrice { get; set; }
+        
+        public decimal RetailPrice { get; set; }
+
+        public decimal WholeSalePrice { get; set; }
 
         public bool IsActive { get; set; }
 

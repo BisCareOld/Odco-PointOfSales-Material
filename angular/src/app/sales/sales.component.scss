@@ -1,0 +1,115 @@
+.parent {
+  margin: 10px;
+  display: grid;
+  height: 95%;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 10% 70% 20%;
+}
+
+.child {
+  padding: 10px;
+  font-size: 20px;
+  border: 1px solid grey;
+}
+
+.product-search-panel {
+  grid-column: 1/3;
+  display: flex;
+  border: 1px solid grey;
+
+  .product-search {
+    width: 100%;
+    font-size: 14px;
+    margin-left: 10px;
+  }
+}
+
+// .product-display {
+// }
+
+.sales-options {
+  grid-column: 2/3;
+  grid-row: 2/4;
+}
+
+.active {
+  background-color: #3f51b5;
+  color: #fff;
+}
+
+.common-functions {
+  display: grid;
+  height: 50%;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 50%;
+
+  button {
+    border: 1px solid grey;
+    text-align: center;
+    border-radius: 0;
+    line-height: 5rem;
+
+    mat-icon {
+      display: grid;
+      margin: auto;
+      width: 100%;
+      font-size: 53px;
+    }
+  }
+}
+
+.below-functions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  grid-template-rows: 40% 40% 40%;
+  gap: 5px;
+
+  button {
+    border: 1px solid grey;
+    text-align: center;
+    border-radius: 0;
+
+    mat-icon,
+    .shortcut-key {
+      display: grid;
+      margin: auto;
+      width: 50%;
+      font-size: 35px;
+      font-weight: bold;
+    }
+  }
+}
+
+.payment-button {
+  background-color: rgb(63, 194, 63);
+  color: rgb(255, 255, 255);
+}
+
+.void-button {
+  background-color: rgb(238, 43, 43);
+  color: rgb(255, 255, 255);
+}
+
+.remove-product-button {
+  border: 0;
+  color: #fff;
+  background-color: rgb(238, 43, 43);
+}
+
+.calculation-column {
+  float: left;
+  width: 50%;
+  text-align: right;
+  font-size: 14px;
+}
+
+.calculation-value {
+  font-size: 18px;
+}
+
+/* Clear floats after the columns */
+.calculation-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}

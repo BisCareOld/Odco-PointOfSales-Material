@@ -7,10 +7,12 @@ using Abp.Linq;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Productions.Products;
 using Odco.PointOfSales.Application.Productions.Warehouses;
+using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
 using System;
@@ -146,6 +148,51 @@ namespace Odco.PointOfSales.Application.Productions
                     Name = p.Name,
                 })
                 .ToList();
+        }
+
+        public async Task<List<ProductSearchResultDto>> GetPartialProductsByTypesAsync(ProductSearchType type, string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+                return new List<ProductSearchResultDto>();
+
+            List<Product> products = new List<Product>();
+
+            if (type == ProductSearchType.Barcode)
+            {
+                products = await _productRepository
+                    .GetAll()
+                    .Where(p => p.IsActive && p.BarCode.ToLower().Contains(keyword))
+                    .OrderBy(p => p.BarCode)
+                    .Take(PointOfSalesConsts.MaximumNumberOfReturnResults)
+                    .ToListAsync();
+            }
+            else if (type == ProductSearchType.Code)
+            {
+                products = await _productRepository
+                    .GetAll()
+                    .Where(p => p.IsActive && p.Code.ToLower().Contains(keyword))
+                    .OrderBy(p => p.Code)
+                    .Take(PointOfSalesConsts.MaximumNumberOfReturnResults)
+                    .ToListAsync();
+            }
+            else if (type == ProductSearchType.Name)
+            {
+                products = await _productRepository
+                    .GetAll()
+                    .Where(p => p.IsActive && p.Name.ToLower().Contains(keyword))
+                    .OrderBy(p => p.Name)
+                    .Take(PointOfSalesConsts.MaximumNumberOfReturnResults)
+                    .ToListAsync();
+            }
+
+            return products.Select(p => new ProductSearchResultDto
+            {
+                Id = p.Id,
+                BarCode = p.BarCode,
+                Code = p.Code,
+                Name = p.Name,
+                IsActive = p.IsActive
+            }).ToList();
         }
         #endregion
 
@@ -432,6 +479,61 @@ namespace Odco.PointOfSales.Application.Productions
                 Name = c.Name
             }).ToListAsync();
         }
+        #endregion
+
+        #region Stock Balance
+        public async Task<ResponseDto<ProductStockBalanceDto>> GetStockBalancesByProductIdAsync(Guid productId)
+        {
+            var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsDefault);
+            if (warehouse == null) return new ResponseDto<ProductStockBalanceDto>
+            {
+                StatusCode = 404,
+                Message = "Default warehouse is not defined",
+                Items = new ProductStockBalanceDto[] { }
+            };
+
+            var stockBalances = _stockBalanceRepository.GetAll()
+                .Where(sb => sb.SequenceNumber > 0 && sb.ProductId == productId && sb.WarehouseId == warehouse.Id && sb.BookBalanceQuantity > 0)
+                .Select(sb => new ProductStockBalanceDto
+                {
+                    StockBalanceId = sb.Id,
+                    ProductId = sb.ProductId,
+                    ExpiryDate = sb.ExpiryDate,
+                    BatchNumber = sb.BatchNumber,
+                    AllocatedQuantity = sb.AllocatedQuantity,
+                    AllocatedQuantityUnitOfMeasureUnit = sb.AllocatedQuantityUnitOfMeasureUnit,
+                    BookBalanceQuantity = sb.BookBalanceQuantity,
+                    BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
+                    CostPrice = sb.CostPrice,
+                    SellingPrice = sb.SellingPrice,
+                    MaximumRetailPrice = sb.MaximumRetailPrice
+                });
+            return new ResponseDto<ProductStockBalanceDto>
+            {
+                StatusCode = 200,
+                Message = "",
+                Items = stockBalances.ToArray()
+            };
+        }
+
+        // Delete if not needed
+        //public async Task<ProductStockBalanceDto> GetStockBalancesByStockBalaneIdsAsync(int[] ids)
+        //{
+        //    return _stockBalanceRepository.GetAll()
+        //        .Where(sb => sb.SequenceNumber > 0 && sb.ProductId == productId && sb.WarehouseId == warehouse.Id && sb.BookBalanceQuantity > 0)
+        //        .Select(sb => new ProductStockBalanceDto
+        //        {
+        //            StockBalanceId = sb.Id,
+        //            ProductId = sb.ProductId,
+        //            ExpiryDate = sb.ExpiryDate,
+        //            BatchNumber = sb.BatchNumber,
+        //            BookBalanceQuantity = sb.BookBalanceQuantity,
+        //            BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
+        //            CostPrice = sb.CostPrice,
+        //            SellingPrice = sb.SellingPrice,
+        //            MaximumRetailPrice = sb.MaximumRetailPrice
+        //        });
+        //}
         #endregion
 
         private async Task CreateOrUpdateStockBalance(Guid productId, string productCode, string productName)

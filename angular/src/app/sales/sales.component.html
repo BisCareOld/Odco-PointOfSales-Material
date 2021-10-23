@@ -1,0 +1,255 @@
+<div class="parent" *ngIf="salePanelForm">
+  <!-- 1. PRODUCT SEARCH PANEL -->
+  <div class="child product-search-panel">
+    <button
+      mat-icon-button
+      (click)="selectedSearchProductType = 1"
+      [class]="selectedSearchProductType == 1 ? 'active' : ''"
+    >
+      <mat-icon>qr_code</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="selectedSearchProductType = 2"
+      [class]="selectedSearchProductType == 2 ? 'active' : ''"
+    >
+      <mat-icon>numbers</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      (click)="selectedSearchProductType = 3"
+      [class]="selectedSearchProductType == 3 ? 'active' : ''"
+    >
+      <mat-icon>local_offer</mat-icon>
+    </button>
+    <div class="box product-search">
+      <partial-products-by-type
+        [type]="selectedSearchProductType"
+        (selectedEvent)="selectedProducts($event)"
+      ></partial-products-by-type>
+    </div>
+  </div>
+
+  <!-- 2. SELECTED PRODUCT TABLE -->
+  <form [formGroup]="salePanelForm" novalidate (ngSubmit)="save()">
+    <div class="child product-display">
+      <ng-container formArrayName="salesProducts">
+        <table class="full-width-table" mat-table [dataSource]="dataSource">
+          <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+          <!-- Product Name Column -->
+          <ng-container matColumnDef="product-name">
+            <th mat-header-cell *matHeaderCellDef style="width: 25%">
+              {{ "Product" | localize }}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <div>{{ element.get("productName").value }}</div>
+              <div>#{{ element.get("productCode").value }}</div>
+            </td>
+          </ng-container>
+
+          <!-- Sold Price Column -->
+          <ng-container matColumnDef="sold-price">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "Price" | localize }}
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroupName]="i"
+            >
+              <input
+                type="number"
+                matInput
+                class="transaction-table-inputs"
+                formControlName="soldPrice"
+                id="soldPrice{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
+              />
+              <span *ngIf="element.get('soldPrice').touched">
+                <mat-error *ngIf="element.get('soldPrice').errors?.required"
+                  >Sold price is required.</mat-error
+                >
+                <mat-error *ngIf="element.get('soldPrice').errors?.min"
+                  >Should be minimum 1.</mat-error
+                >
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "Quantity" | localize }}
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroupName]="i"
+            >
+              <input
+                type="number"
+                matInput
+                class="transaction-table-inputs"
+                formControlName="quantity"
+                id="quantity{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
+              />
+              <span *ngIf="element.get('quantity').touched">
+                <mat-error *ngIf="element.get('quantity').errors?.required"
+                  >Quantity is required.</mat-error
+                >
+                <mat-error *ngIf="element.get('quantity').errors?.min"
+                  >Should be minimum 1.</mat-error
+                >
+                <mat-error *ngIf="element.get('quantity').errors?.max"
+                  >Should be below
+                  {{ element.get("quantity").errors?.max.max }}.</mat-error
+                >
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Discount Rate Column -->
+          <ng-container matColumnDef="discount">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "DiscountRate" | localize }}
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroupName]="i"
+            >
+              <input
+                type="number"
+                matInput
+                class="transaction-table-inputs"
+                formControlName="discountRate"
+                id="discountRate{{ i }}"
+                (change)="updateLineLevelCalculations(element)"
+              />
+              <span *ngIf="element.get('discountRate').touched">
+                <mat-error *ngIf="element.get('discountRate').errors?.required"
+                  >Discount rate is required.</mat-error
+                >
+                <mat-error *ngIf="element.get('discountRate').errors?.min"
+                  >Should be minimum 0.</mat-error
+                >
+                <mat-error *ngIf="element.get('discountRate').errors?.max"
+                  >Should be maximum 100.</mat-error
+                >
+              </span>
+              <span> LKR. {{ element.get("discountAmount").value }} </span>
+            </td>
+          </ng-container>
+
+          <!-- Line Total / Total Amount Column -->
+          <ng-container matColumnDef="line-amount">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ "LineTotal" | localize }}
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let element; let i = index"
+              [formGroupName]="i"
+            >
+              LKR. {{ element.get("lineTotal").value }}
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element; let i = index">
+              <mat-icon
+                style="color: #d45959"
+                (click)="removeProduct(i, element)"
+                >delete_forever</mat-icon
+              >
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </ng-container>
+    </div>
+  </form>
+
+  <!-- 3. SALES OPTIONS -->
+  <div class="child sales-options">
+    <div class="common-functions">
+      <button mat-button class="remove-product-button">
+        <mat-icon>close</mat-icon>Delete
+      </button>
+      <button mat-button>
+        <mat-icon matBadge="F3" matBadgePosition="before">search</mat-icon
+        >Search
+      </button>
+      <button mat-button>
+        <mat-icon matBadge="F4" matBadgePosition="before"
+          >add_shopping_cart</mat-icon
+        >Quantity
+      </button>
+      <button mat-button (click)="newSale()">
+        <mat-icon matBadge="F8" matBadgePosition="before">add</mat-icon>New
+        Sales
+      </button>
+    </div>
+
+    <div class="below-functions">
+      <button mat-button>
+        <span matBadge="F2" matBadgePosition="before"></span
+        ><mat-icon>local_offer</mat-icon>Discount
+      </button>
+      <button mat-button><mat-icon>comment</mat-icon>Comment</button>
+      <button mat-button><mat-icon>move_to_inbox</mat-icon>Cash drawer</button>
+      <button mat-button>
+        <span
+          matBadge="1"
+          matBadgePosition="before"
+          matBadgeColor="accent"
+        ></span>
+        <span class="shortcut-key">F9</span>
+        Save Sale
+      </button>
+      <button mat-button><mat-icon>redo</mat-icon>Refund</button>
+      <button mat-button class="payment-button" (click)="payment()">
+        <span class="shortcut-key">F10</span>Payment
+      </button>
+      <button mat-button><mat-icon>lock</mat-icon>Lock</button>
+      <button mat-button>
+        <span matBadge="F7" matBadgePosition="before"></span>
+        <mat-icon>sync_alt</mat-icon>Transfer
+      </button>
+      <button mat-button class="void-button">
+        <mat-icon>delete</mat-icon>Void order
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. CALCULATION PANEL -->
+  <div class="child">
+    <div class="calculation-row">
+      <div class="calculation-column">Gross Amount</div>
+      <div class="calculation-column calculation-value">
+        LKR. {{ grossAmount.value }}
+      </div>
+    </div>
+    <div class="calculation-row">
+      <div class="calculation-column">Discount</div>
+      <div class="calculation-column">
+        0%
+        <span class="calculation-value">(LKR. {{ discountAmount.value }})</span>
+      </div>
+    </div>
+    <hr style="border: 1px dashed" />
+    <div class="calculation-row">
+      <div class="calculation-column">Net Amount</div>
+      <div class="calculation-column calculation-value">
+        LKR. {{ netAmount.value }}
+      </div>
+    </div>
+  </div>
+</div>
