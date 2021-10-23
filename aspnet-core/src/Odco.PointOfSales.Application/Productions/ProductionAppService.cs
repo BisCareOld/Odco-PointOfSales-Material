@@ -500,6 +500,8 @@ namespace Odco.PointOfSales.Application.Productions
                     ProductId = sb.ProductId,
                     ExpiryDate = sb.ExpiryDate,
                     BatchNumber = sb.BatchNumber,
+                    AllocatedQuantity = sb.AllocatedQuantity,
+                    AllocatedQuantityUnitOfMeasureUnit = sb.AllocatedQuantityUnitOfMeasureUnit,
                     BookBalanceQuantity = sb.BookBalanceQuantity,
                     BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
                     CostPrice = sb.CostPrice,
@@ -513,6 +515,25 @@ namespace Odco.PointOfSales.Application.Productions
                 Items = stockBalances.ToArray()
             };
         }
+
+        // Delete if not needed
+        //public async Task<ProductStockBalanceDto> GetStockBalancesByStockBalaneIdsAsync(int[] ids)
+        //{
+        //    return _stockBalanceRepository.GetAll()
+        //        .Where(sb => sb.SequenceNumber > 0 && sb.ProductId == productId && sb.WarehouseId == warehouse.Id && sb.BookBalanceQuantity > 0)
+        //        .Select(sb => new ProductStockBalanceDto
+        //        {
+        //            StockBalanceId = sb.Id,
+        //            ProductId = sb.ProductId,
+        //            ExpiryDate = sb.ExpiryDate,
+        //            BatchNumber = sb.BatchNumber,
+        //            BookBalanceQuantity = sb.BookBalanceQuantity,
+        //            BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
+        //            CostPrice = sb.CostPrice,
+        //            SellingPrice = sb.SellingPrice,
+        //            MaximumRetailPrice = sb.MaximumRetailPrice
+        //        });
+        //}
         #endregion
 
         private async Task CreateOrUpdateStockBalance(Guid productId, string productCode, string productName)

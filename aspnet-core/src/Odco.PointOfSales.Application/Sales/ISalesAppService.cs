@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Sales.Customers;
 using Odco.PointOfSales.Application.Sales.TemporarySalesHeaders;
 using System;
@@ -21,8 +22,12 @@ namespace Odco.PointOfSales.Application.Sales
         #endregion
 
         #region TemporarySales Header + Products
-        Task<TempSalesHeaderDto> CreateTempSalesAsync(CreateTempSalesHeaderDto input);
+        Task<TempSalesHeaderDto> CreateOrUpdateTempSalesAsync(CreateOrUpdateTempSalesHeaderDto input);
         Task<TempSalesHeaderDto> GetTempSalesAsync(int tempSalesHeaderId);
+        #endregion
+
+        #region StockBalance
+        Task<List<ProductStockBalanceDto>> GetStockBalancesByStockBalanceIdsAsync(Guid[] stockBalanceIds);
         #endregion
     }
 }

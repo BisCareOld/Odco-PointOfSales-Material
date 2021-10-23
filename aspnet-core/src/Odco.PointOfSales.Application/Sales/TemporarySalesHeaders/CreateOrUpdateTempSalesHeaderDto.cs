@@ -8,8 +8,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
 {
     [AutoMapTo(typeof(TempSalesHeader))]
-    public class CreateTempSalesHeaderDto
+    public class CreateOrUpdateTempSalesHeaderDto
     {
+        /// <summary>
+        /// Id Exist: Update
+        /// Id Not Exist: Create
+        /// </summary>
+        public int? Id { get; set; }
+        
         public Guid? CustomerId { get; set; }
 
         [StringLength(10)]
@@ -37,7 +43,7 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
 
         public ICollection<CreateTempSalesProductDto> TempSalesProducts { get; set; }
 
-        public CreateTempSalesHeaderDto()
+        public CreateOrUpdateTempSalesHeaderDto()
         {
             TempSalesProducts = new HashSet<CreateTempSalesProductDto>();
         }

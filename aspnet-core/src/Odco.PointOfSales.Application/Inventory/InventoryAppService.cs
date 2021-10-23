@@ -78,7 +78,7 @@ namespace Odco.PointOfSales.Application.Inventory
                         OnOrderQuantityUnitOfMeasureUnit = null,
                         AllocatedQuantity = 0,
                         AllocatedQuantityUnitOfMeasureUnit = null,
-                        ReceivedQuantity = lineLevel.Quantity,
+                        ReceivedQuantity = lineLevel.Quantity + lineLevel.FreeQuantity,
                         ReceivedQuantityUnitOfMeasureUnit = null,
                         CostPrice = lineLevel.CostPrice,
                         SellingPrice = lineLevel.SellingPrice,

@@ -14,6 +14,11 @@ namespace Odco.PointOfSales.Application.Inventory.StockBalances
         [StringLength(15)]
         public string BatchNumber { get; set; }
 
+        public decimal AllocatedQuantity { get; set; }
+
+        [StringLength(10)]
+        public string AllocatedQuantityUnitOfMeasureUnit { get; set; }
+
         public decimal BookBalanceQuantity { get; set; }
 
         [StringLength(10)]

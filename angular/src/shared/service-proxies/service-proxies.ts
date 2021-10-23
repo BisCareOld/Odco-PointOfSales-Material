@@ -3314,8 +3314,8 @@ export class SalesServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    createTempSales(body: CreateTempSalesHeaderDto | undefined): Observable<TempSalesHeaderDto> {
-        let url_ = this.baseUrl + "/api/services/app/Sales/CreateTempSales";
+    createOrUpdateTempSales(body: CreateOrUpdateTempSalesHeaderDto | undefined): Observable<TempSalesHeaderDto> {
+        let url_ = this.baseUrl + "/api/services/app/Sales/CreateOrUpdateTempSales";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -3331,11 +3331,11 @@ export class SalesServiceProxy {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateTempSales(response_);
+            return this.processCreateOrUpdateTempSales(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateTempSales(<any>response_);
+                    return this.processCreateOrUpdateTempSales(<any>response_);
                 } catch (e) {
                     return <Observable<TempSalesHeaderDto>><any>_observableThrow(e);
                 }
@@ -3344,7 +3344,7 @@ export class SalesServiceProxy {
         }));
     }
 
-    protected processCreateTempSales(response: HttpResponseBase): Observable<TempSalesHeaderDto> {
+    protected processCreateOrUpdateTempSales(response: HttpResponseBase): Observable<TempSalesHeaderDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3420,6 +3420,67 @@ export class SalesServiceProxy {
             }));
         }
         return _observableOf<TempSalesHeaderDto>(<any>null);
+    }
+
+    /**
+     * @param stockBalanceIds (optional) 
+     * @return Success
+     */
+    getStockBalancesByStockBalanceIds(stockBalanceIds: string[] | null | undefined): Observable<ProductStockBalanceDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Sales/GetStockBalancesByStockBalanceIds?";
+        if (stockBalanceIds !== undefined && stockBalanceIds !== null)
+            stockBalanceIds && stockBalanceIds.forEach(item => { url_ += "stockBalanceIds=" + encodeURIComponent("" + item) + "&"; });
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStockBalancesByStockBalanceIds(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStockBalancesByStockBalanceIds(<any>response_);
+                } catch (e) {
+                    return <Observable<ProductStockBalanceDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ProductStockBalanceDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStockBalancesByStockBalanceIds(response: HttpResponseBase): Observable<ProductStockBalanceDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(ProductStockBalanceDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ProductStockBalanceDto[]>(<any>null);
     }
 }
 
@@ -6277,6 +6338,8 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
     productId: string;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
+    allocatedQuantity: number;
+    allocatedQuantityUnitOfMeasureUnit: string | undefined;
     bookBalanceQuantity: number;
     bookBalanceUnitOfMeasureUnit: string | undefined;
     costPrice: number;
@@ -6299,6 +6362,8 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
             this.productId = _data["productId"];
             this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
             this.batchNumber = _data["batchNumber"];
+            this.allocatedQuantity = _data["allocatedQuantity"];
+            this.allocatedQuantityUnitOfMeasureUnit = _data["allocatedQuantityUnitOfMeasureUnit"];
             this.bookBalanceQuantity = _data["bookBalanceQuantity"];
             this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
             this.costPrice = _data["costPrice"];
@@ -6321,6 +6386,8 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
         data["productId"] = this.productId;
         data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
         data["batchNumber"] = this.batchNumber;
+        data["allocatedQuantity"] = this.allocatedQuantity;
+        data["allocatedQuantityUnitOfMeasureUnit"] = this.allocatedQuantityUnitOfMeasureUnit;
         data["bookBalanceQuantity"] = this.bookBalanceQuantity;
         data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
         data["costPrice"] = this.costPrice;
@@ -6343,6 +6410,8 @@ export interface IProductStockBalanceDto {
     productId: string;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
+    allocatedQuantity: number;
+    allocatedQuantityUnitOfMeasureUnit: string | undefined;
     bookBalanceQuantity: number;
     bookBalanceUnitOfMeasureUnit: string | undefined;
     costPrice: number;
@@ -7968,7 +8037,8 @@ export interface ICreateTempSalesProductDto {
     isActive: boolean;
 }
 
-export class CreateTempSalesHeaderDto implements ICreateTempSalesHeaderDto {
+export class CreateOrUpdateTempSalesHeaderDto implements ICreateOrUpdateTempSalesHeaderDto {
+    id: number | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
     customerName: string | undefined;
@@ -7982,7 +8052,7 @@ export class CreateTempSalesHeaderDto implements ICreateTempSalesHeaderDto {
     isActive: boolean;
     tempSalesProducts: CreateTempSalesProductDto[] | undefined;
 
-    constructor(data?: ICreateTempSalesHeaderDto) {
+    constructor(data?: ICreateOrUpdateTempSalesHeaderDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7993,6 +8063,7 @@ export class CreateTempSalesHeaderDto implements ICreateTempSalesHeaderDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.customerId = _data["customerId"];
             this.customerCode = _data["customerCode"];
             this.customerName = _data["customerName"];
@@ -8012,15 +8083,16 @@ export class CreateTempSalesHeaderDto implements ICreateTempSalesHeaderDto {
         }
     }
 
-    static fromJS(data: any): CreateTempSalesHeaderDto {
+    static fromJS(data: any): CreateOrUpdateTempSalesHeaderDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateTempSalesHeaderDto();
+        let result = new CreateOrUpdateTempSalesHeaderDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["customerId"] = this.customerId;
         data["customerCode"] = this.customerCode;
         data["customerName"] = this.customerName;
@@ -8040,15 +8112,16 @@ export class CreateTempSalesHeaderDto implements ICreateTempSalesHeaderDto {
         return data; 
     }
 
-    clone(): CreateTempSalesHeaderDto {
+    clone(): CreateOrUpdateTempSalesHeaderDto {
         const json = this.toJSON();
-        let result = new CreateTempSalesHeaderDto();
+        let result = new CreateOrUpdateTempSalesHeaderDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICreateTempSalesHeaderDto {
+export interface ICreateOrUpdateTempSalesHeaderDto {
+    id: number | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
     customerName: string | undefined;

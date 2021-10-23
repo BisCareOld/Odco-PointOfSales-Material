@@ -11,7 +11,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  CreateTempSalesHeaderDto,
+  CreateOrUpdateTempSalesHeaderDto,
   CreateTempSalesProductDto,
   TempSalesHeaderDto,
   ProductSearchResultDto,
@@ -27,6 +27,7 @@ import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialo
   styleUrls: ["./sales.component.scss"],
 })
 export class SalesComponent extends AppComponentBase implements OnInit {
+  tempSalesHeaderId: number = 0;
   selectedSearchProductType: number = 1; // product search type
   salePanelForm;
   displayedColumns: string[] = [
@@ -87,10 +88,10 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
-    let tempSalesHeaderId =
-      +this.route.snapshot.queryParamMap.get("salesHeaderId");
-    if (!tempSalesHeaderId) this.popoulateSalesHeaderDetails(true, null);
-    if (tempSalesHeaderId) this.getTemporarySalesDetails(tempSalesHeaderId);
+    let _tempSalesHeaderId = (this.tempSalesHeaderId =
+      +this.route.snapshot.queryParamMap.get("salesHeaderId"));
+    if (!_tempSalesHeaderId) this.popoulateSalesHeaderDetails(true, null);
+    if (_tempSalesHeaderId) this.getTemporarySalesDetails(_tempSalesHeaderId);
   }
 
   getTemporarySalesDetails(id: number) {
@@ -101,49 +102,33 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
         this.popoulateSalesHeaderDetails(false, result);
 
-        result.tempSalesProducts.forEach((value, i) => {
-          let item = this.fb.group({
-            stockBalanceId: [value.stockBalanceId],
-            productId: [value.id, Validators.required],
-            productCode: [value.code, Validators.required],
-            productName: [value.name, Validators.required],
-            warehouseId: [value.warehouseId, Validators.required],
-            warehouseCode: [value.warehouseCode, Validators.required],
-            warehouseName: [value.warehouseName, Validators.required],
-            quantity: [
-              value.quantity,
-              Validators.compose([
-                Validators.required,
-                Validators.min(1),
-                Validators.max(value.bookBalanceQuantity),
-              ]),
-            ],
-            freeQuantity: [
-              0,
-              Validators.compose([Validators.required, Validators.min(0)]),
-            ],
-            soldPrice: [
-              value.sellingPrice,
-              Validators.compose([Validators.required, Validators.min(1)]),
-            ],
-            discountRate: [
-              value.discountAmount,
-              Validators.compose([
-                Validators.required,
-                Validators.min(0),
-                Validators.max(100),
-              ]),
-            ],
-            discountAmount: [value.discountAmount, Validators.required],
-            lineTotal: [value.lineTotal, Validators.required],
-            //stockBalance: , // TODO: No needed I guess
-          });
-          this.salesProducts.push(item);
-          this.dataSource.data.push(item);
+        let stockBalanceIds: string[] = [];
+        result.tempSalesProducts.forEach((value) => {
+          stockBalanceIds.push(value.stockBalanceId);
         });
 
-        this.notify.info(this.l("ProductRetreivedSuccessfully"));
-        return (this.dataSource.filter = "");
+        let _stockBalances: ProductStockBalanceDto[] = [];
+        if (stockBalanceIds.length > 0) {
+          this._salesService
+            .getStockBalancesByStockBalanceIds(stockBalanceIds)
+            .subscribe((sb) => {
+              _stockBalances = sb;
+
+              result.tempSalesProducts.forEach((value, i) => {
+                let particularSB = _stockBalances.find(
+                  (sb) => sb.stockBalanceId == value.stockBalanceId
+                );
+                this.populateSalesProductDetails(
+                  false,
+                  value,
+                  null,
+                  particularSB
+                );
+              });
+
+              this.notify.info(this.l("ProductRetreivedSuccessfully"));
+            });
+        }
       });
   }
 
@@ -201,10 +186,82 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     });
   }
 
-  // private populateSalesProductDetails(
-  //   isNewSale: boolean,
-  //   value: TempSalesProductDto
-  // ) {}
+  private populateSalesProductDetails(
+    isNewSale: boolean,
+    _tempSalesProduct: TempSalesProductDto,
+    _product: ProductSearchResultDto,
+    _stockBalance: ProductStockBalanceDto
+  ) {
+    let item = this.fb.group({
+      stockBalanceId: [_stockBalance.stockBalanceId],
+      productId: [
+        !isNewSale ? _tempSalesProduct.productId : _product.id,
+        Validators.required,
+      ],
+      productCode: [
+        !isNewSale ? _tempSalesProduct.code : _product.code,
+        Validators.required,
+      ],
+      productName: [
+        !isNewSale ? _tempSalesProduct.name : _product.name,
+        Validators.required,
+      ],
+      warehouseId: [
+        !isNewSale ? _tempSalesProduct.warehouseId : null,
+        Validators.required,
+      ],
+      warehouseCode: [
+        !isNewSale ? _tempSalesProduct.warehouseCode : null,
+        Validators.required,
+      ],
+      warehouseName: [
+        !isNewSale ? _tempSalesProduct.warehouseName : null,
+        Validators.required,
+      ],
+      quantity: [
+        !isNewSale ? _tempSalesProduct.quantity : 0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(1),
+          Validators.max(
+            !isNewSale
+              ? _tempSalesProduct.bookBalanceQuantity
+              : _stockBalance.bookBalanceQuantity
+          ),
+        ]),
+      ],
+      freeQuantity: [
+        0,
+        Validators.compose([Validators.required, Validators.min(0)]),
+      ],
+      soldPrice: [
+        !isNewSale
+          ? _tempSalesProduct.sellingPrice
+          : _stockBalance.sellingPrice,
+        Validators.compose([Validators.required, Validators.min(1)]),
+      ],
+      discountRate: [
+        !isNewSale ? _tempSalesProduct.discountRate : 0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      discountAmount: [
+        !isNewSale ? _tempSalesProduct.discountAmount : 0,
+        Validators.required,
+      ],
+      lineTotal: [
+        !isNewSale ? _tempSalesProduct.lineTotal : 0,
+        Validators.required,
+      ],
+      stockBalance: _stockBalance, // TODO: No needed I guess
+    });
+    this.salesProducts.push(item);
+    this.dataSource.data.push(item);
+    return (this.dataSource.filter = "");
+  }
 
   logValidationErrors(group: FormGroup = this.salePanelForm): void {
     // Loop through each control key in the FormGroup
@@ -281,47 +338,9 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       const sb = stockBalances[i];
 
       if (!this.isStockBalanceExist(sb.stockBalanceId)) {
-        let item = this.fb.group({
-          stockBalanceId: [sb.stockBalanceId],
-          productId: [product.id, Validators.required],
-          productCode: [product.code, Validators.required],
-          productName: [product.name, Validators.required],
-          warehouseId: [null, Validators.required],
-          warehouseCode: [null, Validators.required],
-          warehouseName: [null, Validators.required],
-          quantity: [
-            0,
-            Validators.compose([
-              Validators.required,
-              Validators.min(1),
-              Validators.max(sb.bookBalanceQuantity),
-            ]),
-          ],
-          freeQuantity: [
-            0,
-            Validators.compose([Validators.required, Validators.min(0)]),
-          ],
-          soldPrice: [
-            sb.sellingPrice,
-            Validators.compose([Validators.required, Validators.min(1)]),
-          ],
-          discountRate: [
-            0,
-            Validators.compose([
-              Validators.required,
-              Validators.min(0),
-              Validators.max(100),
-            ]),
-          ],
-          discountAmount: [0, Validators.required],
-          lineTotal: [0, Validators.required],
-          stockBalance: sb,
-        });
-        this.salesProducts.push(item);
-        this.dataSource.data.push(item);
+        this.populateSalesProductDetails(true, null, product, sb);
       }
     }
-    return (this.dataSource.filter = "");
   }
 
   removeProduct(itemIndex: number, item: FormGroup) {
@@ -395,7 +414,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
     console.log(this.salePanelForm.value);
 
-    let _header = new CreateTempSalesHeaderDto();
+    let _header = new CreateOrUpdateTempSalesHeaderDto();
+    _header.id = !this.tempSalesHeaderId ? null : this.tempSalesHeaderId;
     _header.customerId = this.salePanelForm.value.customerId;
     _header.customerCode = this.salePanelForm.value.customerCode;
     _header.customerName = this.salePanelForm.value.customerName;
@@ -438,7 +458,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     });
 
     console.log(_header);
-    this._salesService.createTempSales(_header).subscribe((i) => {
+    this._salesService.createOrUpdateTempSales(_header).subscribe((i) => {
       console.log(i.id);
       this.notify.info(this.l("SavedSuccessfully"));
       this.router.navigate(["/app/payment-component", i.id]);
