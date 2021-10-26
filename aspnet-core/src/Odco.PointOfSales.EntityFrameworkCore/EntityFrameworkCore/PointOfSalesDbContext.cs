@@ -9,6 +9,7 @@ using Odco.PointOfSales.Core.IntermediateEntities;
 using Odco.PointOfSales.Sales.Common;
 using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Sales;
+using Odco.PointOfSales.Core.Finance;
 
 namespace Odco.PointOfSales.EntityFrameworkCore
 {
@@ -58,6 +59,12 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         public virtual DbSet<GoodsReceivedProduct> GoodsReceivedProducts { get; set; }
         #endregion
 
+        #region Finance
+        public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<InvoiceProduct> InvoiceProducts { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
+        #endregion
+
         public PointOfSalesDbContext(DbContextOptions<PointOfSalesDbContext> options)
                 : base(options)
         {
@@ -67,11 +74,7 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         //protected override void OnModelCreating(DbModelBuilder modelBuilder)
         //{
         //    base.OnModelCreating(modelBuilder);
-
         //    modelBuilder.Entity<Prod>().HasRequired(c => c.SalesPerson).WithMany(s => s.SalesPersonSalesAreas).WillCascadeOnDelete(false);
-
-
-
         //}
     }
 }

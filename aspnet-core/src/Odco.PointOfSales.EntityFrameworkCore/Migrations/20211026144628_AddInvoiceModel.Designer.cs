@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odco.PointOfSales.EntityFrameworkCore;
 
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    partial class PointOfSalesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211026144628_AddInvoiceModel")]
+    partial class AddInvoiceModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2357,106 +2359,6 @@ namespace Odco.PointOfSales.Migrations
                     b.ToTable("Finance.InvoiceProduct");
                 });
 
-            modelBuilder.Entity("Odco.PointOfSales.Core.Finance.Payment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Bank")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("BankId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Branch")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("BranchId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("CashAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("ChequeAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ChequeNumber")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<DateTime?>("ChequeReturnDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid?>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CustomerPhoneNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal?>("GiftCardAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("InvoiceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<bool>("IsCash")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCheque")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCreditOutstanding")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDebitCard")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsGiftCard")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal?>("OutstandingAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("OutstandingSettledAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.ToTable("Finance.Payment");
-                });
-
             modelBuilder.Entity("Odco.PointOfSales.Core.IntermediateEntities.ProductPriceGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3735,17 +3637,6 @@ namespace Odco.PointOfSales.Migrations
                     b.Navigation("Invoice");
                 });
 
-            modelBuilder.Entity("Odco.PointOfSales.Core.Finance.Payment", b =>
-                {
-                    b.HasOne("Odco.PointOfSales.Core.Finance.Invoice", "Invoice")
-                        .WithMany("Payments")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
-                });
-
             modelBuilder.Entity("Odco.PointOfSales.Core.IntermediateEntities.ProductPriceGroup", b =>
                 {
                     b.HasOne("Odco.PointOfSales.Sales.Common.PriceGroup", "PriceGroup")
@@ -3960,8 +3851,6 @@ namespace Odco.PointOfSales.Migrations
             modelBuilder.Entity("Odco.PointOfSales.Core.Finance.Invoice", b =>
                 {
                     b.Navigation("InvoiceProducts");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Odco.PointOfSales.Core.Inventory.GoodsReceived", b =>
