@@ -13,6 +13,12 @@
     <Compile Remove="Migrations\20190111071724_Upgraded_To_Abp_v4_1_0.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="StoredProcedures\spGetStockBalancesByStockBalanceId.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="StoredProcedures\spGetStockBalancesByStockBalanceId.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
