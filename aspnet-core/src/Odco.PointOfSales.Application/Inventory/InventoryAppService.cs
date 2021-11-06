@@ -11,6 +11,7 @@ using Odco.PointOfSales.Application.Inventory.GoodsReceiveNotes;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
+using Odco.PointOfSales.Core.StoredProcedures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +27,14 @@ namespace Odco.PointOfSales.Application.Inventory
         private readonly IDocumentSequenceNumberManager _documentSequenceNumberManager;
         private readonly IRepository<Product, Guid> _productRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
+        private readonly IStoredProcedureAppService _storedProcedureAppService;
 
         public InventoryAppService(IRepository<GoodsReceived, Guid> goodsReceivedRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
             IDocumentSequenceNumberManager documentSequenceNumberManager,
             IRepository<Product, Guid> productRepository,
-            IRepository<Warehouse, Guid> warehouseRepository)
+            IRepository<Warehouse, Guid> warehouseRepository,
+            IStoredProcedureAppService storedProcedureAppService)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _goodsReceivedRepository = goodsReceivedRepository;
@@ -39,6 +42,7 @@ namespace Odco.PointOfSales.Application.Inventory
             _documentSequenceNumberManager = documentSequenceNumberManager;
             _productRepository = productRepository;
             _warehouseRepository = warehouseRepository;
+            _storedProcedureAppService = storedProcedureAppService;
         }
 
         #region Goods Received Notes
@@ -206,5 +210,19 @@ namespace Odco.PointOfSales.Application.Inventory
         }
         #endregion
 
+        public async Task XASD()
+        {
+            try
+            {
+                var y = await _storedProcedureAppService.GetStockBalancesByStockBalanceId();
+                var l = 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+            
+        }
     }
 }
