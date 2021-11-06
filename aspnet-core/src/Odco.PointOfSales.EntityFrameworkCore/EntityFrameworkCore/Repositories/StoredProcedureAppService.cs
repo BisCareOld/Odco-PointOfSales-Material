@@ -24,7 +24,7 @@ namespace Odco.PointOfSales.EntityFrameworkCore.Repositories
             _transactionProvider = transactionProvider;
         }
 
-        public async Task<List<StockBalance>> GetStockBalancesByStockBalanceId()
+        public async Task<List<StockBalance>> GetStockBalancesByStockBalanceId(Guid[] stockBalanceIds)
         {
             try
             {
@@ -32,56 +32,65 @@ namespace Odco.PointOfSales.EntityFrameworkCore.Repositories
 
                 var stockBalances = new List<StockBalance>();
 
-                using (var command = CreateCommand("spGetStockBalancesByStockBalanceId", CommandType.StoredProcedure))
+                if(stockBalanceIds.Length > 0)
                 {
-                    using (var dataReader = await command.ExecuteReaderAsync())
+                    // Comma seperated with inverted commas for each values
+                    var arrayToString = string.Join(",", Array.ConvertAll(stockBalanceIds, x => string.Format("'{0}'", x.ToString())));
+
+                    // Setting up the WHERE clause => Raw SQL condition
+                    var wClause = string.Format("WHERE Id IN ({0})", arrayToString);
+
+                    using (var command = CreateCommand("spGetStockBalancesByStockBalanceId", CommandType.StoredProcedure, new SqlParameter("wClause", wClause)))
                     {
-                        while (dataReader.Read())
+                        using (var dataReader = await command.ExecuteReaderAsync())
                         {
-                            var sb = new StockBalance
+                            while (dataReader.Read())
                             {
-                                Id = SafeGetGuid(dataReader, "Id").Value,
-                                SequenceNumber = SafeGetInteger(dataReader, "SequenceNumber").Value,
-                                ProductId = SafeGetGuid(dataReader, "ProductId").Value,
-                                ProductCode = SafeGetString(dataReader, "ProductCode"),
-                                ProductName = SafeGetString(dataReader, "ProductName"),
-                                WarehouseId = SafeGetGuid(dataReader, "WarehouseId"),
-                                WarehouseCode = SafeGetString(dataReader, "WarehouseCode"),
-                                WarehouseName = SafeGetString(dataReader, "WarehouseName"),
-                                ExpiryDate = SafeGetDateTime(dataReader, "ExpiryDate"),
-                                BatchNumber = SafeGetString(dataReader, "BatchNumber"),
-                                ReceivedQuantity = SafeGetDecimal(dataReader, "ReceivedQuantity").Value,
-                                ReceivedQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "ReceivedQuantityUnitOfMeasureUnit"),
-                                BookBalanceQuantity = SafeGetDecimal(dataReader, "BookBalanceQuantity").Value,
-                                BookBalanceUnitOfMeasureUnit = SafeGetString(dataReader, "BookBalanceUnitOfMeasureUnit"),
-                                OnOrderQuantity = SafeGetDecimal(dataReader, "OnOrderQuantity").Value,
-                                OnOrderQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "OnOrderQuantityUnitOfMeasureUnit"),
-                                AllocatedQuantity = SafeGetDecimal(dataReader, "AllocatedQuantity").Value,
-                                AllocatedQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "AllocatedQuantityUnitOfMeasureUnit"),
-                                CostPrice = SafeGetDecimal(dataReader, "CostPrice").Value,
-                                SellingPrice = SafeGetDecimal(dataReader, "SellingPrice").Value,
-                                MaximumRetailPrice = SafeGetDecimal(dataReader, "MaximumRetailPrice").Value,
-                                GoodsRecievedNumber = SafeGetString(dataReader, "GoodsRecievedNumber"),
-                                PurchaseOrderNumber = SafeGetString(dataReader, "PurchaseOrderNumber"),
-                                
-                                CreationTime = SafeGetDateTime(dataReader, "CreationTime").Value,
-                                CreatorUserId = SafeGetLong(dataReader, "CreatorUserId"),
-                                LastModificationTime = SafeGetDateTime(dataReader, "LastModificationTime"),
-                                LastModifierUserId = SafeGetLong(dataReader, "LastModifierUserId"),
-                                IsDeleted = SafeGetBoolean(dataReader, "IsDeleted"),
-                                DeleterUserId = SafeGetLong(dataReader, "DeleterUserId"),
-                                DeletionTime = SafeGetDateTime(dataReader, "DeletionTime")
-                            };
-                            stockBalances.Add(sb);
+                                var sb = new StockBalance
+                                {
+                                    Id = SafeGetGuid(dataReader, "Id").Value,
+                                    SequenceNumber = SafeGetInteger(dataReader, "SequenceNumber").Value,
+                                    ProductId = SafeGetGuid(dataReader, "ProductId").Value,
+                                    ProductCode = SafeGetString(dataReader, "ProductCode"),
+                                    ProductName = SafeGetString(dataReader, "ProductName"),
+                                    WarehouseId = SafeGetGuid(dataReader, "WarehouseId"),
+                                    WarehouseCode = SafeGetString(dataReader, "WarehouseCode"),
+                                    WarehouseName = SafeGetString(dataReader, "WarehouseName"),
+                                    ExpiryDate = SafeGetDateTime(dataReader, "ExpiryDate"),
+                                    BatchNumber = SafeGetString(dataReader, "BatchNumber"),
+                                    ReceivedQuantity = SafeGetDecimal(dataReader, "ReceivedQuantity").Value,
+                                    ReceivedQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "ReceivedQuantityUnitOfMeasureUnit"),
+                                    BookBalanceQuantity = SafeGetDecimal(dataReader, "BookBalanceQuantity").Value,
+                                    BookBalanceUnitOfMeasureUnit = SafeGetString(dataReader, "BookBalanceUnitOfMeasureUnit"),
+                                    OnOrderQuantity = SafeGetDecimal(dataReader, "OnOrderQuantity").Value,
+                                    OnOrderQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "OnOrderQuantityUnitOfMeasureUnit"),
+                                    AllocatedQuantity = SafeGetDecimal(dataReader, "AllocatedQuantity").Value,
+                                    AllocatedQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "AllocatedQuantityUnitOfMeasureUnit"),
+                                    CostPrice = SafeGetDecimal(dataReader, "CostPrice").Value,
+                                    SellingPrice = SafeGetDecimal(dataReader, "SellingPrice").Value,
+                                    MaximumRetailPrice = SafeGetDecimal(dataReader, "MaximumRetailPrice").Value,
+                                    GoodsRecievedNumber = SafeGetString(dataReader, "GoodsRecievedNumber"),
+                                    PurchaseOrderNumber = SafeGetString(dataReader, "PurchaseOrderNumber"),
+
+                                    CreationTime = SafeGetDateTime(dataReader, "CreationTime").Value,
+                                    CreatorUserId = SafeGetLong(dataReader, "CreatorUserId"),
+                                    LastModificationTime = SafeGetDateTime(dataReader, "LastModificationTime"),
+                                    LastModifierUserId = SafeGetLong(dataReader, "LastModifierUserId"),
+                                    IsDeleted = SafeGetBoolean(dataReader, "IsDeleted"),
+                                    DeleterUserId = SafeGetLong(dataReader, "DeleterUserId"),
+                                    DeletionTime = SafeGetDateTime(dataReader, "DeletionTime")
+                                };
+                                stockBalances.Add(sb);
+                            }
                         }
                     }
                 }
-                
+
                 return stockBalances;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Sql Error => spGetStockBalancesByStockBalanceId");
             }
 
         }

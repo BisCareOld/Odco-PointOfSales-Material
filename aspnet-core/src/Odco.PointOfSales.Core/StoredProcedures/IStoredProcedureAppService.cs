@@ -8,6 +8,6 @@ namespace Odco.PointOfSales.Core.StoredProcedures
 {
     public interface IStoredProcedureAppService: IRepository<StockBalance, Guid>
     {
-        Task<List<StockBalance>> GetStockBalancesByStockBalanceId();
+        Task<List<StockBalance>> GetStockBalancesByStockBalanceId(Guid[] stockBalanceIds);
     }
 }
