@@ -15,7 +15,5 @@ namespace Odco.PointOfSales.Application.Inventory
         #region Stock Balance
         Task<bool> SyncStockBalancesAsync();
         #endregion
-
-        Task XASD();
     }
 }

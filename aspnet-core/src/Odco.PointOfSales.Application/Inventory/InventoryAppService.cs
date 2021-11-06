@@ -209,26 +209,5 @@ namespace Odco.PointOfSales.Application.Inventory
                 .ToListAsync();
         }
         #endregion
-
-        public async Task XASD()
-        {
-            try
-            {
-                Guid[] arrays = new Guid[]
-                                {
-                                    Guid.Parse("a87c8017-1a11-48d9-c4ae-08d995d4556f"),
-                                    Guid.Parse("e8fa34a4-ea09-488b-c4b2-08d995d4556f"),
-                                };
-
-                var y = await _storedProcedureAppService.GetStockBalancesByStockBalanceId(arrays);
-                var l = 0;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            
-            
-        }
     }
 }
