@@ -39,7 +39,9 @@
         <div><button mat-button>Cash</button></div>
         <div><button mat-button>Credit Card</button></div>
         <div><button mat-button>Debit Card</button></div>
-        <div><button mat-button>Cheque</button></div>
+        <div>
+          <button mat-button (click)="showChequeDialog(1, 2)">Cheque</button>
+        </div>
         <div><button mat-button>Voucher</button></div>
         <div><button mat-button>Gift Card</button></div>
         <div>
