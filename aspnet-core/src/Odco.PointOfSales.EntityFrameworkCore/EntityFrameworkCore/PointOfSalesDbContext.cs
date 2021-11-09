@@ -25,6 +25,8 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         public virtual DbSet<PersonTitle> PersonTitles { get; set; }
         public virtual DbSet<UnitConversion> UnitConversions { get; set; }
         public virtual DbSet<UnitOfMeasure> UnitOfMeasures { get; set; }
+        public virtual DbSet<Bank> Banks { get; set; }
+        public virtual DbSet<BankBranch> BankBranches { get; set; }
         #endregion
 
         #region IntermediateEntities
