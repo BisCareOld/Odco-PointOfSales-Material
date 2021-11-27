@@ -376,6 +376,74 @@ export class DocumentSequenceNumberManagerImplementationServiceProxy {
 }
 
 @Injectable()
+export class FinanceServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createInvoice(body: CreateInvoiceDto | undefined): Observable<InvoiceDto> {
+        let url_ = this.baseUrl + "/api/services/app/Finance/CreateInvoice";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateInvoice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateInvoice(<any>response_);
+                } catch (e) {
+                    return <Observable<InvoiceDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InvoiceDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateInvoice(response: HttpResponseBase): Observable<InvoiceDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = InvoiceDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InvoiceDto>(<any>null);
+    }
+}
+
+@Injectable()
 export class InventoryServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -4904,6 +4972,600 @@ export enum DocumentType {
     _10 = 10,
 }
 
+export class CashDto implements ICashDto {
+    cashAmount: number;
+
+    constructor(data?: ICashDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.cashAmount = _data["cashAmount"];
+        }
+    }
+
+    static fromJS(data: any): CashDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CashDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["cashAmount"] = this.cashAmount;
+        return data; 
+    }
+
+    clone(): CashDto {
+        const json = this.toJSON();
+        let result = new CashDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICashDto {
+    cashAmount: number;
+}
+
+export class ChequeDto implements IChequeDto {
+    chequeNumber: string | undefined;
+    bankId: string;
+    bank: string | undefined;
+    branchId: string;
+    branch: string | undefined;
+    chequeReturnDate: moment.Moment;
+    chequeAmount: number;
+
+    constructor(data?: IChequeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.chequeNumber = _data["chequeNumber"];
+            this.bankId = _data["bankId"];
+            this.bank = _data["bank"];
+            this.branchId = _data["branchId"];
+            this.branch = _data["branch"];
+            this.chequeReturnDate = _data["chequeReturnDate"] ? moment(_data["chequeReturnDate"].toString()) : <any>undefined;
+            this.chequeAmount = _data["chequeAmount"];
+        }
+    }
+
+    static fromJS(data: any): ChequeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChequeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["chequeNumber"] = this.chequeNumber;
+        data["bankId"] = this.bankId;
+        data["bank"] = this.bank;
+        data["branchId"] = this.branchId;
+        data["branch"] = this.branch;
+        data["chequeReturnDate"] = this.chequeReturnDate ? this.chequeReturnDate.toISOString() : <any>undefined;
+        data["chequeAmount"] = this.chequeAmount;
+        return data; 
+    }
+
+    clone(): ChequeDto {
+        const json = this.toJSON();
+        let result = new ChequeDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IChequeDto {
+    chequeNumber: string | undefined;
+    bankId: string;
+    bank: string | undefined;
+    branchId: string;
+    branch: string | undefined;
+    chequeReturnDate: moment.Moment;
+    chequeAmount: number;
+}
+
+export class CustomerCreditOutstandingDto implements ICustomerCreditOutstandingDto {
+    outstandingAmount: number;
+
+    constructor(data?: ICustomerCreditOutstandingDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.outstandingAmount = _data["outstandingAmount"];
+        }
+    }
+
+    static fromJS(data: any): CustomerCreditOutstandingDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CustomerCreditOutstandingDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["outstandingAmount"] = this.outstandingAmount;
+        return data; 
+    }
+
+    clone(): CustomerCreditOutstandingDto {
+        const json = this.toJSON();
+        let result = new CustomerCreditOutstandingDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICustomerCreditOutstandingDto {
+    outstandingAmount: number;
+}
+
+export class DebitCardDto implements IDebitCardDto {
+
+    constructor(data?: IDebitCardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): DebitCardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DebitCardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data; 
+    }
+
+    clone(): DebitCardDto {
+        const json = this.toJSON();
+        let result = new DebitCardDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IDebitCardDto {
+}
+
+export class GiftCardDto implements IGiftCardDto {
+    giftCardAmount: number;
+
+    constructor(data?: IGiftCardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.giftCardAmount = _data["giftCardAmount"];
+        }
+    }
+
+    static fromJS(data: any): GiftCardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GiftCardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["giftCardAmount"] = this.giftCardAmount;
+        return data; 
+    }
+
+    clone(): GiftCardDto {
+        const json = this.toJSON();
+        let result = new GiftCardDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IGiftCardDto {
+    giftCardAmount: number;
+}
+
+export class CreateInvoiceDto implements ICreateInvoiceDto {
+    tempSalesHeaderId: number | undefined;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    cashes: CashDto[] | undefined;
+    cheques: ChequeDto[] | undefined;
+    outstandings: CustomerCreditOutstandingDto[] | undefined;
+    debitCards: DebitCardDto[] | undefined;
+    giftCards: GiftCardDto[] | undefined;
+
+    constructor(data?: ICreateInvoiceDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tempSalesHeaderId = _data["tempSalesHeaderId"];
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.taxRate = _data["taxRate"];
+            this.taxAmount = _data["taxAmount"];
+            this.grossAmount = _data["grossAmount"];
+            this.netAmount = _data["netAmount"];
+            if (Array.isArray(_data["cashes"])) {
+                this.cashes = [] as any;
+                for (let item of _data["cashes"])
+                    this.cashes.push(CashDto.fromJS(item));
+            }
+            if (Array.isArray(_data["cheques"])) {
+                this.cheques = [] as any;
+                for (let item of _data["cheques"])
+                    this.cheques.push(ChequeDto.fromJS(item));
+            }
+            if (Array.isArray(_data["outstandings"])) {
+                this.outstandings = [] as any;
+                for (let item of _data["outstandings"])
+                    this.outstandings.push(CustomerCreditOutstandingDto.fromJS(item));
+            }
+            if (Array.isArray(_data["debitCards"])) {
+                this.debitCards = [] as any;
+                for (let item of _data["debitCards"])
+                    this.debitCards.push(DebitCardDto.fromJS(item));
+            }
+            if (Array.isArray(_data["giftCards"])) {
+                this.giftCards = [] as any;
+                for (let item of _data["giftCards"])
+                    this.giftCards.push(GiftCardDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateInvoiceDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateInvoiceDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tempSalesHeaderId"] = this.tempSalesHeaderId;
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["taxRate"] = this.taxRate;
+        data["taxAmount"] = this.taxAmount;
+        data["grossAmount"] = this.grossAmount;
+        data["netAmount"] = this.netAmount;
+        if (Array.isArray(this.cashes)) {
+            data["cashes"] = [];
+            for (let item of this.cashes)
+                data["cashes"].push(item.toJSON());
+        }
+        if (Array.isArray(this.cheques)) {
+            data["cheques"] = [];
+            for (let item of this.cheques)
+                data["cheques"].push(item.toJSON());
+        }
+        if (Array.isArray(this.outstandings)) {
+            data["outstandings"] = [];
+            for (let item of this.outstandings)
+                data["outstandings"].push(item.toJSON());
+        }
+        if (Array.isArray(this.debitCards)) {
+            data["debitCards"] = [];
+            for (let item of this.debitCards)
+                data["debitCards"].push(item.toJSON());
+        }
+        if (Array.isArray(this.giftCards)) {
+            data["giftCards"] = [];
+            for (let item of this.giftCards)
+                data["giftCards"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): CreateInvoiceDto {
+        const json = this.toJSON();
+        let result = new CreateInvoiceDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateInvoiceDto {
+    tempSalesHeaderId: number | undefined;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    cashes: CashDto[] | undefined;
+    cheques: ChequeDto[] | undefined;
+    outstandings: CustomerCreditOutstandingDto[] | undefined;
+    debitCards: DebitCardDto[] | undefined;
+    giftCards: GiftCardDto[] | undefined;
+}
+
+export class InvoiceProductDto implements IInvoiceProductDto {
+    invoiceId: string;
+    invoiceNumber: string | undefined;
+    stockBalanceId: string;
+    productId: string;
+    productCode: string;
+    productName: string;
+    warehouseId: string;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    quantity: number;
+    price: number;
+    discountRate: number;
+    discountAmount: number;
+    lineTotal: number;
+    remarks: string | undefined;
+    id: string;
+
+    constructor(data?: IInvoiceProductDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.invoiceId = _data["invoiceId"];
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.stockBalanceId = _data["stockBalanceId"];
+            this.productId = _data["productId"];
+            this.productCode = _data["productCode"];
+            this.productName = _data["productName"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
+            this.costPrice = _data["costPrice"];
+            this.sellingPrice = _data["sellingPrice"];
+            this.maximumRetailPrice = _data["maximumRetailPrice"];
+            this.quantity = _data["quantity"];
+            this.price = _data["price"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.lineTotal = _data["lineTotal"];
+            this.remarks = _data["remarks"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): InvoiceProductDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceProductDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["invoiceId"] = this.invoiceId;
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["stockBalanceId"] = this.stockBalanceId;
+        data["productId"] = this.productId;
+        data["productCode"] = this.productCode;
+        data["productName"] = this.productName;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
+        data["costPrice"] = this.costPrice;
+        data["sellingPrice"] = this.sellingPrice;
+        data["maximumRetailPrice"] = this.maximumRetailPrice;
+        data["quantity"] = this.quantity;
+        data["price"] = this.price;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["lineTotal"] = this.lineTotal;
+        data["remarks"] = this.remarks;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): InvoiceProductDto {
+        const json = this.toJSON();
+        let result = new InvoiceProductDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IInvoiceProductDto {
+    invoiceId: string;
+    invoiceNumber: string | undefined;
+    stockBalanceId: string;
+    productId: string;
+    productCode: string;
+    productName: string;
+    warehouseId: string;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    quantity: number;
+    price: number;
+    discountRate: number;
+    discountAmount: number;
+    lineTotal: number;
+    remarks: string | undefined;
+    id: string;
+}
+
+export class InvoiceDto implements IInvoiceDto {
+    tempSalesHeaderId: number | undefined;
+    invoiceNumber: string;
+    referenceNumber: string | undefined;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    invoiceProducts: InvoiceProductDto[] | undefined;
+    id: string;
+
+    constructor(data?: IInvoiceDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tempSalesHeaderId = _data["tempSalesHeaderId"];
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.referenceNumber = _data["referenceNumber"];
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.taxRate = _data["taxRate"];
+            this.taxAmount = _data["taxAmount"];
+            this.grossAmount = _data["grossAmount"];
+            this.netAmount = _data["netAmount"];
+            this.remarks = _data["remarks"];
+            if (Array.isArray(_data["invoiceProducts"])) {
+                this.invoiceProducts = [] as any;
+                for (let item of _data["invoiceProducts"])
+                    this.invoiceProducts.push(InvoiceProductDto.fromJS(item));
+            }
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): InvoiceDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tempSalesHeaderId"] = this.tempSalesHeaderId;
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["referenceNumber"] = this.referenceNumber;
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["taxRate"] = this.taxRate;
+        data["taxAmount"] = this.taxAmount;
+        data["grossAmount"] = this.grossAmount;
+        data["netAmount"] = this.netAmount;
+        data["remarks"] = this.remarks;
+        if (Array.isArray(this.invoiceProducts)) {
+            data["invoiceProducts"] = [];
+            for (let item of this.invoiceProducts)
+                data["invoiceProducts"].push(item.toJSON());
+        }
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): InvoiceDto {
+        const json = this.toJSON();
+        let result = new InvoiceDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IInvoiceDto {
+    tempSalesHeaderId: number | undefined;
+    invoiceNumber: string;
+    referenceNumber: string | undefined;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    invoiceProducts: InvoiceProductDto[] | undefined;
+    id: string;
+}
+
 export enum TransactionStatus {
     _1 = 1,
     _2 = 2,
@@ -6336,6 +6998,9 @@ export interface IBrandDtoPagedResultDto {
 export class ProductStockBalanceDto implements IProductStockBalanceDto {
     stockBalanceId: string;
     productId: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
     allocatedQuantity: number;
@@ -6360,6 +7025,9 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
         if (_data) {
             this.stockBalanceId = _data["stockBalanceId"];
             this.productId = _data["productId"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
             this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
             this.batchNumber = _data["batchNumber"];
             this.allocatedQuantity = _data["allocatedQuantity"];
@@ -6384,6 +7052,9 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
         data = typeof data === 'object' ? data : {};
         data["stockBalanceId"] = this.stockBalanceId;
         data["productId"] = this.productId;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
         data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
         data["batchNumber"] = this.batchNumber;
         data["allocatedQuantity"] = this.allocatedQuantity;
@@ -6408,6 +7079,9 @@ export class ProductStockBalanceDto implements IProductStockBalanceDto {
 export interface IProductStockBalanceDto {
     stockBalanceId: string;
     productId: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
     allocatedQuantity: number;

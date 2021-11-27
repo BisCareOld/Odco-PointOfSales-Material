@@ -9,6 +9,14 @@ namespace Odco.PointOfSales.Application.Inventory.StockBalances
 
         public Guid ProductId { get; set; }
 
+        public Guid? WarehouseId { get; set; }
+
+        [StringLength(10)]
+        public string WarehouseCode { get; set; }
+
+        [StringLength(100)]
+        public string WarehouseName { get; set; }
+
         public DateTime? ExpiryDate { get; set; }
 
         [StringLength(15)]

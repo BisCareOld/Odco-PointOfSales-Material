@@ -498,6 +498,9 @@ namespace Odco.PointOfSales.Application.Productions
                 {
                     StockBalanceId = sb.Id,
                     ProductId = sb.ProductId,
+                    WarehouseId = sb.WarehouseId,
+                    WarehouseCode = sb.WarehouseCode,
+                    WarehouseName = sb.WarehouseName,
                     ExpiryDate = sb.ExpiryDate,
                     BatchNumber = sb.BatchNumber,
                     AllocatedQuantity = sb.AllocatedQuantity,
