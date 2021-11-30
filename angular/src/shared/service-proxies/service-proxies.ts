@@ -141,6 +141,76 @@ export class AccountServiceProxy {
 }
 
 @Injectable()
+export class CommonServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @return Success
+     */
+    getAllBanks(): Observable<CommonKeyValuePairDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Common/GetAllBanks";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllBanks(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllBanks(<any>response_);
+                } catch (e) {
+                    return <Observable<CommonKeyValuePairDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CommonKeyValuePairDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllBanks(response: HttpResponseBase): Observable<CommonKeyValuePairDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(CommonKeyValuePairDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CommonKeyValuePairDto[]>(<any>null);
+    }
+}
+
+@Injectable()
 export class ConfigurationServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -4916,6 +4986,57 @@ export interface IRegisterOutput {
     canLogin: boolean;
 }
 
+export class CommonKeyValuePairDto implements ICommonKeyValuePairDto {
+    id: string;
+    code: string | undefined;
+    name: string | undefined;
+
+    constructor(data?: ICommonKeyValuePairDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): CommonKeyValuePairDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CommonKeyValuePairDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        return data; 
+    }
+
+    clone(): CommonKeyValuePairDto {
+        const json = this.toJSON();
+        let result = new CommonKeyValuePairDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICommonKeyValuePairDto {
+    id: string;
+    code: string | undefined;
+    name: string | undefined;
+}
+
 export class ChangeUiThemeInput implements IChangeUiThemeInput {
     theme: string;
 
@@ -5019,7 +5140,7 @@ export class ChequeDto implements IChequeDto {
     chequeNumber: string | undefined;
     bankId: string;
     bank: string | undefined;
-    branchId: string;
+    branchId: string | undefined;
     branch: string | undefined;
     chequeReturnDate: moment.Moment;
     chequeAmount: number;
@@ -5076,7 +5197,7 @@ export interface IChequeDto {
     chequeNumber: string | undefined;
     bankId: string;
     bank: string | undefined;
-    branchId: string;
+    branchId: string | undefined;
     branch: string | undefined;
     chequeReturnDate: moment.Moment;
     chequeAmount: number;
@@ -6307,57 +6428,6 @@ export interface IUpdateProductDto {
     isActive: boolean;
     supplierIds: string[] | undefined;
     id: string;
-}
-
-export class CommonKeyValuePairDto implements ICommonKeyValuePairDto {
-    id: string;
-    code: string | undefined;
-    name: string | undefined;
-
-    constructor(data?: ICommonKeyValuePairDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.code = _data["code"];
-            this.name = _data["name"];
-        }
-    }
-
-    static fromJS(data: any): CommonKeyValuePairDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CommonKeyValuePairDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["code"] = this.code;
-        data["name"] = this.name;
-        return data; 
-    }
-
-    clone(): CommonKeyValuePairDto {
-        const json = this.toJSON();
-        let result = new CommonKeyValuePairDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ICommonKeyValuePairDto {
-    id: string;
-    code: string | undefined;
-    name: string | undefined;
 }
 
 export enum ProductSearchType {

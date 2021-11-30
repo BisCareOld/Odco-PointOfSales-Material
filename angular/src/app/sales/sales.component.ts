@@ -465,7 +465,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     });
   }
 
-  save() {}
+  save() { }
 
   //#region Propertises
   get salesNumber() {

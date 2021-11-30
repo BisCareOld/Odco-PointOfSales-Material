@@ -13,7 +13,7 @@ namespace Odco.PointOfSales.Application.Finance.Payments.PaymentTypes
         [StringLength(100)]
         public string Bank { get; set; }
 
-        public Guid BranchId { get; set; }
+        public Guid? BranchId { get; set; }
 
         [StringLength(100)]
         public string Branch { get; set; }

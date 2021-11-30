@@ -22,12 +22,26 @@ td {
 
 .payment-grid {
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  //grid-template-columns: 1fr 3fr;
 }
 
 .payment-type button {
-  width: 90%;
   border: 1px solid grey;
   border-radius: 0;
   margin: 5px 0px;
+}
+.payment-type-card {
+  max-width: 100%;
+  margin: 0.5rem;
+}
+
+.active-payment {
+  color: gold;
+  background-color: #4b4949;
+}
+
+.remove-btn {
+  float: right;
+  padding: 0;
+  margin: 0;
 }
