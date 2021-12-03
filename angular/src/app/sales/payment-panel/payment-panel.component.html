@@ -1,22 +1,31 @@
 <div class="parent-grid">
   <!-- 1. HEADING: ITEM -->
-  <div class="child-grid">Items</div>
+  <div class="child-grid">Items
+    <div style="float: right;">
+      <button mat-stroked-button color="primary">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    </div>
+  </div>
 
   <!-- 2. HEADING: ACTIONS -->
-  <div class="child-grid">Actions</div>
+  <div class="child-grid">Actions
+    <span style="float: right;">
+      <button mat-stroked-button color="accent">Cancel</button>
+    </span>
+  </div>
 
   <!-- 3. ITEM LIST -->
   <div class="child-grid">
-    <ng-container
-      *ngIf="
+    <ng-container *ngIf="
         tempSalesHeader &&
         tempSalesHeader.tempSalesProducts &&
         tempSalesHeader.tempSalesProducts.length > 0
-      "
-    >
+      ">
       <table *ngFor="let item of tempSalesHeader.tempSalesProducts">
         <tr>
-          <td>{{ item.name }}</td>
+          <td style="font-weight: 500;">{{ item.name }} <span style="color: rgb(16, 126, 16);"
+              *ngIf="item.discountRate > 0">{{item.discountRate}}%</span> </td>
           <!-- This cell will take up space on
                   two rows -->
           <td rowspan="2">{{ item.lineTotal }}</td>
@@ -30,38 +39,224 @@
 
   <!-- 4. PAYMENT METHODS -->
   <div class="child-grid">
-    <div>Cancel</div>
-    <div>Customer</div>
+    <form [formGroup]="formPayment" novalidate *ngIf="formPayment">
 
-    <div class="payment-grid">
-      <div class="payment-child-grid payment-type">
-        Payment Type
-        <div><button mat-button>Cash</button></div>
-        <div><button mat-button>Credit Card</button></div>
-        <div><button mat-button>Debit Card</button></div>
-        <div><button mat-button>Cheque</button></div>
-        <div><button mat-button>Voucher</button></div>
-        <div><button mat-button>Gift Card</button></div>
-        <div>
-          <button mat-button>
-            <mat-icon matSuffix>add</mat-icon> Split Payments
-          </button>
-        </div>
+      <!-- Display Errors -->
+      <div style="padding: 0.5rem;" *ngIf="errors.length > 0">
+        <div class="error-text" *ngFor="let error of errors">{{ error }}</div>
       </div>
 
-      <div class="payment-child-grid">
-        Payment
-        <div style="margin-top: 15px">
-          Total: <span style="float: right">580.75</span>
+      <div>Customer</div>
+
+      <div class="payment-grid">
+        <div class="payment-type" style="width: 100%">
+          <div style="display: inline; width: 100%">
+            <button mat-button [class.active-payment]="paymentMethod == 1" (click)="paymentTypeSelection(1)">
+              <mat-icon>payments</mat-icon> Cash
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 2" (click)="paymentTypeSelection(2)">
+              <mat-icon>credit_card</mat-icon> Card
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 3" (click)="paymentTypeSelection(3)">
+              <mat-icon>note</mat-icon> Cheque
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 4" (click)="paymentTypeSelection(4)">
+              <mat-icon>request_quote</mat-icon> Voucher
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 5" (click)="paymentTypeSelection(5)">
+              <mat-icon>card_giftcard</mat-icon> Gift Card
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 6" (click)="paymentTypeSelection(6)">
+              <mat-icon matSuffix>add</mat-icon>
+            </button>
+          </div>
         </div>
-        <div style="margin-top: 15px">
-          <mat-form-field class="example-full-width">
-            <mat-label>Paid Amount</mat-label>
-            <input type="nuber" matInput style="text-align: right" />
-            <mat-icon matSuffix>mode_edit</mat-icon>
-          </mat-form-field>
-        </div>
+
+        <mat-card class="payment-type-card" *ngIf="paymentMethod > 0">
+          <mat-card-header>
+            <mat-card-subtitle *ngIf="paymentMethod == 1">Cash Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 2">Card Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 3">Cheque Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 4">Voucher Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 5">Gift Payment</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+
+            <!-- Multi Payment Option -->
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
+              style="display: inline;" *ngIf="paymentMethod == 6"> Multi Payments
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button type="button" mat-menu-item (click)="multiSelectPayment(1)">
+                <mat-icon>payments</mat-icon>
+                <span>Cash</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(2)">
+                <mat-icon>credit_card</mat-icon>
+                <span>Card</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(3)">
+                <mat-icon>note</mat-icon>
+                <span>Cheque</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(4)">
+                <mat-icon>request_quote</mat-icon>
+                <span>Voucher</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(5)">
+                <mat-icon>card_giftcard</mat-icon>
+                <span>Gift</span>
+              </button>
+            </mat-menu>
+
+            <!-- Cash -->
+            <ng-container formArrayName="cashes">
+              <ng-container *ngFor="let cashForm of cashes.controls; let i = index">
+                <div [formGroup]="cashForm">
+                  <mat-icon class="remove-btn" color="warn" (click)="removeArrayInFormByIndex(1, i)">
+                    delete_forever</mat-icon>
+                  <mat-form-field>
+                    <mat-label>Cash Amount</mat-label>
+                    <input matInput type="number" formControlName="cashAmount">
+                    <span *ngIf="cashForm.get('cashAmount').touched">
+                      <mat-error *ngIf="cashForm.get('cashAmount').errors?.required">Cash amount is required.
+                      </mat-error>
+                      <mat-error *ngIf="cashForm.get('cashAmount').errors?.min">Should be minimum 1.</mat-error>
+                      <mat-error *ngIf="cashForm.get('cashAmount').errors?.max">Should be below
+                        {{ cashForm.get("cashAmount").errors?.max.max }}.</mat-error>
+                    </span>
+                  </mat-form-field>
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <!-- Cheque -->
+            <ng-container formArrayName="cheques">
+              <ng-container *ngFor="let chequeForm of cheques.controls; let i = index">
+                <div class="lesson-form-row" [formGroup]="chequeForm">
+                  <mat-icon class="remove-btn" color="warn" (click)="removeArrayInFormByIndex(3, i)">delete_forever
+                  </mat-icon>
+
+                  <mat-form-field>
+                    <mat-label>Bank</mat-label>
+                    <mat-select formControlName="bankId">
+                      <mat-option *ngFor="let b of banks" [value]="b.id">{{ b.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Cheque Number</mat-label>
+                    <input matInput type="number" formControlName="chequeNumber">
+                    <span *ngIf="chequeForm.get('chequeNumber').touched">
+                      <mat-error *ngIf="chequeForm.get('chequeNumber').errors?.required">Cheque number is required.
+                      </mat-error>
+                      <mat-error *ngIf="chequeForm.get('chequeNumber').errors?.minLength">Should be minimum 5.
+                      </mat-error>
+                      <mat-error *ngIf="chequeForm.get('chequeNumber').errors?.maxLength">Should be below
+                        {{ chequeForm.get("chequeNumber").errors?.maxLength.maxLength }}.</mat-error>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Cheque Amount</mat-label>
+                    <input matInput type="number" formControlName="chequeAmount">
+                    <span *ngIf="chequeForm.get('chequeAmount').touched">
+                      <mat-error *ngIf="chequeForm.get('chequeAmount').errors?.required">Cheque amount is required.
+                      </mat-error>
+                      <mat-error *ngIf="chequeForm.get('chequeAmount').errors?.min">Should be minimum 1.</mat-error>
+                      <mat-error *ngIf="chequeForm.get('chequeAmount').errors?.max">Should be below
+                        {{ chequeForm.get("chequeAmount").errors?.max.max }}.</mat-error>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Return date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="chequeReturnDate">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker touchUi #picker></mat-datepicker>
+                    <span *ngIf="chequeForm.get('chequeReturnDate').touched">
+                      <mat-error *ngIf="chequeForm.get('chequeReturnDate').errors?.required">Return date is required.
+                      </mat-error>
+                    </span>
+                  </mat-form-field>
+
+
+
+                </div>
+              </ng-container>
+            </ng-container>
+
+          </mat-card-content>
+          <!-- <mat-card-actions>
+          <button mat-button>LIKE</button>
+          <button mat-button>SHARE</button>
+        </mat-card-actions> -->
+        </mat-card>
+
+        <mat-card-content>
+          <div class="parent">
+            <div class="child">
+              <mat-label>{{ "GrossAmount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ tempSalesHeader.grossAmount }}</div>
+
+            <div class="child">
+              <mat-label>{{ "Taxes" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">
+              <input type="number" matInput class="transaction-table-inputs" formControlName="taxRate" id="taxRate" />
+              <!-- (change)="headerLevelCalculation()" />
+            <mat-error *ngIf="formErrors.taxRate">{{
+              formErrors.taxRate
+              }}</mat-error> -->
+            </div>
+
+            <div class="child">
+              <mat-label>{{ "Discount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">
+              <input type="number" matInput class="transaction-table-inputs" formControlName="discountRate"
+                id="discountRate" />
+              <!-- (change)="headerLevelCalculation()" />
+            <mat-error *ngIf="formErrors.discountRate">{{
+              formErrors.discountRate
+              }}</mat-error> -->
+            </div>
+
+            <div class="child">
+              <mat-label>{{ "TotalDiscount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ tempSalesHeader.discountAmount }}</div>
+
+            <div class="child">
+              <mat-label>{{ "NetAmount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ tempSalesHeader.netAmount }}</div>
+
+            <div class="child">
+              <mat-label>{{ "Paid" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ totalPaidAmout() }}</div>
+
+            <div class="child">
+              <mat-label>{{ "Balance" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ balanceAmount() }}</div>
+
+          </div>
+          <div style="float: right; margin-right: 10px;">
+            <button type="submit" mat-raised-button color="primary" style="margin-right: 0.5rem;"
+              (click)="save()">Submit</button>
+            <button type="button" mat-raised-button color="warn">Cancel</button>
+          </div>
+
+        </mat-card-content>
+
       </div>
-    </div>
+
+    </form>
   </div>
+
 </div>

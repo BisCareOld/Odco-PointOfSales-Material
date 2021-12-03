@@ -22,6 +22,8 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { MatBadgeModule } from "@angular/material/badge";
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 const AngularMaterialComponents = [
   MatFormFieldModule,
@@ -46,10 +48,12 @@ const AngularMaterialComponents = [
   MatNativeDateModule,
   MatMomentDateModule,
   MatBadgeModule,
+  MatMenuModule,
+  MatButtonToggleModule
 ];
 
 @NgModule({
   imports: [AngularMaterialComponents],
   exports: [AngularMaterialComponents],
 })
-export class MaterialModule {}
+export class MaterialModule { }

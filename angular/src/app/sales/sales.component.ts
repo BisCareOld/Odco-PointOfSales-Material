@@ -438,9 +438,9 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       _lineLevel.stockBalanceId = item.stockBalance.stockBalanceId;
       _lineLevel.expiryDate = item.stockBalance.expiryDate;
       _lineLevel.batchNumber = item.stockBalance.batchNumber;
-      _lineLevel.warehouseId = null;
-      _lineLevel.warehouseCode = null;
-      _lineLevel.warehouseName = null;
+      _lineLevel.warehouseId = item.stockBalance.warehouseId;
+      _lineLevel.warehouseCode = item.stockBalance.warehouseCode;
+      _lineLevel.warehouseName = item.stockBalance.warehouseName;
       _lineLevel.bookBalanceQuantity = item.stockBalance.bookBalanceQuantity;
       _lineLevel.bookBalanceUnitOfMeasureUnit =
         item.stockBalance.bookBalanceUnitOfMeasureUnit;
@@ -465,7 +465,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     });
   }
 
-  save() {}
+  save() { }
 
   //#region Propertises
   get salesNumber() {

@@ -22,12 +22,51 @@ td {
 
 .payment-grid {
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  //grid-template-columns: 1fr 3fr;
 }
 
 .payment-type button {
-  width: 90%;
   border: 1px solid grey;
   border-radius: 0;
   margin: 5px 0px;
+}
+.payment-type-card {
+  max-width: 100%;
+  margin: 0.5rem;
+}
+
+.active-payment {
+  color: gold;
+  background-color: #4b4949;
+}
+
+.remove-btn {
+  float: right;
+  padding: 0;
+  margin: 0;
+}
+
+.parent {
+  margin: 10px;
+  display: grid;
+  grid-template-columns: 75% auto;
+  grid-auto-rows: 50px;
+}
+
+.child {
+  padding: 10px;
+  //border: 1px solid rgba(153, 148, 148, 0.241);
+  text-align: right;
+}
+
+.transaction-table-inputs {
+  width: 75px;
+  text-align: right;
+  border-bottom: 1px solid #000;
+}
+
+.error-text {
+  color: #f02020;
+  font-size: 1rem;
+  font-weight: 500;
 }

@@ -191,7 +191,7 @@ namespace Odco.PointOfSales.Application.Sales
                             // 1. Get Company Summary(1) + Warehouse Summary(1) + GRN Summary(1) based on the SBID
                             // 2. Update AQ & BBQ
                             // 3. GRN Summary - Strigth forward set value because Data got from specific StockBalanceId
-                            var stockBalances = await GetStockBalancesByStockBalanceIdAsync(iSP.StockBalanceId);
+                            var stockBalances = await GetStockBalancesByStockBalanceIdAsync(iSP.StockBalanceId, iSP.ProductId, iSP.WarehouseId.Value);
 
                             if (existSP.Quantity > iSP.Quantity)
                             {
@@ -227,7 +227,7 @@ namespace Odco.PointOfSales.Application.Sales
                             // 2. Get Company Summary(1) + Warehouse Summary(1) + GRN Summary(1) based on the SBID
                             // 3. Update (Revert) AQ & BBQ in all 3 rows
                             // 4. GRN Summary (Soft Delete it)
-                            var stockBalances = await GetStockBalancesByStockBalanceIdAsync(existSP.StockBalanceId);
+                            var stockBalances = await GetStockBalancesByStockBalanceIdAsync(existSP.StockBalanceId, existSP.ProductId, existSP.WarehouseId.Value);
                             decimal _AQ = 0; // Related to GRN summary
                             foreach (var sb in stockBalances)
                             {
@@ -345,6 +345,9 @@ namespace Odco.PointOfSales.Application.Sales
                     {
                         StockBalanceId = sb.Id,
                         ProductId = sb.ProductId,
+                        WarehouseId = sb.WarehouseId,
+                        WarehouseCode = sb.WarehouseCode,
+                        WarehouseName = sb.WarehouseName,
                         ExpiryDate = sb.ExpiryDate,
                         BatchNumber = sb.BatchNumber,
                         AllocatedQuantity = sb.AllocatedQuantity,
@@ -378,23 +381,29 @@ namespace Odco.PointOfSales.Application.Sales
         /// <param name="productId"></param>
         /// <param name="warehouseId"></param>
         /// <returns></returns>
-        private async Task<List<StockBalance>> GetStockBalancesByStockBalanceIdAsync(Guid stockBalanceId)
+        private async Task<List<StockBalance>> GetStockBalancesByStockBalanceIdAsync(Guid stockBalanceId, Guid productId, Guid warehouseId)
         {
-            var returnList = new List<StockBalance>();
+            return await _stockBalanceRepository.GetAll()
+                .Where(sb => sb.Id == stockBalanceId ||
+                (sb.SequenceNumber == 0 && sb.ProductId == productId && sb.WarehouseId == warehouseId) ||
+                (sb.SequenceNumber == 0 && sb.ProductId == productId && !sb.WarehouseId.HasValue)
+            ).ToListAsync();
 
-            var _sb1 = await _stockBalanceRepository.FirstOrDefaultAsync(sb => sb.Id == stockBalanceId);
+            //var returnList = new List<StockBalance>();
 
-            var _sb2 = await _stockBalanceRepository
-                .GetAll()
-                .Where(sb => sb.ProductId == _sb1.ProductId
-                            && sb.SequenceNumber == 0
-                            && (!sb.WarehouseId.HasValue || sb.WarehouseId == _sb1.WarehouseId))
-                .OrderByDescending(sb => sb.SequenceNumber)
-                .ToListAsync();
+            //var _sb1 = await _stockBalanceRepository.FirstOrDefaultAsync(sb => sb.Id == stockBalanceId);
 
-            returnList.Add(_sb1);
-            returnList.AddRange(_sb2);
-            return returnList;
+            //var _sb2 = await _stockBalanceRepository
+            //    .GetAll()
+            //    .Where(sb => sb.ProductId == _sb1.ProductId
+            //                && sb.SequenceNumber == 0
+            //                && (!sb.WarehouseId.HasValue || sb.WarehouseId == _sb1.WarehouseId))
+            //    .OrderByDescending(sb => sb.SequenceNumber)
+            //    .ToListAsync();
+
+            //returnList.Add(_sb1);
+            //returnList.AddRange(_sb2);
+            //return returnList;
         }
         #endregion
 
