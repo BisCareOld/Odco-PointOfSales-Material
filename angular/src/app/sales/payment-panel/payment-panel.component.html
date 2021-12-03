@@ -1,9 +1,19 @@
 <div class="parent-grid">
   <!-- 1. HEADING: ITEM -->
-  <div class="child-grid">Items</div>
+  <div class="child-grid">Items
+    <div style="float: right;">
+      <button mat-stroked-button color="primary">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    </div>
+  </div>
 
   <!-- 2. HEADING: ACTIONS -->
-  <div class="child-grid">Actions</div>
+  <div class="child-grid">Actions
+    <span style="float: right;">
+      <button mat-stroked-button color="accent">Cancel</button>
+    </span>
+  </div>
 
   <!-- 3. ITEM LIST -->
   <div class="child-grid">
@@ -14,7 +24,8 @@
       ">
       <table *ngFor="let item of tempSalesHeader.tempSalesProducts">
         <tr>
-          <td>{{ item.name }}</td>
+          <td style="font-weight: 500;">{{ item.name }} <span style="color: rgb(16, 126, 16);"
+              *ngIf="item.discountRate > 0">{{item.discountRate}}%</span> </td>
           <!-- This cell will take up space on
                   two rows -->
           <td rowspan="2">{{ item.lineTotal }}</td>
@@ -28,65 +39,76 @@
 
   <!-- 4. PAYMENT METHODS -->
   <div class="child-grid">
-    <div>Cancel</div>
-    <div>Customer</div>
+    <form [formGroup]="formPayment" novalidate *ngIf="formPayment">
 
-    <div class="payment-grid">
-      <div class="payment-type" style="width: 100%">
-        <div style="display: inline; width: 100%">
-          <button mat-button [class.active-payment]="paymentMethod == 1" (click)="paymentTypeSelection(1)">
-            Cash
-          </button>
-          <button mat-button [class.active-payment]="paymentMethod == 2" (click)="paymentTypeSelection(2)">
-            Credit Card
-          </button>
-          <button mat-button [class.active-payment]="paymentMethod == 3" (click)="paymentTypeSelection(3)">
-            Debit Card
-          </button>
-          <button mat-button [class.active-payment]="paymentMethod == 4" (click)="paymentTypeSelection(4)">
-            Cheque
-          </button>
-          <button mat-button [class.active-payment]="paymentMethod == 5" (click)="paymentTypeSelection(5)">
-            Voucher
-          </button>
-          <button mat-button [class.active-payment]="paymentMethod == 6" (click)="paymentTypeSelection(6)">
-            Gift Card
-          </button>
-          <button mat-button [class.active-payment]="paymentMethod == 7" (click)="paymentTypeSelection(7)">
-            <mat-icon matSuffix>add</mat-icon>
-          </button>
-        </div>
+      <!-- Display Errors -->
+      <div style="padding: 0.5rem;" *ngIf="errors.length > 0">
+        <div class="error-text" *ngFor="let error of errors">{{ error }}</div>
       </div>
 
-      <mat-card class="payment-type-card" *ngIf="paymentMethod > 0">
-        <mat-card-header>
-          <mat-card-subtitle *ngIf="paymentMethod == 1">Cash Payment</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="paymentMethod == 2">Credit Card Payment</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="paymentMethod == 3">Debit Card Payment</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="paymentMethod == 4">Cheque Payment</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="paymentMethod == 5">Voucher Payment</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="paymentMethod == 6">Gift Payment</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="paymentMethod == 7">Multi Payment</mat-card-subtitle>
-        </mat-card-header>
+      <div>Customer</div>
 
-        <mat-card-content>
-          <div [formGroup]="formPayment">
+      <div class="payment-grid">
+        <div class="payment-type" style="width: 100%">
+          <div style="display: inline; width: 100%">
+            <button mat-button [class.active-payment]="paymentMethod == 1" (click)="paymentTypeSelection(1)">
+              <mat-icon>payments</mat-icon> Cash
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 2" (click)="paymentTypeSelection(2)">
+              <mat-icon>credit_card</mat-icon> Card
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 3" (click)="paymentTypeSelection(3)">
+              <mat-icon>note</mat-icon> Cheque
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 4" (click)="paymentTypeSelection(4)">
+              <mat-icon>request_quote</mat-icon> Voucher
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 5" (click)="paymentTypeSelection(5)">
+              <mat-icon>card_giftcard</mat-icon> Gift Card
+            </button>
+            <button mat-button [class.active-payment]="paymentMethod == 6" (click)="paymentTypeSelection(6)">
+              <mat-icon matSuffix>add</mat-icon>
+            </button>
+          </div>
+        </div>
 
+        <mat-card class="payment-type-card" *ngIf="paymentMethod > 0">
+          <mat-card-header>
+            <mat-card-subtitle *ngIf="paymentMethod == 1">Cash Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 2">Card Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 3">Cheque Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 4">Voucher Payment</mat-card-subtitle>
+            <mat-card-subtitle *ngIf="paymentMethod == 5">Gift Payment</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
 
             <!-- Multi Payment Option -->
-            <mat-form-field appearance="fill" *ngIf="paymentMethod == 7">
-              <mat-label>Select Payment Option(s)</mat-label>
-              <mat-select (selectionChange)="multiSelectPayment($event)" name="xx">
-                <mat-option value="0"></mat-option>
-                <mat-option value="1">Cash</mat-option>
-                <mat-option value="2">Credit Card </mat-option>
-                <mat-option value="3">Debit Card</mat-option>
-                <mat-option value="4">Cheque</mat-option>
-                <mat-option value="5">Voucher</mat-option>
-                <mat-option value="6">Gift</mat-option>
-              </mat-select>
-            </mat-form-field>
-
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu"
+              style="display: inline;" *ngIf="paymentMethod == 6"> Multi Payments
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button type="button" mat-menu-item (click)="multiSelectPayment(1)">
+                <mat-icon>payments</mat-icon>
+                <span>Cash</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(2)">
+                <mat-icon>credit_card</mat-icon>
+                <span>Card</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(3)">
+                <mat-icon>note</mat-icon>
+                <span>Cheque</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(4)">
+                <mat-icon>request_quote</mat-icon>
+                <span>Voucher</span>
+              </button>
+              <button type="button" mat-menu-item (click)="multiSelectPayment(5)">
+                <mat-icon>card_giftcard</mat-icon>
+                <span>Gift</span>
+              </button>
+            </mat-menu>
 
             <!-- Cash -->
             <ng-container formArrayName="cashes">
@@ -113,7 +135,7 @@
             <ng-container formArrayName="cheques">
               <ng-container *ngFor="let chequeForm of cheques.controls; let i = index">
                 <div class="lesson-form-row" [formGroup]="chequeForm">
-                  <mat-icon class="remove-btn" color="warn" (click)="removeArrayInFormByIndex(4, i)">delete_forever
+                  <mat-icon class="remove-btn" color="warn" (click)="removeArrayInFormByIndex(3, i)">delete_forever
                   </mat-icon>
 
                   <mat-form-field>
@@ -166,28 +188,75 @@
               </ng-container>
             </ng-container>
 
-
-          </div>
-        </mat-card-content>
-        <!-- <mat-card-actions>
+          </mat-card-content>
+          <!-- <mat-card-actions>
           <button mat-button>LIKE</button>
           <button mat-button>SHARE</button>
         </mat-card-actions> -->
-      </mat-card>
+        </mat-card>
 
-      <div class="payment-child-grid">
-        Payment
-        <div style="margin-top: 15px">
-          Total: <span style="float: right">580.75</span>
-        </div>
-        <div style="margin-top: 15px">
-          <mat-form-field class="example-full-width">
-            <mat-label>Paid Amount</mat-label>
-            <input type="number" matInput style="text-align: right" />
-            <mat-icon matSuffix>mode_edit</mat-icon>
-          </mat-form-field>
-        </div>
+        <mat-card-content>
+          <div class="parent">
+            <div class="child">
+              <mat-label>{{ "GrossAmount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ tempSalesHeader.grossAmount }}</div>
+
+            <div class="child">
+              <mat-label>{{ "Taxes" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">
+              <input type="number" matInput class="transaction-table-inputs" formControlName="taxRate" id="taxRate" />
+              <!-- (change)="headerLevelCalculation()" />
+            <mat-error *ngIf="formErrors.taxRate">{{
+              formErrors.taxRate
+              }}</mat-error> -->
+            </div>
+
+            <div class="child">
+              <mat-label>{{ "Discount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">
+              <input type="number" matInput class="transaction-table-inputs" formControlName="discountRate"
+                id="discountRate" />
+              <!-- (change)="headerLevelCalculation()" />
+            <mat-error *ngIf="formErrors.discountRate">{{
+              formErrors.discountRate
+              }}</mat-error> -->
+            </div>
+
+            <div class="child">
+              <mat-label>{{ "TotalDiscount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ tempSalesHeader.discountAmount }}</div>
+
+            <div class="child">
+              <mat-label>{{ "NetAmount" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ tempSalesHeader.netAmount }}</div>
+
+            <div class="child">
+              <mat-label>{{ "Paid" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ totalPaidAmout() }}</div>
+
+            <div class="child">
+              <mat-label>{{ "Balance" | localize }}</mat-label>
+            </div>
+            <div class="child" *ngIf="tempSalesHeader">LKR. {{ balanceAmount() }}</div>
+
+          </div>
+          <div style="float: right; margin-right: 10px;">
+            <button type="submit" mat-raised-button color="primary" style="margin-right: 0.5rem;"
+              (click)="save()">Submit</button>
+            <button type="button" mat-raised-button color="warn">Cancel</button>
+          </div>
+
+        </mat-card-content>
+
       </div>
-    </div>
+
+    </form>
   </div>
+
 </div>

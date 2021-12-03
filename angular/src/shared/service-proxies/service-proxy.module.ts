@@ -19,6 +19,7 @@ import * as ApiServiceProxies from "./service-proxies";
     ApiServiceProxies.DocumentSequenceNumberManagerImplementationServiceProxy,
     ApiServiceProxies.SalesServiceProxy,
     ApiServiceProxies.CommonServiceProxy,
+    ApiServiceProxies.FinanceServiceProxy,
     { provide: HTTP_INTERCEPTORS, useClass: AbpHttpInterceptor, multi: true },
   ],
 })

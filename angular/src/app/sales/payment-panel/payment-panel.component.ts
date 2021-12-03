@@ -1,11 +1,12 @@
 import { ThrowStmt } from "@angular/compiler";
 import { Component, OnChanges, OnInit } from "@angular/core";
-import { FormArray, FormBuilder, FormControl, Validators } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
 import {
   SalesServiceProxy,
   CommonServiceProxy,
+  FinanceServiceProxy,
   TempSalesHeaderDto,
   CommonKeyValuePairDto,
 } from "@shared/service-proxies/service-proxies";
@@ -21,13 +22,15 @@ export class PaymentPanelComponent implements OnInit {
   paymentMethod: number = 0;
   formPayment;
   banks: CommonKeyValuePairDto[] = []
+  errors: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private _matDialogService: MatDialog,
     private _salesService: SalesServiceProxy,
-    private _commonService: CommonServiceProxy
+    private _commonService: CommonServiceProxy,
+    private _financeService: FinanceServiceProxy,
   ) { }
 
   ngOnInit(): void {
@@ -62,6 +65,7 @@ export class PaymentPanelComponent implements OnInit {
   }
 
   InitateForm() {
+
     this.formPayment = this.fb.group({
       tempSalesHeaderId: [this.tempSalesHeader.id],
       customerId: [this.tempSalesHeader.customerId],
@@ -97,16 +101,45 @@ export class PaymentPanelComponent implements OnInit {
     this.EmptyArraysInForm();
     this.paymentMethod = paymentType;
     if (paymentType == 1) this.InitateCash();
-    if (paymentType == 4) this.InitateCheque();
+    if (paymentType == 3) this.InitateCheque();
   }
 
-  save() { }
-
-  multiSelectPayment($event) {
-    console.log($event);
-    if ($event.value == 1) this.InitateCash();
-    if ($event.value == 4) this.InitateCheque();
+  totalPaidAmout(): number {
+    let totalAmount = 0;
+    this.cashes.value.forEach(element => {
+      totalAmount += element.cashAmount;
+    });
+    this.cheques.value.forEach(element => {
+      totalAmount += element.chequeAmount;
+    });
+    return totalAmount;
   }
+
+  balanceAmount() {
+    let retunAmount = this.totalPaidAmout() - this.tempSalesHeader.netAmount;
+    return retunAmount.toFixed(2);
+  }
+
+  save() {
+    this.totalPaidAmout();
+    this.errors = [];
+    if (this.cashes.length <= 0 && this.cheques.length <= 0)
+      this.errors.push("Select a Payment Method.");
+    else {
+      console.log(this.formPayment);
+      // this._financeService.createInvoice(this.formPayment.value).subscribe((response) => {
+      //   if (response.id) {
+      //     alert("Success");
+      //   }
+      // });
+    }
+  }
+
+  multiSelectPayment(pType) {
+    if (pType == 1) this.InitateCash();
+    if (pType == 3) this.InitateCheque();
+  }
+
   //#region Initiate array of Payment methods into main form
   InitateCash() {
     let cash = this.fb.group({
@@ -153,13 +186,13 @@ export class PaymentPanelComponent implements OnInit {
 
   //#region Remove array of Payment methods in main form
   removeArrayInFormByIndex(paymentType: number, index: number) {
-    if (this.paymentMethod != 7) {
+    if (this.paymentMethod != 6) {
       if (paymentType == 1) this.cashes.removeAt(index);
-      if (paymentType == 4) this.cheques.removeAt(index);
-      if (paymentType != 7) this.paymentMethod = 0;
+      if (paymentType == 3) this.cheques.removeAt(index);
+      if (paymentType != 6) this.paymentMethod = 0;
     } else {
       if (paymentType == 1) this.cashes.removeAt(index);
-      if (paymentType == 4) this.cheques.removeAt(index);
+      if (paymentType == 3) this.cheques.removeAt(index);
       if (this.cashes.length == 0 && this.cheques.length == 0) this.paymentMethod = 0;
     }
   }

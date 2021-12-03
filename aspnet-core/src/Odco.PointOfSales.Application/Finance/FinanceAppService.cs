@@ -38,129 +38,139 @@ namespace Odco.PointOfSales.Application.Finance
 
         public async Task<InvoiceDto> CreateInvoiceAsync(CreateInvoiceDto input)
         {
-            var invoiceProducts = new List<InvoiceProduct>();
-            var payments = new List<Payment>();
-
-            var tempSalesHeader = _tempSalesHeaderRepository
-                .GetAllIncluding(tsh => tsh.TempSalesProducts)
-                .FirstOrDefault(tsh => tsh.Id == input.TempSalesHeaderId);
-
-            var invoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
-
-            #region Map TempSalesProduct = InvoiceProduct (LineLevel)
-            foreach (var tsp in tempSalesHeader.TempSalesProducts)
+            try
             {
-                if (tsp.IsActive)
+                var invoiceProducts = new List<InvoiceProduct>();
+                var payments = new List<Payment>();
+
+                var tempSalesHeader = _tempSalesHeaderRepository
+                    .GetAllIncluding(tsh => tsh.TempSalesProducts)
+                    .FirstOrDefault(tsh => tsh.Id == input.TempSalesHeaderId);
+
+                var invoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
+
+                #region Map TempSalesProduct = InvoiceProduct (LineLevel)
+                foreach (var tsp in tempSalesHeader.TempSalesProducts)
                 {
-                    invoiceProducts.Add(new InvoiceProduct
+                    if (tsp.IsActive)
                     {
-                        // InvoiceId = 
-                        // InvoiceNumber = 
-                        StockBalanceId = tsp.StockBalanceId,
-                        ProductId = tsp.ProductId,
-                        ProductCode = tsp.Code,
-                        ProductName = tsp.Name,
-                        WarehouseId = tsp.WarehouseId.Value,
-                        WarehouseCode = tsp.WarehouseCode,
-                        WarehouseName = tsp.WarehouseName,
-                        CostPrice = tsp.CostPrice,
-                        SellingPrice = tsp.SellingPrice,
-                        MaximumRetailPrice = tsp.MaximumRetailPrice,
-                        Quantity = tsp.Quantity,
-                        Price = tsp.SellingPrice,
-                        DiscountRate = tsp.DiscountRate,
-                        DiscountAmount = tsp.DiscountAmount,
-                        LineTotal = tsp.LineTotal,
-                        // Remarks = 
+                        invoiceProducts.Add(new InvoiceProduct
+                        {
+                            // InvoiceId = 
+                            InvoiceNumber = invoiceNumber,
+                            StockBalanceId = tsp.StockBalanceId,
+                            ProductId = tsp.ProductId,
+                            ProductCode = tsp.Code,
+                            ProductName = tsp.Name,
+                            WarehouseId = tsp.WarehouseId.Value,
+                            WarehouseCode = tsp.WarehouseCode,
+                            WarehouseName = tsp.WarehouseName,
+                            CostPrice = tsp.CostPrice,
+                            SellingPrice = tsp.SellingPrice,
+                            MaximumRetailPrice = tsp.MaximumRetailPrice,
+                            Quantity = tsp.Quantity,
+                            Price = tsp.SellingPrice,
+                            DiscountRate = tsp.DiscountRate,
+                            DiscountAmount = tsp.DiscountAmount,
+                            LineTotal = tsp.LineTotal,
+                            // Remarks = 
+                        });
+                    }
+                }
+                #endregion
+
+                #region Map Payment from Payments[]
+
+                if (input.Cashes.Any())
+                {
+                    // Get the total amount of cash payments
+                    var totalCashAmount = input.Cashes.Select(c => c.CashAmount).Sum();
+                    payments.Add(new Payment
+                    {
+                        CashAmount = totalCashAmount,
+                        IsCash = true,
                     });
                 }
-            }
-            #endregion
-
-            #region Map Payment from Payments[]
-            foreach (var ip in input.Cashes)
-            {
-                payments.Add(new Payment
+                foreach (var ip in input.Cheques)
                 {
-                    CashAmount = ip.CashAmount,
-                    IsCash = true,
-                });
-            }
-            foreach (var ip in input.Cheques)
-            {
-                payments.Add(new Payment
+                    payments.Add(new Payment
+                    {
+                        ChequeAmount = ip.ChequeAmount,
+                        ChequeNumber = ip.ChequeNumber,
+                        ChequeReturnDate = ip.ChequeReturnDate,
+                        BankId = ip.BankId,
+                        Bank = ip.Bank,
+                        BranchId = ip.BranchId,
+                        Branch = ip.Branch,
+                        IsCheque = true,
+                    });
+                }
+                foreach (var ip in input.Outstandings)
                 {
-                    ChequeAmount = ip.ChequeAmount,
-                    ChequeNumber = ip.ChequeNumber,
-                    ChequeReturnDate = ip.ChequeReturnDate,
-                    BankId = ip.BankId,
-                    Bank = ip.Bank,
-                    BranchId = ip.BranchId,
-                    Branch = ip.Branch,
-                    IsCheque = true,
-                });
-            }
-            foreach (var ip in input.Outstandings)
-            {
-                payments.Add(new Payment
+                    payments.Add(new Payment
+                    {
+                        OutstandingAmount = ip.OutstandingAmount,
+                        OutstandingSettledAmount = ip.OutstandingAmount,
+                        IsCreditOutstanding = true,
+                    });
+                }
+                foreach (var ip in input.DebitCards)
                 {
-                    OutstandingAmount = ip.OutstandingAmount,
-                    OutstandingSettledAmount = ip.OutstandingAmount,
-                    IsCreditOutstanding = true,
-                });
-            }
-            foreach (var ip in input.DebitCards)
-            {
-                payments.Add(new Payment
+                    payments.Add(new Payment
+                    {
+                        IsDebitCard = true,
+                    });
+                }
+                foreach (var ip in input.GiftCards)
                 {
-                    IsDebitCard = true,
-                });
-            }
-            foreach (var ip in input.GiftCards)
-            {
-                payments.Add(new Payment
+                    payments.Add(new Payment
+                    {
+                        GiftCardAmount = ip.GiftCardAmount,
+                        IsGiftCard = true,
+                    });
+                }
+
+                foreach (var p in payments)
                 {
-                    GiftCardAmount = ip.GiftCardAmount,
-                    IsGiftCard = true,
-                });
+                    p.CustomerId = input.CustomerId;
+                    //p.CustomerPhoneNumber = input.Customer
+                    p.InvoiceNumber = invoiceNumber;
+                }
+                #endregion
+
+                #region Map TempSalesHeader = Invoice (HeaderLevel)
+                var invoice = new Invoice
+                {
+                    TempSalesHeaderId = input.TempSalesHeaderId,
+                    InvoiceNumber = invoiceNumber,
+                    // ReferenceNumber = tempSalesHeader.Refer
+                    CustomerId = input.CustomerId,
+                    CustomerCode = input.CustomerCode,
+                    CustomerName = input.CustomerName,
+                    DiscountRate = input.DiscountRate,
+                    DiscountAmount = input.DiscountAmount,
+                    TaxRate = input.TaxRate,
+                    TaxAmount = input.TaxAmount,
+                    GrossAmount = input.GrossAmount,
+                    NetAmount = input.NetAmount,
+                    //Remarks = input.Rema
+                    InvoiceProducts = invoiceProducts,
+                    Payments = payments
+                };
+                #endregion
+
+                var created = await _invoiceRepository.InsertAsync(invoice);
+
+                tempSalesHeader.IsActive = false;
+                await _tempSalesHeaderRepository.UpdateAsync(tempSalesHeader);
+
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return ObjectMapper.Map<InvoiceDto>(created);
             }
-
-            foreach(var p in payments)
+            catch (Exception ex)
             {
-                p.CustomerId = input.CustomerId;
-                //p.CustomerPhoneNumber = input.Customer
-                p.InvoiceNumber = invoiceNumber;
+                throw ex;
             }
-            #endregion
-
-            #region Map TempSalesHeader = Invoice (HeaderLevel)
-            var invoice = new Invoice
-            {
-                TempSalesHeaderId = input.TempSalesHeaderId,
-                // InvoiceNumber = input.
-                // ReferenceNumber = tempSalesHeader.Refer
-                CustomerId = input.CustomerId,
-                CustomerCode = input.CustomerCode,
-                CustomerName = input.CustomerName,
-                DiscountRate = input.DiscountRate,
-                DiscountAmount = input.DiscountAmount,
-                TaxRate = input.TaxRate,
-                TaxAmount = input.TaxAmount,
-                GrossAmount = input.GrossAmount,
-                NetAmount = input.NetAmount,
-                //Remarks = input.Rema
-                InvoiceProducts = invoiceProducts,
-                Payments = payments
-            };
-            #endregion
-
-            var created = await _invoiceRepository.InsertAsync(invoice);
-            
-            tempSalesHeader.IsActive = false;
-            await _tempSalesHeaderRepository.UpdateAsync(tempSalesHeader);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-            return ObjectMapper.Map<InvoiceDto>(created);
         }
     }
 }
