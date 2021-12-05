@@ -120,12 +120,31 @@ export class PaymentPanelComponent implements OnInit {
     return retunAmount.toFixed(2);
   }
 
-  save() {
-    this.totalPaidAmout();
+  paymentValidation() {
     this.errors = [];
-    if (this.cashes.length <= 0 && this.cheques.length <= 0)
+    let totalSum = 0;
+    this.cashes.value.forEach(element => {
+      totalSum += element.cashAmount;
+    });
+    this.cheques.value.forEach(element => {
+      totalSum += element.chequeAmount;
+    });
+    if (this.cashes.length <= 0 && this.cheques.length <= 0) {
       this.errors.push("Select a Payment Method.");
-    else {
+    }
+    if (this.cashes.length > 0 && totalSum <= 0) {
+      this.errors.push("Invalid cash amount.");
+    }
+    if (this.cheques.length > 0 && totalSum <= 0) {
+      this.errors.push("Invalid cheque amount.");
+    }
+  }
+
+  save() {
+    this.paymentValidation();
+    this.totalPaidAmout();
+
+    if (this.errors.length <= 0) {
       console.log(this.formPayment);
       // this._financeService.createInvoice(this.formPayment.value).subscribe((response) => {
       //   if (response.id) {

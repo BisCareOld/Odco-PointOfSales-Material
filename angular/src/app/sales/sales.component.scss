@@ -8,24 +8,28 @@
 
 .child {
   padding: 10px;
-  font-size: 20px;
+  font-size: 1rem;
   border: 1px solid grey;
+  border-bottom: 0;
 }
 
 .product-search-panel {
   grid-column: 1/3;
   display: flex;
   border: 1px solid grey;
+  border-bottom: 0;
 
   .product-search {
     width: 100%;
-    font-size: 14px;
+    font-size: 0.7rem;
     margin-left: 10px;
   }
 }
 
-// .product-display {
-// }
+.product-display {
+  height: 129%;
+  overflow: auto;
+}
 
 .sales-options {
   grid-column: 2/3;
@@ -39,9 +43,8 @@
 
 .common-functions {
   display: grid;
-  height: 50%;
+  height: 25%;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 50%;
 
   button {
     border: 1px solid grey;
@@ -56,6 +59,11 @@
       font-size: 53px;
     }
   }
+}
+
+.calculation-summary {
+  padding: 1rem;
+  font-size: 1.1rem;
 }
 
 .below-functions {
@@ -74,7 +82,7 @@
       display: grid;
       margin: auto;
       width: 50%;
-      font-size: 35px;
+      font-size: 1.8rem;
       font-weight: bold;
     }
   }
@@ -94,22 +102,4 @@
   border: 0;
   color: #fff;
   background-color: rgb(238, 43, 43);
-}
-
-.calculation-column {
-  float: left;
-  width: 50%;
-  text-align: right;
-  font-size: 14px;
-}
-
-.calculation-value {
-  font-size: 18px;
-}
-
-/* Clear floats after the columns */
-.calculation-row:after {
-  content: "";
-  display: table;
-  clear: both;
 }
