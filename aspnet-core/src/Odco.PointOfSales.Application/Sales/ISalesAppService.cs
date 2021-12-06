@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Sales.Customers;
 using Odco.PointOfSales.Application.Sales.TemporarySalesHeaders;
@@ -28,6 +29,10 @@ namespace Odco.PointOfSales.Application.Sales
 
         #region StockBalance
         Task<List<ProductStockBalanceDto>> GetStockBalancesByStockBalanceIdsAsync(Guid[] stockBalanceIds);
+        #endregion
+
+        #region NonInventoryProduct
+        Task<List<NonInventoryProductDto>> GetNonInventoryProductByTempSalesHeaderIdAsync(int tempId);
         #endregion
     }
 }

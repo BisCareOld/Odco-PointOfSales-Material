@@ -161,6 +161,7 @@ namespace Odco.PointOfSales.Application.Sales
         /// 1. Create Temporary Sales Header & Product
         /// 2. StockBalance: Shift sales quantity to allocated quantity
         /// 3. Set Default warehouse to selected products (Line Level Products)
+        /// 4. NonInventoryProduct: Adding a quantity is missed
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
@@ -168,6 +169,7 @@ namespace Odco.PointOfSales.Application.Sales
         {
             var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
             var _tempHeader = new TempSalesHeader();
+            var _tempId = 0;
 
             if (input.Id.HasValue)
             {
@@ -293,14 +295,14 @@ namespace Odco.PointOfSales.Application.Sales
                 }
 
                 var temp = ObjectMapper.Map<TempSalesHeader>(input);
-                _tempHeader = await _tempSalesHeaderRepository.InsertAsync(temp);
+                _tempId = await _tempSalesHeaderRepository.InsertAndGetIdAsync(temp);
             }
-            
+
             // Create / Update / Delete NonInventoryProduct
-            await CreateOrUpdateNonInventoryProductAsync(_tempHeader.Id, input.NonInventoryProducts.ToList());
+            await CreateOrUpdateNonInventoryProductAsync(_tempId, input.NonInventoryProducts.ToList());
 
             await CurrentUnitOfWork.SaveChangesAsync();
-            return ObjectMapper.Map<TempSalesHeaderDto>(_tempHeader);
+            return new TempSalesHeaderDto { Id = _tempId }; //ObjectMapper.Map<TempSalesHeaderDto>(_tempHeader);
         }
 
         public async Task<TempSalesHeaderDto> GetTempSalesAsync(int tempSalesHeaderId)
@@ -418,7 +420,34 @@ namespace Odco.PointOfSales.Application.Sales
 
         #endregion
 
-        #region Non Inventory Product
+        #region NonInventoryProduct
+        public async Task<List<NonInventoryProductDto>> GetNonInventoryProductByTempSalesHeaderIdAsync(int tempSalesId)
+        {
+            return await _nonInventoryProductRepository
+                .GetAll()
+                .Where(n => n.TempSalesId == tempSalesId)
+                .Select(n => new NonInventoryProductDto
+                {
+                    SequenceNumber = n.SequenceNumber,
+                    TempSalesId = n.TempSalesId,
+                    ProductId = n.ProductId,
+                    ProductCode = n.ProductCode,
+                    ProductName = n.ProductName,
+                    WarehouseId = n.WarehouseId,
+                    WarehouseCode = n.WarehouseCode,
+                    WarehouseName = n.WarehouseName,
+                    Quantity = n.Quantity,
+                    QuantityUnitOfMeasureUnit = n.QuantityUnitOfMeasureUnit,
+                    DiscountRate = n.DiscountRate,
+                    DiscountAmount = n.DiscountAmount,
+                    LineTotal = n.LineTotal,
+                    CostPrice = n.CostPrice,
+                    SellingPrice = n.SellingPrice,
+                    MaximumRetailPrice = n.MaximumRetailPrice,
+                })
+                .ToListAsync();
+        }
+
         private async Task CreateOrUpdateNonInventoryProductAsync(int tempSalesId, List<CreateNonInventoryProductDto> nonInventoryProducts)
         {
             #region Explanation
@@ -462,7 +491,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                         await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
                         {
-                            SequenceNumber = -5,
+                            SequenceNumber = 1,
                             TempSalesId = tempSalesId,
                             ProductId = input_nip.ProductId,
                             ProductCode = input_nip.ProductCode,
@@ -471,7 +500,10 @@ namespace Odco.PointOfSales.Application.Sales
                             WarehouseCode = input_nip.WarehouseCode,
                             WarehouseName = input_nip.WarehouseName,
                             Quantity = input_nip.Quantity,
-                            QuantityUnitOfMeasureUnit = input_nip.QuantityUnitOfMeasureUnit,
+                            QuantityUnitOfMeasureUnit = null,
+                            DiscountRate = input_nip.DiscountRate,
+                            DiscountAmount = input_nip.DiscountAmount,
+                            LineTotal = input_nip.LineTotal,
                             CostPrice = input_nip.CostPrice,
                             SellingPrice = input_nip.SellingPrice,
                             MaximumRetailPrice = input_nip.MaximumRetailPrice
@@ -489,7 +521,7 @@ namespace Odco.PointOfSales.Application.Sales
                         else
                             await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, input_nip.Quantity, false);
 
-                        updatedDto.SequenceNumber = -5;
+                        updatedDto.SequenceNumber = 1;
                         updatedDto.TempSalesId = tempSalesId;
                         updatedDto.ProductId = input_nip.ProductId;
                         updatedDto.ProductCode = input_nip.ProductCode;
@@ -498,7 +530,10 @@ namespace Odco.PointOfSales.Application.Sales
                         updatedDto.WarehouseCode = input_nip.WarehouseCode;
                         updatedDto.WarehouseName = input_nip.WarehouseName;
                         updatedDto.Quantity = input_nip.Quantity;
-                        updatedDto.QuantityUnitOfMeasureUnit = input_nip.QuantityUnitOfMeasureUnit;
+                        updatedDto.QuantityUnitOfMeasureUnit = null;
+                        updatedDto.DiscountRate = input_nip.DiscountRate;
+                        updatedDto.DiscountAmount = input_nip.DiscountAmount;
+                        updatedDto.LineTotal = input_nip.LineTotal;
                         updatedDto.CostPrice = input_nip.CostPrice;
                         updatedDto.SellingPrice = input_nip.SellingPrice;
                         updatedDto.MaximumRetailPrice = input_nip.MaximumRetailPrice;

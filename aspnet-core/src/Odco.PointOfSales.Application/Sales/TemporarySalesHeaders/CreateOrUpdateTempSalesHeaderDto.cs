@@ -43,7 +43,7 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
         public bool IsActive { get; set; }
 
         public ICollection<CreateTempSalesProductDto> TempSalesProducts { get; set; }
-        
+
         public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
 
         public CreateOrUpdateTempSalesHeaderDto()

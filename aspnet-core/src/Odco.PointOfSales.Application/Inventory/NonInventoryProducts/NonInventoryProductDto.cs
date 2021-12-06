@@ -1,33 +1,17 @@
-﻿using Abp.Domain.Entities.Auditing;
+﻿using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
+using Odco.PointOfSales.Core.Inventory;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Odco.PointOfSales.Core.Inventory
+namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
 {
-    /// <summary>
-    /// 
-    /// OPERATIONS
-    ///      SequenceNo  |   Warehouse
-    ///          0              NULL        =>      Company Summary
-    ///          0              Exist       =>      Warehouse Summart
-    ///          1 =<           Exist       =>      NonInventory 
-    ///          
-    /// CRUD
-    ///     CREATE  =   Sales -> Payment
-    ///     UPDATE  =   Payment -> Sales    (Alter Qty)
-    ///     DELETE  =   Payment ->  Sales   (Remove Product)
-    /// 
-    /// RELATIONSHIPS
-    ///     NonInventoryProduct : TempSales = 1 : 1
-    ///     
-    /// </summary>
-    [Table("Inventory.NonInventoryProduct")]
-    public class NonInventoryProduct : FullAuditedEntity<Guid>
+    [AutoMapTo(typeof(NonInventoryProductDto)), AutoMapFrom(typeof(NonInventoryProduct))]
+    public class NonInventoryProductDto : EntityDto<Guid>
     {
         public int SequenceNumber { get; set; }
 
-        public int TempSalesId { get; set; }
+        public int TempSalesId { get   ; set; }
 
         /// <summary>
         ///     Product *FK
@@ -82,14 +66,3 @@ namespace Odco.PointOfSales.Core.Inventory
         public decimal MaximumRetailPrice { get; set; }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
