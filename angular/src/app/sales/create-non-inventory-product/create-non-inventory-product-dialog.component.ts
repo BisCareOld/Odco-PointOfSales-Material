@@ -31,6 +31,9 @@ export class CreateNonInventoryProductDialogComponent implements OnInit {
         Validators.min(1),
       ])],
       quantityUnitOfMeasureUnit: [null],
+      discountRate: [0],
+      discountAmount: [0],
+      lineTotal: [0],
       costPrice: [0, Validators.compose([
         Validators.required,
         Validators.min(1),
@@ -78,6 +81,8 @@ export class CreateNonInventoryProductDialogComponent implements OnInit {
   }
 
   submit() {
+    this.lineTotal.setValue(this.quantity.value * this.sellingPrice.value);
+
     this.matDialogRef.close({
       data: this.nipForm.value,
       event: "NonInventoryProduct",
@@ -114,6 +119,15 @@ export class CreateNonInventoryProductDialogComponent implements OnInit {
   }
   get quantityUnitOfMeasureUnit() {
     return this.nipForm.get("quantityUnitOfMeasureUnit") as FormControl;
+  }
+  get discountRate() {
+    return this.nipForm.get("discountRate") as FormControl;
+  }
+  get discountAmount() {
+    return this.nipForm.get("discountAmount") as FormControl;
+  }
+  get lineTotal() {
+    return this.nipForm.get("lineTotal") as FormControl;
   }
   get costPrice() {
     return this.nipForm.get("costPrice") as FormControl;

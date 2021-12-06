@@ -50,7 +50,7 @@ namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
         [StringLength(10)]
         public string QuantityUnitOfMeasureUnit { get; set; }
 
-        #region Calculation By Sales
+        #region Sales
         public decimal DiscountRate { get; set; }
 
         public decimal DiscountAmount { get; set; }
