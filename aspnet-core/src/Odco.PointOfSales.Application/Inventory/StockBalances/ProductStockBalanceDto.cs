@@ -41,4 +41,3 @@ namespace Odco.PointOfSales.Application.Inventory.StockBalances
         public bool IsSelected { get; set; }
     }
 }
-

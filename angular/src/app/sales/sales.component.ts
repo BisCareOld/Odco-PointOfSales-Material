@@ -18,7 +18,9 @@ import {
   ProductStockBalanceDto,
   SalesServiceProxy,
   TempSalesProductDto,
+  CreateNonInventoryProductDto,
 } from "@shared/service-proxies/service-proxies";
+import { CreateNonInventoryProductDialogComponent } from "./create-non-inventory-product/create-non-inventory-product-dialog.component";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 
 @Component({
@@ -40,6 +42,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   ];
   dataSource = new MatTableDataSource<FormGroup>();
   productStockBalances: ProductStockBalanceDto[] = [];
+  nonInventoryProducts: CreateNonInventoryProductDto[] = []
   validationMessages = {
     goodsReceivedNumber: {
       required: "This field is required",
@@ -401,6 +404,25 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
   newSale() {
     this.router.navigate(["/app/sales"]);
+  }
+
+  showCreateOrEditNonInventoryProductDialog(): void {
+    let materialDialog = this._matDialogService.open(
+      CreateNonInventoryProductDialogComponent,
+      {
+        width: "50%",
+      }
+    );
+
+    materialDialog.afterClosed().subscribe((result) => {
+      // "NonInventoryProduct" came from Dialog
+      if (result && result.event == "NonInventoryProduct") {
+        //this.addProductToTable(product, result.data);
+        console.log(result);
+        this.nonInventoryProducts.push(result.data);
+        console.log(this.nonInventoryProducts)
+      }
+    });
   }
 
   payment() {

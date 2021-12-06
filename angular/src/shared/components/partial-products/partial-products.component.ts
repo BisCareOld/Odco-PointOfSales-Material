@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
 import {
   CommonKeyValuePairDto,
   ProductionServiceProxy,
@@ -15,11 +15,12 @@ export class PartialProductsComponent implements OnInit {
   filteredOptions: Observable<CommonKeyValuePairDto[]>;
   disable: boolean = false;
 
+  @Input('clearSelectedField') clearSelectedField: boolean = false; // Enum ProductSearchType
   @Output() selectedEvent = new EventEmitter<CommonKeyValuePairDto>();
 
-  constructor(private _productionService: ProductionServiceProxy) {}
+  constructor(private _productionService: ProductionServiceProxy) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   changeKeyword() {
     this.filteredOptions = this._productionService.getPartialProducts(
@@ -31,10 +32,13 @@ export class PartialProductsComponent implements OnInit {
     var vm = this;
 
     this.selectedEvent.emit(option);
+    console.log(this.clearSelectedField)
+    if (!this.clearSelectedField) {
+      setTimeout(function () {
+        vm.clearSelectedProduct();
+      }, 1000);
+    }
 
-    setTimeout(function () {
-      vm.clearSelectedProduct();
-    }, 1000);
   }
 
   clearSelectedProduct() {

@@ -1,4 +1,5 @@
 ﻿using Abp.AutoMapper;
+using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Sales.TemporarySalesProducts;
 using Odco.PointOfSales.Core.Sales;
 using System;
@@ -42,10 +43,13 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
         public bool IsActive { get; set; }
 
         public ICollection<CreateTempSalesProductDto> TempSalesProducts { get; set; }
+        
+        public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
 
         public CreateOrUpdateTempSalesHeaderDto()
         {
             TempSalesProducts = new HashSet<CreateTempSalesProductDto>();
+            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
         }
     }
 }

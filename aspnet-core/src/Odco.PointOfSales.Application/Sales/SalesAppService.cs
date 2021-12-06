@@ -7,6 +7,7 @@ using Abp.Linq;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.GeneralDto;
+using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Productions.Warehouses;
 using Odco.PointOfSales.Application.Sales.Customers;
@@ -31,12 +32,15 @@ namespace Odco.PointOfSales.Application.Sales
         private readonly IRepository<TempSalesProduct, int> _tempSaleProductRepository;
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
+        private readonly IRepository<NonInventoryProduct, Guid> _nonInventoryProductRepository;
 
         public SalesAppService(IRepository<Customer, Guid> customerRepository,
             IRepository<TempSalesHeader, int> tempSalesHeaderRepository,
             IRepository<TempSalesProduct, int> tempSaleProductRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
-            IRepository<Warehouse, Guid> warehouseRepository)
+            IRepository<Warehouse, Guid> warehouseRepository,
+            IRepository<NonInventoryProduct, Guid> nonInventoryProductRepository
+            )
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _customerRepository = customerRepository;
@@ -44,6 +48,7 @@ namespace Odco.PointOfSales.Application.Sales
             _tempSaleProductRepository = tempSaleProductRepository;
             _stockBalanceRepository = stockBalanceRepository;
             _warehouseRepository = warehouseRepository;
+            _nonInventoryProductRepository = nonInventoryProductRepository;
         }
 
         #region Customer
@@ -244,7 +249,7 @@ namespace Odco.PointOfSales.Application.Sales
                                     sb.BookBalanceQuantity += _AQ;
                                 }
                                 await _stockBalanceRepository.UpdateAsync(sb);
-                                
+
                             }
                             await _tempSaleProductRepository.DeleteAsync(existSP);
                         }
@@ -290,6 +295,9 @@ namespace Odco.PointOfSales.Application.Sales
                 var temp = ObjectMapper.Map<TempSalesHeader>(input);
                 _tempHeader = await _tempSalesHeaderRepository.InsertAsync(temp);
             }
+            
+            // Create / Update / Delete NonInventoryProduct
+            await CreateOrUpdateNonInventoryProductAsync(_tempHeader.Id, input.NonInventoryProducts.ToList());
 
             await CurrentUnitOfWork.SaveChangesAsync();
             return ObjectMapper.Map<TempSalesHeaderDto>(_tempHeader);
@@ -327,13 +335,15 @@ namespace Odco.PointOfSales.Application.Sales
                 }
             }
 
-            if(isExisting)
+            if (isExisting)
             {
                 var lineLevelProduct = ObjectMapper.Map<TempSalesProduct>(lineLevel);
                 lineLevelProduct.TempSalesHeaderId = existingHeaderId.Value;
                 await _tempSaleProductRepository.InsertAsync(lineLevelProduct);
             }
         }
+
+
         #endregion
 
         #region Stock Balance
@@ -405,7 +415,121 @@ namespace Odco.PointOfSales.Application.Sales
             //returnList.AddRange(_sb2);
             //return returnList;
         }
+
         #endregion
 
+        #region Non Inventory Product
+        private async Task CreateOrUpdateNonInventoryProductAsync(int tempSalesId, List<CreateNonInventoryProductDto> nonInventoryProducts)
+        {
+            #region Explanation
+            //------- Existing -----------Input Req--------------------------
+            // 1.        YES                 NO          =>  DELETE
+            // 2.        NO                  YES         =>  CREATE
+            // 3.        YES                 YES         =>  UPDATE
+            #endregion
+
+            var existingNIPs = await _nonInventoryProductRepository.GetAll().Where(n => n.TempSalesId == tempSalesId).ToListAsync();
+
+            foreach (var exist_nips in existingNIPs)
+            {
+                // DELETE
+                if (!nonInventoryProducts.Any(n => n.Id == exist_nips.Id))
+                {
+                    // Company Summary & Warehouse Summary
+                    var nonInventoryProductSummaries1 = await GetNonInventoryProductSummariesAsync(exist_nips.ProductId, exist_nips.WarehouseId.Value);
+
+                    var remove = existingNIPs.FirstOrDefault(n => n.Id == exist_nips.Id);
+                    if (remove != null)
+                    {
+                        await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries1, remove.Quantity, false);
+
+                        await _nonInventoryProductRepository.HardDeleteAsync(remove);
+                    }
+                }
+            }
+
+            foreach (var input_nip in nonInventoryProducts)
+            {
+                // Company Summary & Warehouse Summary
+                var nonInventoryProductSummaries2 = await GetNonInventoryProductSummariesAsync(input_nip.ProductId, input_nip.WarehouseId.Value);
+
+                if (!input_nip.Id.HasValue)
+                {
+                    // CREATE
+                    if (!existingNIPs.Any(n => n.Id == input_nip.Id))
+                    {
+                        await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, input_nip.Quantity, true);
+
+                        await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
+                        {
+                            SequenceNumber = -5,
+                            TempSalesId = tempSalesId,
+                            ProductId = input_nip.ProductId,
+                            ProductCode = input_nip.ProductCode,
+                            ProductName = input_nip.ProductName,
+                            WarehouseId = input_nip.WarehouseId,
+                            WarehouseCode = input_nip.WarehouseCode,
+                            WarehouseName = input_nip.WarehouseName,
+                            Quantity = input_nip.Quantity,
+                            QuantityUnitOfMeasureUnit = input_nip.QuantityUnitOfMeasureUnit,
+                            CostPrice = input_nip.CostPrice,
+                            SellingPrice = input_nip.SellingPrice,
+                            MaximumRetailPrice = input_nip.MaximumRetailPrice
+                        });
+                    }
+                }
+                else
+                {
+                    // UPDATE
+                    var updatedDto = existingNIPs.FirstOrDefault(n => n.Id == input_nip.Id);
+                    if (updatedDto != null)
+                    {
+                        if (updatedDto.Quantity <= input_nip.Quantity)
+                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, input_nip.Quantity, true);
+                        else
+                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, input_nip.Quantity, false);
+
+                        updatedDto.SequenceNumber = -5;
+                        updatedDto.TempSalesId = tempSalesId;
+                        updatedDto.ProductId = input_nip.ProductId;
+                        updatedDto.ProductCode = input_nip.ProductCode;
+                        updatedDto.ProductName = input_nip.ProductName;
+                        updatedDto.WarehouseId = input_nip.WarehouseId;
+                        updatedDto.WarehouseCode = input_nip.WarehouseCode;
+                        updatedDto.WarehouseName = input_nip.WarehouseName;
+                        updatedDto.Quantity = input_nip.Quantity;
+                        updatedDto.QuantityUnitOfMeasureUnit = input_nip.QuantityUnitOfMeasureUnit;
+                        updatedDto.CostPrice = input_nip.CostPrice;
+                        updatedDto.SellingPrice = input_nip.SellingPrice;
+                        updatedDto.MaximumRetailPrice = input_nip.MaximumRetailPrice;
+                        await _nonInventoryProductRepository.UpdateAsync(updatedDto);
+                    }
+                }
+            }
+        }
+
+        private async Task<List<NonInventoryProduct>> GetNonInventoryProductSummariesAsync(Guid ProductId, Guid WarehouseId)
+        {
+            return await _nonInventoryProductRepository
+                        .GetAll()
+                        .Where(n => n.SequenceNumber == 0
+                            && n.ProductId == ProductId
+                            && (n.WarehouseId == WarehouseId || !n.WarehouseId.HasValue))
+                        .ToListAsync();
+        }
+
+        private async Task UpdateNonInventoryProductSummariesAsync(List<NonInventoryProduct> updateDtos, decimal UpdatedQuantity, bool isAdditional)
+        {
+            foreach (var summary in updateDtos)
+            {
+                if (isAdditional)
+                    summary.Quantity += UpdatedQuantity;
+                else
+                    summary.Quantity -= UpdatedQuantity;
+
+                await _nonInventoryProductRepository.UpdateAsync(summary);
+            }
+        }
+        #endregion
     }
 }

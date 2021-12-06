@@ -135,8 +135,9 @@
         <span matBadge="F2" matBadgePosition="before"></span>
         <mat-icon>local_offer</mat-icon>Discount
       </button>
-      <button mat-button>
-        <mat-icon>comment</mat-icon>Comment
+      <button mat-button (click)="showCreateOrEditNonInventoryProductDialog()">
+        <mat-icon>comment</mat-icon>
+        <mat-label>NIP</mat-label>
       </button>
       <button mat-button>
         <mat-icon>move_to_inbox</mat-icon>Cash drawer

@@ -519,6 +519,33 @@ namespace Odco.PointOfSales.Application.Productions
             };
         }
 
+        public async Task<ProductStockBalanceDto> GetRecentlyCreatedGoodsReceivedNoteAsync(Guid productId)
+        {
+            return await _stockBalanceRepository
+                .GetAll()
+                .Where(sb => sb.SequenceNumber > 0 && sb.ProductId == productId)
+                .OrderByDescending(sb => sb.SequenceNumber)
+                .Select(sb => new ProductStockBalanceDto
+                {
+                    StockBalanceId = sb.Id,
+                    ProductId = sb.ProductId,
+                    WarehouseId = sb.WarehouseId,
+                    WarehouseCode = sb.WarehouseCode,
+                    WarehouseName = sb.WarehouseName,
+                    ExpiryDate = sb.ExpiryDate,
+                    BatchNumber = sb.BatchNumber,
+                    AllocatedQuantity = sb.AllocatedQuantity,
+                    AllocatedQuantityUnitOfMeasureUnit = sb.AllocatedQuantityUnitOfMeasureUnit,
+                    BookBalanceQuantity = sb.BookBalanceQuantity,
+                    BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
+                    CostPrice = sb.CostPrice,
+                    SellingPrice = sb.SellingPrice,
+                    MaximumRetailPrice = sb.MaximumRetailPrice,
+                    IsSelected = true,
+                })
+                .FirstOrDefaultAsync();
+        }
+
         // Delete if not needed
         //public async Task<ProductStockBalanceDto> GetStockBalancesByStockBalaneIdsAsync(int[] ids)
         //{
