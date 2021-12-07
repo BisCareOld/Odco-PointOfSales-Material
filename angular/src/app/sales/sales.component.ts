@@ -43,7 +43,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   ];
   dataSource = new MatTableDataSource<FormGroup>();
   productStockBalances: ProductStockBalanceDto[] = [];
-  //nonInventoryProducts: NonInventoryProductDto[] = []
   validationMessages = {
     goodsReceivedNumber: {
       required: "This field is required",
@@ -95,15 +94,19 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     let _tempSalesHeaderId = (this.tempSalesHeaderId =
       +this.route.snapshot.queryParamMap.get("salesHeaderId"));
     if (!_tempSalesHeaderId) this.populateSalesHeaderDetails(true, null);
-    if (_tempSalesHeaderId) this.getTemporarySalesDetails(_tempSalesHeaderId);
+    if (_tempSalesHeaderId) {
+
+      this.getTemporarySalesDetails(_tempSalesHeaderId);
+    }
   }
 
   getTemporarySalesDetails(id: number) {
     this._salesService
       .getTempSales(id)
       .subscribe((result: TempSalesHeaderDto) => {
-        console.log(result);
+        console.log("1", result);
 
+        this.getNonInventoryProductsByTempSalesHeaderId(id);
         this.populateSalesHeaderDetails(false, result);
 
         let stockBalanceIds: string[] = [];
@@ -116,6 +119,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
           this._salesService
             .getStockBalancesByStockBalanceIds(stockBalanceIds)
             .subscribe((sb) => {
+              console.log("2", sb);
               _stockBalances = sb;
 
               result.tempSalesProducts.forEach((value, i) => {
@@ -134,6 +138,15 @@ export class SalesComponent extends AppComponentBase implements OnInit {
             });
         }
       });
+  }
+
+  getNonInventoryProductsByTempSalesHeaderId(id: number) {
+    this._salesService.getNonInventoryProductByTempSalesHeaderId(id).subscribe((results) => {
+      results.forEach((n: NonInventoryProductDto) => {
+        console.log("getNonInventoryProductsByTempSalesHeaderId ", n);
+        this.populateSalesProductForNonInventoryDetails(n);
+      });
+    });
   }
 
   // If "salesheader: Exist => Came from Query string else a new One
@@ -273,6 +286,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     _nonInventoryProduct: NonInventoryProductDto,
   ) {
     let item = this.fb.group({
+      id: [_nonInventoryProduct.id],
+      tempSalesId: [_nonInventoryProduct.tempSalesId],
       stockBalanceId: [null],
       productId: [
         _nonInventoryProduct.productId,
@@ -554,7 +569,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
       let _b = new CreateNonInventoryProductDto();
       if (item.isNonInventoryProductInvolved) {
-        _b.id = item.nonInventoryProductId;
+        _b.id = item.id;
         _b.sequenceNumber = 1;
         _b.tempSalesId = item.tempSalesId;
         _b.productId = item.productId;

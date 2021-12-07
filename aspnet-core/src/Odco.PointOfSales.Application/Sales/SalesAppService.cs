@@ -278,6 +278,7 @@ namespace Odco.PointOfSales.Application.Sales
                     }
 
                     _tempHeader = new TempSalesHeader { Id = tempSales.Id };
+                    _tempId = tempSales.Id;
                 }
             }
             else
@@ -428,6 +429,7 @@ namespace Odco.PointOfSales.Application.Sales
                 .Where(n => n.TempSalesId == tempSalesId)
                 .Select(n => new NonInventoryProductDto
                 {
+                    Id = n.Id,
                     SequenceNumber = n.SequenceNumber,
                     TempSalesId = n.TempSalesId,
                     ProductId = n.ProductId,
