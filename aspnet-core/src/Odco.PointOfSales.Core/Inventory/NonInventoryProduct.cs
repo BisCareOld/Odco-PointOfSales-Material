@@ -83,13 +83,3 @@ namespace Odco.PointOfSales.Core.Inventory
     }
 }
 
-
-
-
-
-
-
-
-
-
-
