@@ -16,7 +16,7 @@ namespace Odco.PointOfSales.Application.Finance.Invoices
             InvoiceProducts = new HashSet<InvoiceProductDto>();
         }
 
-        public int? TempSalesHeaderId { get; set; }
+        public int? TempSaleId { get; set; }
 
         [Required]
         [StringLength(15)]

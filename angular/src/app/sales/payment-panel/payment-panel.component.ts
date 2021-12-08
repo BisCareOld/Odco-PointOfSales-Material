@@ -7,7 +7,7 @@ import {
   SalesServiceProxy,
   CommonServiceProxy,
   FinanceServiceProxy,
-  TempSalesHeaderDto,
+  TempSaleDto,
   CommonKeyValuePairDto,
 } from "@shared/service-proxies/service-proxies";
 import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.component";
@@ -18,7 +18,7 @@ import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.c
   styleUrls: ["./payment-panel.component.scss"],
 })
 export class PaymentPanelComponent implements OnInit {
-  tempSalesHeader: TempSalesHeaderDto;
+  tempSalesHeader: TempSaleDto;
   paymentMethod: number = 0;
   formPayment;
   banks: CommonKeyValuePairDto[] = []

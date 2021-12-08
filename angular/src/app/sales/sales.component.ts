@@ -11,9 +11,9 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  CreateOrUpdateTempSalesHeaderDto,
+  CreateOrUpdateTempSaleDto,
   CreateTempSalesProductDto,
-  TempSalesHeaderDto,
+  TempSaleDto,
   ProductSearchResultDto,
   ProductStockBalanceDto,
   SalesServiceProxy,
@@ -103,7 +103,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   getTemporarySalesDetails(id: number) {
     this._salesService
       .getTempSales(id)
-      .subscribe((result: TempSalesHeaderDto) => {
+      .subscribe((result: TempSaleDto) => {
         console.log("1", result);
 
         this.getNonInventoryProductsByTempSalesHeaderId(id);
@@ -141,7 +141,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   getNonInventoryProductsByTempSalesHeaderId(id: number) {
-    this._salesService.getNonInventoryProductByTempSalesHeaderId(id).subscribe((results) => {
+    this._salesService.getNonInventoryProductByTempSaleId(id).subscribe((results) => {
       results.forEach((n: NonInventoryProductDto) => {
         console.log("getNonInventoryProductsByTempSalesHeaderId ", n);
         this.populateSalesProductForNonInventoryDetails(n);
@@ -152,7 +152,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   // If "salesheader: Exist => Came from Query string else a new One
   private populateSalesHeaderDetails(
     isNewSale: boolean,
-    salesheader: TempSalesHeaderDto
+    salesheader: TempSaleDto
   ) {
     this.salePanelForm = this.fb.group({
       salesNumber: [
@@ -287,7 +287,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   ) {
     let item = this.fb.group({
       id: [_nonInventoryProduct.id],
-      tempSalesId: [_nonInventoryProduct.tempSalesId],
+      tempSalesId: [_nonInventoryProduct.tempSaleId],
       stockBalanceId: [null],
       productId: [
         _nonInventoryProduct.productId,
@@ -521,7 +521,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
     //console.log(this.salePanelForm.value);
 
-    let _header = new CreateOrUpdateTempSalesHeaderDto();
+    let _header = new CreateOrUpdateTempSaleDto();
     _header.id = !this.tempSalesHeaderId ? null : this.tempSalesHeaderId;
     _header.customerId = this.salePanelForm.value.customerId;
     _header.customerCode = this.salePanelForm.value.customerCode;
@@ -571,7 +571,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       if (item.isNonInventoryProductInvolved) {
         _b.id = item.id;
         _b.sequenceNumber = 1;
-        _b.tempSalesId = item.tempSalesId;
+        _b.tempSaleId = item.tempSaleId;
         _b.productId = item.productId;
         _b.productCode = item.productCode;
         _b.productName = item.productName;

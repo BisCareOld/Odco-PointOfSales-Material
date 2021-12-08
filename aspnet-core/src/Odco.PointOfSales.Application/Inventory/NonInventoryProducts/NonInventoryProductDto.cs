@@ -11,7 +11,7 @@ namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
     {
         public int SequenceNumber { get; set; }
 
-        public int TempSalesId { get   ; set; }
+        public int TempSaleId { get   ; set; }
 
         /// <summary>
         ///     Product *FK

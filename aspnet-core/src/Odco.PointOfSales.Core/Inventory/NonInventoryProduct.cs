@@ -27,7 +27,7 @@ namespace Odco.PointOfSales.Core.Inventory
     {
         public int SequenceNumber { get; set; }
 
-        public int TempSalesId { get; set; }
+        public int TempSaleId { get; set; }
 
         /// <summary>
         ///     Product *FK

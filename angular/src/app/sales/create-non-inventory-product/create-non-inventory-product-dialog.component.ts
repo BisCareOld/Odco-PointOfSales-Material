@@ -19,7 +19,7 @@ export class CreateNonInventoryProductDialogComponent implements OnInit {
   ngOnInit(): void {
     this.nipForm = this.fb.group({
       sequenceNumber: [1, Validators.required],
-      tempSalesId: [null],
+      tempSaleId: [null],
       productId: [null, Validators.required],
       productCode: [null, Validators.required],
       productName: [null, Validators.required],
@@ -93,8 +93,8 @@ export class CreateNonInventoryProductDialogComponent implements OnInit {
   get sequenceNumber() {
     return this.nipForm.get("sequenceNumber") as FormControl;
   }
-  get tempSalesId() {
-    return this.nipForm.get("tempSalesId") as FormControl;
+  get tempSaleId() {
+    return this.nipForm.get("tempSaleId") as FormControl;
   }
   get productId() {
     return this.nipForm.get("productId") as FormControl;

@@ -7,8 +7,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Odco.PointOfSales.Core.Sales
 {
-    [Table("Sales.TempSalesHeader")]
-    public class TempSalesHeader : FullAuditedEntity<int>
+    [Table("Sales.TempSale")]
+    public class TempSale : FullAuditedEntity<int>
     {
         public Guid? CustomerId { get; set; }
 
@@ -37,7 +37,7 @@ namespace Odco.PointOfSales.Core.Sales
 
         public ICollection<TempSalesProduct> TempSalesProducts { get; set; }
 
-        public TempSalesHeader()
+        public TempSale()
         {
             TempSalesProducts = new HashSet<TempSalesProduct>();
         }

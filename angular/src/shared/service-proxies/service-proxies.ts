@@ -3508,7 +3508,7 @@ export class SalesServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    createOrUpdateTempSales(body: CreateOrUpdateTempSalesHeaderDto | undefined): Observable<TempSalesHeaderDto> {
+    createOrUpdateTempSales(body: CreateOrUpdateTempSaleDto | undefined): Observable<TempSaleDto> {
         let url_ = this.baseUrl + "/api/services/app/Sales/CreateOrUpdateTempSales";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -3531,14 +3531,14 @@ export class SalesServiceProxy {
                 try {
                     return this.processCreateOrUpdateTempSales(<any>response_);
                 } catch (e) {
-                    return <Observable<TempSalesHeaderDto>><any>_observableThrow(e);
+                    return <Observable<TempSaleDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<TempSalesHeaderDto>><any>_observableThrow(response_);
+                return <Observable<TempSaleDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreateOrUpdateTempSales(response: HttpResponseBase): Observable<TempSalesHeaderDto> {
+    protected processCreateOrUpdateTempSales(response: HttpResponseBase): Observable<TempSaleDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3549,7 +3549,7 @@ export class SalesServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = TempSalesHeaderDto.fromJS(resultData200);
+            result200 = TempSaleDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -3557,19 +3557,19 @@ export class SalesServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<TempSalesHeaderDto>(<any>null);
+        return _observableOf<TempSaleDto>(<any>null);
     }
 
     /**
-     * @param tempSalesHeaderId (optional) 
+     * @param tempSaleId (optional) 
      * @return Success
      */
-    getTempSales(tempSalesHeaderId: number | undefined): Observable<TempSalesHeaderDto> {
+    getTempSales(tempSaleId: number | undefined): Observable<TempSaleDto> {
         let url_ = this.baseUrl + "/api/services/app/Sales/GetTempSales?";
-        if (tempSalesHeaderId === null)
-            throw new Error("The parameter 'tempSalesHeaderId' cannot be null.");
-        else if (tempSalesHeaderId !== undefined)
-            url_ += "tempSalesHeaderId=" + encodeURIComponent("" + tempSalesHeaderId) + "&";
+        if (tempSaleId === null)
+            throw new Error("The parameter 'tempSaleId' cannot be null.");
+        else if (tempSaleId !== undefined)
+            url_ += "tempSaleId=" + encodeURIComponent("" + tempSaleId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -3587,14 +3587,14 @@ export class SalesServiceProxy {
                 try {
                     return this.processGetTempSales(<any>response_);
                 } catch (e) {
-                    return <Observable<TempSalesHeaderDto>><any>_observableThrow(e);
+                    return <Observable<TempSaleDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<TempSalesHeaderDto>><any>_observableThrow(response_);
+                return <Observable<TempSaleDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetTempSales(response: HttpResponseBase): Observable<TempSalesHeaderDto> {
+    protected processGetTempSales(response: HttpResponseBase): Observable<TempSaleDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3605,7 +3605,7 @@ export class SalesServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = TempSalesHeaderDto.fromJS(resultData200);
+            result200 = TempSaleDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -3613,7 +3613,7 @@ export class SalesServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<TempSalesHeaderDto>(<any>null);
+        return _observableOf<TempSaleDto>(<any>null);
     }
 
     /**
@@ -3678,15 +3678,15 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param tempSalesId (optional) 
+     * @param tempSaleId (optional) 
      * @return Success
      */
-    getNonInventoryProductByTempSalesHeaderId(tempSalesId: number | undefined): Observable<NonInventoryProductDto[]> {
-        let url_ = this.baseUrl + "/api/services/app/Sales/GetNonInventoryProductByTempSalesHeaderId?";
-        if (tempSalesId === null)
-            throw new Error("The parameter 'tempSalesId' cannot be null.");
-        else if (tempSalesId !== undefined)
-            url_ += "tempSalesId=" + encodeURIComponent("" + tempSalesId) + "&";
+    getNonInventoryProductByTempSaleId(tempSaleId: number | undefined): Observable<NonInventoryProductDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Sales/GetNonInventoryProductByTempSaleId?";
+        if (tempSaleId === null)
+            throw new Error("The parameter 'tempSaleId' cannot be null.");
+        else if (tempSaleId !== undefined)
+            url_ += "tempSaleId=" + encodeURIComponent("" + tempSaleId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -3698,11 +3698,11 @@ export class SalesServiceProxy {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetNonInventoryProductByTempSalesHeaderId(response_);
+            return this.processGetNonInventoryProductByTempSaleId(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetNonInventoryProductByTempSalesHeaderId(<any>response_);
+                    return this.processGetNonInventoryProductByTempSaleId(<any>response_);
                 } catch (e) {
                     return <Observable<NonInventoryProductDto[]>><any>_observableThrow(e);
                 }
@@ -3711,7 +3711,7 @@ export class SalesServiceProxy {
         }));
     }
 
-    protected processGetNonInventoryProductByTempSalesHeaderId(response: HttpResponseBase): Observable<NonInventoryProductDto[]> {
+    protected processGetNonInventoryProductByTempSaleId(response: HttpResponseBase): Observable<NonInventoryProductDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -5446,7 +5446,7 @@ export interface IGiftCardDto {
 }
 
 export class CreateInvoiceDto implements ICreateInvoiceDto {
-    tempSalesHeaderId: number | undefined;
+    tempSaleId: number | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
     customerName: string | undefined;
@@ -5473,7 +5473,7 @@ export class CreateInvoiceDto implements ICreateInvoiceDto {
 
     init(_data?: any) {
         if (_data) {
-            this.tempSalesHeaderId = _data["tempSalesHeaderId"];
+            this.tempSaleId = _data["tempSaleId"];
             this.customerId = _data["customerId"];
             this.customerCode = _data["customerCode"];
             this.customerName = _data["customerName"];
@@ -5520,7 +5520,7 @@ export class CreateInvoiceDto implements ICreateInvoiceDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["tempSalesHeaderId"] = this.tempSalesHeaderId;
+        data["tempSaleId"] = this.tempSaleId;
         data["customerId"] = this.customerId;
         data["customerCode"] = this.customerCode;
         data["customerName"] = this.customerName;
@@ -5567,7 +5567,7 @@ export class CreateInvoiceDto implements ICreateInvoiceDto {
 }
 
 export interface ICreateInvoiceDto {
-    tempSalesHeaderId: number | undefined;
+    tempSaleId: number | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
     customerName: string | undefined;
@@ -5700,7 +5700,7 @@ export interface IInvoiceProductDto {
 }
 
 export class InvoiceDto implements IInvoiceDto {
-    tempSalesHeaderId: number | undefined;
+    tempSaleId: number | undefined;
     invoiceNumber: string;
     referenceNumber: string | undefined;
     customerId: string | undefined;
@@ -5727,7 +5727,7 @@ export class InvoiceDto implements IInvoiceDto {
 
     init(_data?: any) {
         if (_data) {
-            this.tempSalesHeaderId = _data["tempSalesHeaderId"];
+            this.tempSaleId = _data["tempSaleId"];
             this.invoiceNumber = _data["invoiceNumber"];
             this.referenceNumber = _data["referenceNumber"];
             this.customerId = _data["customerId"];
@@ -5758,7 +5758,7 @@ export class InvoiceDto implements IInvoiceDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["tempSalesHeaderId"] = this.tempSalesHeaderId;
+        data["tempSaleId"] = this.tempSaleId;
         data["invoiceNumber"] = this.invoiceNumber;
         data["referenceNumber"] = this.referenceNumber;
         data["customerId"] = this.customerId;
@@ -5789,7 +5789,7 @@ export class InvoiceDto implements IInvoiceDto {
 }
 
 export interface IInvoiceDto {
-    tempSalesHeaderId: number | undefined;
+    tempSaleId: number | undefined;
     invoiceNumber: string;
     referenceNumber: string | undefined;
     customerId: string | undefined;
@@ -8903,7 +8903,7 @@ export interface ICreateTempSalesProductDto {
 export class CreateNonInventoryProductDto implements ICreateNonInventoryProductDto {
     id: string | undefined;
     sequenceNumber: number;
-    tempSalesId: number | undefined;
+    tempSaleId: number | undefined;
     productId: string;
     productCode: string;
     productName: string;
@@ -8932,7 +8932,7 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
         if (_data) {
             this.id = _data["id"];
             this.sequenceNumber = _data["sequenceNumber"];
-            this.tempSalesId = _data["tempSalesId"];
+            this.tempSaleId = _data["tempSaleId"];
             this.productId = _data["productId"];
             this.productCode = _data["productCode"];
             this.productName = _data["productName"];
@@ -8961,7 +8961,7 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["sequenceNumber"] = this.sequenceNumber;
-        data["tempSalesId"] = this.tempSalesId;
+        data["tempSaleId"] = this.tempSaleId;
         data["productId"] = this.productId;
         data["productCode"] = this.productCode;
         data["productName"] = this.productName;
@@ -8990,7 +8990,7 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
 export interface ICreateNonInventoryProductDto {
     id: string | undefined;
     sequenceNumber: number;
-    tempSalesId: number | undefined;
+    tempSaleId: number | undefined;
     productId: string;
     productCode: string;
     productName: string;
@@ -9007,7 +9007,7 @@ export interface ICreateNonInventoryProductDto {
     maximumRetailPrice: number;
 }
 
-export class CreateOrUpdateTempSalesHeaderDto implements ICreateOrUpdateTempSalesHeaderDto {
+export class CreateOrUpdateTempSaleDto implements ICreateOrUpdateTempSaleDto {
     id: number | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
@@ -9023,7 +9023,7 @@ export class CreateOrUpdateTempSalesHeaderDto implements ICreateOrUpdateTempSale
     tempSalesProducts: CreateTempSalesProductDto[] | undefined;
     nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
 
-    constructor(data?: ICreateOrUpdateTempSalesHeaderDto) {
+    constructor(data?: ICreateOrUpdateTempSaleDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -9059,9 +9059,9 @@ export class CreateOrUpdateTempSalesHeaderDto implements ICreateOrUpdateTempSale
         }
     }
 
-    static fromJS(data: any): CreateOrUpdateTempSalesHeaderDto {
+    static fromJS(data: any): CreateOrUpdateTempSaleDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateOrUpdateTempSalesHeaderDto();
+        let result = new CreateOrUpdateTempSaleDto();
         result.init(data);
         return result;
     }
@@ -9093,15 +9093,15 @@ export class CreateOrUpdateTempSalesHeaderDto implements ICreateOrUpdateTempSale
         return data; 
     }
 
-    clone(): CreateOrUpdateTempSalesHeaderDto {
+    clone(): CreateOrUpdateTempSaleDto {
         const json = this.toJSON();
-        let result = new CreateOrUpdateTempSalesHeaderDto();
+        let result = new CreateOrUpdateTempSaleDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICreateOrUpdateTempSalesHeaderDto {
+export interface ICreateOrUpdateTempSaleDto {
     id: number | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
@@ -9119,7 +9119,7 @@ export interface ICreateOrUpdateTempSalesHeaderDto {
 }
 
 export class TempSalesProductDto implements ITempSalesProductDto {
-    tempSalesHeaderId: number;
+    tempSaleId: number;
     productId: string;
     barCode: string | undefined;
     code: string;
@@ -9154,7 +9154,7 @@ export class TempSalesProductDto implements ITempSalesProductDto {
 
     init(_data?: any) {
         if (_data) {
-            this.tempSalesHeaderId = _data["tempSalesHeaderId"];
+            this.tempSaleId = _data["tempSaleId"];
             this.productId = _data["productId"];
             this.barCode = _data["barCode"];
             this.code = _data["code"];
@@ -9189,7 +9189,7 @@ export class TempSalesProductDto implements ITempSalesProductDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["tempSalesHeaderId"] = this.tempSalesHeaderId;
+        data["tempSaleId"] = this.tempSaleId;
         data["productId"] = this.productId;
         data["barCode"] = this.barCode;
         data["code"] = this.code;
@@ -9224,7 +9224,7 @@ export class TempSalesProductDto implements ITempSalesProductDto {
 }
 
 export interface ITempSalesProductDto {
-    tempSalesHeaderId: number;
+    tempSaleId: number;
     productId: string;
     barCode: string | undefined;
     code: string;
@@ -9249,7 +9249,7 @@ export interface ITempSalesProductDto {
     id: number;
 }
 
-export class TempSalesHeaderDto implements ITempSalesHeaderDto {
+export class TempSaleDto implements ITempSaleDto {
     customerId: string | undefined;
     customerCode: string | undefined;
     customerName: string | undefined;
@@ -9264,7 +9264,7 @@ export class TempSalesHeaderDto implements ITempSalesHeaderDto {
     tempSalesProducts: TempSalesProductDto[] | undefined;
     id: number;
 
-    constructor(data?: ITempSalesHeaderDto) {
+    constructor(data?: ITempSaleDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -9295,9 +9295,9 @@ export class TempSalesHeaderDto implements ITempSalesHeaderDto {
         }
     }
 
-    static fromJS(data: any): TempSalesHeaderDto {
+    static fromJS(data: any): TempSaleDto {
         data = typeof data === 'object' ? data : {};
-        let result = new TempSalesHeaderDto();
+        let result = new TempSaleDto();
         result.init(data);
         return result;
     }
@@ -9324,15 +9324,15 @@ export class TempSalesHeaderDto implements ITempSalesHeaderDto {
         return data; 
     }
 
-    clone(): TempSalesHeaderDto {
+    clone(): TempSaleDto {
         const json = this.toJSON();
-        let result = new TempSalesHeaderDto();
+        let result = new TempSaleDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ITempSalesHeaderDto {
+export interface ITempSaleDto {
     customerId: string | undefined;
     customerCode: string | undefined;
     customerName: string | undefined;
@@ -9350,7 +9350,7 @@ export interface ITempSalesHeaderDto {
 
 export class NonInventoryProductDto implements INonInventoryProductDto {
     sequenceNumber: number;
-    tempSalesId: number;
+    tempSaleId: number;
     productId: string;
     productCode: string;
     productName: string;
@@ -9379,7 +9379,7 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
     init(_data?: any) {
         if (_data) {
             this.sequenceNumber = _data["sequenceNumber"];
-            this.tempSalesId = _data["tempSalesId"];
+            this.tempSaleId = _data["tempSaleId"];
             this.productId = _data["productId"];
             this.productCode = _data["productCode"];
             this.productName = _data["productName"];
@@ -9408,7 +9408,7 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["sequenceNumber"] = this.sequenceNumber;
-        data["tempSalesId"] = this.tempSalesId;
+        data["tempSaleId"] = this.tempSaleId;
         data["productId"] = this.productId;
         data["productCode"] = this.productCode;
         data["productName"] = this.productName;
@@ -9437,7 +9437,7 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
 
 export interface INonInventoryProductDto {
     sequenceNumber: number;
-    tempSalesId: number;
+    tempSaleId: number;
     productId: string;
     productCode: string;
     productName: string;
