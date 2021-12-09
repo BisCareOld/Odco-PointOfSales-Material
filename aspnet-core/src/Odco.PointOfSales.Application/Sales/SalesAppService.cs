@@ -472,7 +472,7 @@ namespace Odco.PointOfSales.Application.Sales
                     var remove = existingNIPs.FirstOrDefault(n => n.Id == exist_nips.Id);
                     if (remove != null)
                     {
-                        await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries1, remove.Quantity, false);
+                        await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries1, remove.Quantity, 0);
 
                         await _nonInventoryProductRepository.HardDeleteAsync(remove);
                     }
@@ -489,7 +489,7 @@ namespace Odco.PointOfSales.Application.Sales
                     // CREATE
                     if (!existingNIPs.Any(n => n.Id == input_nip.Id))
                     {
-                        await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, input_nip.Quantity, true);
+                        await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, 0, input_nip.Quantity);
 
                         await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
                         {
@@ -519,9 +519,9 @@ namespace Odco.PointOfSales.Application.Sales
                     if (updatedDto != null)
                     {
                         if (updatedDto.Quantity <= input_nip.Quantity)
-                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, input_nip.Quantity, true);
+                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, updatedDto.Quantity, input_nip.Quantity);
                         else
-                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, input_nip.Quantity, false);
+                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, updatedDto.Quantity, input_nip.Quantity);
 
                         updatedDto.SequenceNumber = 1;
                         updatedDto.TempSaleId = tempSaleId;
@@ -555,14 +555,29 @@ namespace Odco.PointOfSales.Application.Sales
                         .ToListAsync();
         }
 
-        private async Task UpdateNonInventoryProductSummariesAsync(List<NonInventoryProduct> updateDtos, decimal UpdatedQuantity, bool isAdditional)
+        private async Task UpdateNonInventoryProductSummariesAsync(List<NonInventoryProduct> updateDtos, decimal previousQuantity, decimal NewQuantity)
         {
+            // PrevQty  |   NewQty      |   Diff = (PrevQty - NewQty)
+            //     +           -               +
+            //     -           +               -
+            //     =           =               =       
+
+            // Calculate the differences & Make the differentiate value to positive
+            var differentiateQuantity = previousQuantity - NewQuantity;
+            differentiateQuantity = Math.Abs(differentiateQuantity);
+
+            // Based on the comparison set positive or nagative value for "differentiateQuantity"
+            if (previousQuantity >= NewQuantity)
+                differentiateQuantity = (-1) * differentiateQuantity;
+            else
+                differentiateQuantity = (+1) * differentiateQuantity;
+
             foreach (var summary in updateDtos)
             {
-                if (isAdditional)
-                    summary.Quantity += UpdatedQuantity;
-                else
-                    summary.Quantity -= UpdatedQuantity;
+                // Might have positive or negative values in "differentiateQuantity"
+                // Minus will decrease from existing value
+                // positive will increase from existing value 
+                summary.Quantity += differentiateQuantity;  
 
                 await _nonInventoryProductRepository.UpdateAsync(summary);
             }
