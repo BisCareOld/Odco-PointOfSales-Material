@@ -2,7 +2,7 @@ import { ThrowStmt } from "@angular/compiler";
 import { Component, OnChanges, OnInit } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   SalesServiceProxy,
   CommonServiceProxy,
@@ -26,12 +26,13 @@ export class PaymentPanelComponent implements OnInit {
   errors: string[] = [];
 
   constructor(
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private _matDialogService: MatDialog,
     private _salesService: SalesServiceProxy,
     private _commonService: CommonServiceProxy,
     private _financeService: FinanceServiceProxy,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -54,7 +55,7 @@ export class PaymentPanelComponent implements OnInit {
   getNonInventoryProductByTempSaleId(tempSaleId: number) {
     this._salesService.getNonInventoryProductByTempSaleId(tempSaleId).subscribe((result) => {
 
-    })
+    });
   }
 
   showChequeDialog(tempSalesId: number, netAmount: number) {
@@ -102,6 +103,14 @@ export class PaymentPanelComponent implements OnInit {
       debitCards: this.fb.array([]),
       giftCards: this.fb.array([]),
     });
+  }
+
+  navigateBack() {
+    this.router.navigate(
+      ["/app/sales"],
+      {
+        queryParams: { salesHeaderId: this.tempSalesHeader.id }
+      });
   }
 
   paymentTypeSelection(paymentType: number) {
