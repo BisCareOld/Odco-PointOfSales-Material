@@ -1,0 +1,45 @@
+.full-width {
+  width: 100%;
+}
+
+.shipping-card {
+  min-width: 120px;
+  margin: 20px auto;
+}
+
+.mat-radio-button {
+  display: block;
+  margin: 5px 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.col:last-child {
+  margin-right: 0;
+}
+
+.transaction-table-inputs {
+  width: 75px;
+  text-align: right;
+  border-bottom: 1px solid #000;
+}
+
+.parent {
+  margin: 10px;
+  display: grid;
+  grid-template-columns: 75% auto;
+  grid-auto-rows: 50px;
+}
+.child {
+  padding: 10px;
+  border: 1px solid rgba(153, 148, 148, 0.241);
+  text-align: right;
+}

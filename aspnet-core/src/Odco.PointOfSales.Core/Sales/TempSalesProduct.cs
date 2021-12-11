@@ -10,9 +10,9 @@ namespace Odco.PointOfSales.Sales.Common
     public class TempSalesProduct : FullAuditedEntity<int>
     {
         #region TemporarySalesHeader
-        public int TempSalesHeaderId { get; set; }
+        public int TempSaleId { get; set; }
 
-        public TempSalesHeader TempSalesHeader { get; set; }
+        public TempSale TempSale { get; set; }
         #endregion
 
         #region Product

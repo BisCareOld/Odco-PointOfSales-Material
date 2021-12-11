@@ -9,6 +9,7 @@ import { SalesComponent } from "./sales.component";
 import { PaymentPanelComponent } from "./payment-panel/payment-panel.component";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 import { ChequeDialogComponent } from "./payment-methods/cheque/cheque-dialog.component";
+import { CreateNonInventoryProductDialogComponent } from './create-non-inventory-product/create-non-inventory-product-dialog.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,8 @@ import { ChequeDialogComponent } from "./payment-methods/cheque/cheque-dialog.co
     PaymentPanelComponent,
     StockBalanceDialogComponent,
     ChequeDialogComponent,
+    CreateNonInventoryProductDialogComponent,
+    CreateNonInventoryProductDialogComponent
   ],
   imports: [
     CommonModule,
@@ -24,6 +27,6 @@ import { ChequeDialogComponent } from "./payment-methods/cheque/cheque-dialog.co
     ReactiveFormsModule,
     SharedModule,
   ],
-  entryComponents: [StockBalanceDialogComponent, ChequeDialogComponent],
+  entryComponents: [StockBalanceDialogComponent, ChequeDialogComponent, CreateNonInventoryProductDialogComponent],
 })
-export class SaleModule {}
+export class SaleModule { }

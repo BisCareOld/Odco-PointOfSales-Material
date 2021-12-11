@@ -52,6 +52,8 @@ namespace Odco.PointOfSales.Application.Productions
 
         #region Stock Balance
         Task<ResponseDto<ProductStockBalanceDto>> GetStockBalancesByProductIdAsync(Guid productId);
+        Task<ProductStockBalanceDto> GetRecentlyCreatedGoodsReceivedNoteAsync(Guid productId);
+
         #endregion
     }
 }

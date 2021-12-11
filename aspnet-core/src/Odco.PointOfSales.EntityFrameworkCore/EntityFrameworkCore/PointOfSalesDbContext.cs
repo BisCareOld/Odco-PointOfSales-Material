@@ -50,7 +50,7 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         #region Sales
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<PriceGroup> PriceGroups { get; set; }
-        public virtual DbSet<TempSalesHeader> TempSalesHeader { get; set; }
+        public virtual DbSet<TempSale> TempSale { get; set; }
         public virtual DbSet<TempSalesProduct> TempSalesProducts { get; set; }
 
         #endregion
@@ -59,6 +59,7 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         public virtual DbSet<StockBalance> StockBalances { get; set; }
         public virtual DbSet<GoodsReceived> GoodsReceivedTransactions { get; set; }
         public virtual DbSet<GoodsReceivedProduct> GoodsReceivedProducts { get; set; }
+        public virtual DbSet<NonInventoryProduct> NonInventoryProducts { get; set; }
         #endregion
 
         #region Finance

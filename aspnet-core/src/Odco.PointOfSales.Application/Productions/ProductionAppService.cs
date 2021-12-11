@@ -30,12 +30,14 @@ namespace Odco.PointOfSales.Application.Productions
         private readonly IRepository<Brand, Guid> _brandRepository;
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
+        private readonly IRepository<NonInventoryProduct, Guid> _nonInventoryProductRepository;
 
         public ProductionAppService(IRepository<Product, Guid> productRepository,
             IRepository<Category, Guid> categoryRepository,
             IRepository<Brand, Guid> brandRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
-            IRepository<Warehouse, Guid> warehouseRepository)
+            IRepository<Warehouse, Guid> warehouseRepository,
+            IRepository<NonInventoryProduct, Guid> nonInventoryProductRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _productRepository = productRepository;
@@ -43,6 +45,7 @@ namespace Odco.PointOfSales.Application.Productions
             _brandRepository = brandRepository;
             _stockBalanceRepository = stockBalanceRepository;
             _warehouseRepository = warehouseRepository;
+            _nonInventoryProductRepository = nonInventoryProductRepository;
         }
 
         #region Product
@@ -53,6 +56,7 @@ namespace Odco.PointOfSales.Application.Productions
                 var product = ObjectMapper.Map<Product>(input);
                 var created = await _productRepository.InsertAsync(product);
                 await CreateOrUpdateStockBalance(created.Id, created.Code, created.Name);
+                await CreateOrUpdateNonInventoryProductSummaryAsync(created.Id, created.Code, created.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(created);
             }
@@ -122,6 +126,7 @@ namespace Odco.PointOfSales.Application.Productions
                 ObjectMapper.Map(input, product);
                 var updated = await _productRepository.UpdateAsync(product);
                 await CreateOrUpdateStockBalance(updated.Id, updated.Code, updated.Name);
+                await CreateOrUpdateNonInventoryProductSummaryAsync(updated.Id, updated.Code, updated.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(updated);
             }
@@ -203,6 +208,7 @@ namespace Odco.PointOfSales.Application.Productions
             {
                 var warehouse = ObjectMapper.Map<Warehouse>(input);
                 var created = await _warehouseRepository.InsertAsync(warehouse);
+                CreateOrUpdateWarehouseSummariesInNonInventoryProductAndStockBalanceAsync(created.Id, created.Code, created.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<WarehouseDto>(created);
             }
@@ -271,6 +277,7 @@ namespace Odco.PointOfSales.Application.Productions
                 var warehouse = await _warehouseRepository.FirstOrDefaultAsync(pt => pt.Id == input.Id);
                 ObjectMapper.Map(input, warehouse);
                 var updated = await _warehouseRepository.UpdateAsync(warehouse);
+                CreateOrUpdateWarehouseSummariesInNonInventoryProductAndStockBalanceAsync(updated.Id, updated.Code, updated.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<WarehouseDto>(updated);
             }
@@ -282,8 +289,8 @@ namespace Odco.PointOfSales.Application.Productions
 
         public async Task<List<CommonKeyValuePairDto>> GetAllKeyValuePairWarehousesAsync()
         {
-            return await _warehouseRepository.GetAll()
-                .Where(w => w.IsActive)
+            return await _warehouseRepository
+                .GetAll()
                 .OrderBy(w => w.Name)
                 .Select(w => new CommonKeyValuePairDto
                 {
@@ -519,64 +526,256 @@ namespace Odco.PointOfSales.Application.Productions
             };
         }
 
-        // Delete if not needed
-        //public async Task<ProductStockBalanceDto> GetStockBalancesByStockBalaneIdsAsync(int[] ids)
-        //{
-        //    return _stockBalanceRepository.GetAll()
-        //        .Where(sb => sb.SequenceNumber > 0 && sb.ProductId == productId && sb.WarehouseId == warehouse.Id && sb.BookBalanceQuantity > 0)
-        //        .Select(sb => new ProductStockBalanceDto
-        //        {
-        //            StockBalanceId = sb.Id,
-        //            ProductId = sb.ProductId,
-        //            ExpiryDate = sb.ExpiryDate,
-        //            BatchNumber = sb.BatchNumber,
-        //            BookBalanceQuantity = sb.BookBalanceQuantity,
-        //            BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
-        //            CostPrice = sb.CostPrice,
-        //            SellingPrice = sb.SellingPrice,
-        //            MaximumRetailPrice = sb.MaximumRetailPrice
-        //        });
-        //}
-        #endregion
+        public async Task<ProductStockBalanceDto> GetRecentlyCreatedGoodsReceivedNoteAsync(Guid productId)
+        {
+            return await _stockBalanceRepository
+                .GetAll()
+                .Where(sb => sb.SequenceNumber > 0 && sb.ProductId == productId)
+                .OrderByDescending(sb => sb.SequenceNumber)
+                .Select(sb => new ProductStockBalanceDto
+                {
+                    StockBalanceId = sb.Id,
+                    ProductId = sb.ProductId,
+                    WarehouseId = sb.WarehouseId,
+                    WarehouseCode = sb.WarehouseCode,
+                    WarehouseName = sb.WarehouseName,
+                    ExpiryDate = sb.ExpiryDate,
+                    BatchNumber = sb.BatchNumber,
+                    AllocatedQuantity = sb.AllocatedQuantity,
+                    AllocatedQuantityUnitOfMeasureUnit = sb.AllocatedQuantityUnitOfMeasureUnit,
+                    BookBalanceQuantity = sb.BookBalanceQuantity,
+                    BookBalanceUnitOfMeasureUnit = sb.BookBalanceUnitOfMeasureUnit,
+                    CostPrice = sb.CostPrice,
+                    SellingPrice = sb.SellingPrice,
+                    MaximumRetailPrice = sb.MaximumRetailPrice,
+                    IsSelected = true,
+                })
+                .FirstOrDefaultAsync();
+        }
 
         private async Task CreateOrUpdateStockBalance(Guid productId, string productCode, string productName)
         {
-            var stockBalances = _stockBalanceRepository.GetAll().Where(sb => sb.ProductId == productId);
+            var existStockBalances = _stockBalanceRepository.GetAll().Where(sb => sb.ProductId == productId);
 
-            if (stockBalances.Count() > 0)
+            var warehouses = await GetAllKeyValuePairWarehousesAsync();
+
+            #region Creating or Updating Company Summary
+            if (!existStockBalances.Any(n => !n.WarehouseId.HasValue))
             {
-                foreach (var sb in stockBalances)
+                // Create
+                await _stockBalanceRepository.InsertAsync(new StockBalance
                 {
-                    sb.ProductId = productId;
-                    sb.ProductCode = productCode;
-                    sb.ProductName = productName;
-                    await _stockBalanceRepository.UpdateAsync(sb);
-                }
-            }
-            else
-            {
-                // Warehouse summary
-                var warehouses = await GetAllKeyValuePairWarehousesAsync();
-
-                // Company summary
-                // Initializing with a Empty (Null) warehouse
-                warehouses.Add(new CommonKeyValuePairDto());
-
-                var newStockBalances = warehouses.Select(w => new StockBalance
-                {
+                    Id = Guid.NewGuid(),
                     SequenceNumber = 0,
                     ProductId = productId,
                     ProductCode = productCode,
                     ProductName = productName,
-                    WarehouseId = w.Id,
-                    WarehouseCode = w.Code,
-                    WarehouseName = w.Name
-                }).ToList();
-
-                foreach (var stockBalance in newStockBalances)
-                    await _stockBalanceRepository.InsertAsync(stockBalance);
+                    WarehouseId = null,
+                    WarehouseCode = null,
+                    WarehouseName = null
+                });
             }
-            await CurrentUnitOfWork.SaveChangesAsync();
+            else
+            {
+                // Update
+                var update = existStockBalances.FirstOrDefault(n => !n.WarehouseId.HasValue);
+                update.ProductCode = productCode;
+                update.ProductName = productName;
+                await _stockBalanceRepository.UpdateAsync(update);
+            }
+            #endregion
+
+            #region Creating or Updating Warehouse Summaries
+            foreach (var w in warehouses)
+            {
+                // Creating or Updating Warehouse Summaries
+                if (!existStockBalances.Any(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id))
+                {
+                    // Create
+                    await _stockBalanceRepository.InsertAsync(new StockBalance
+                    {
+                        Id = Guid.NewGuid(),
+                        SequenceNumber = 0,
+                        ProductId = productId,
+                        ProductCode = productCode,
+                        ProductName = productName,
+                        WarehouseId = w.Id,
+                        WarehouseCode = w.Code,
+                        WarehouseName = w.Name,
+                    });
+                }
+                else
+                {
+                    // Update
+                    var update = existStockBalances.FirstOrDefault(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id);
+                    update.ProductCode = productCode;
+                    update.ProductName = productName;
+                    await _stockBalanceRepository.UpdateAsync(update);
+                }
+            }
+            #endregion
+        }
+
+        #endregion
+
+        #region NonInventoryProduct
+        private async Task CreateOrUpdateNonInventoryProductSummaryAsync(Guid productId, string productCode, string productName)
+        {
+            var existNonInventoryProducts = await _nonInventoryProductRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.ProductId == productId).ToListAsync();
+
+            var warehouses = await GetAllKeyValuePairWarehousesAsync();
+
+            #region Company Summary
+            // Creating or Updating Company Summaries
+            if (!existNonInventoryProducts.Any(n => !n.WarehouseId.HasValue))
+            {
+                // Create
+                await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
+                {
+                    Id = Guid.NewGuid(),
+                    SequenceNumber = 0,
+                    TempSaleId = 0,
+                    ProductId = productId,
+                    ProductCode = productCode,
+                    ProductName = productName,
+                    WarehouseId = null,
+                    WarehouseCode = null,
+                    WarehouseName = null,
+                    Quantity = 0,
+                    QuantityUnitOfMeasureUnit = null,
+                    DiscountRate = 0,
+                    DiscountAmount = 0,
+                    LineTotal = 0,
+                    CostPrice = 0,
+                    SellingPrice = 0,
+                    MaximumRetailPrice = 0,
+                });
+            }
+            else
+            {
+                // Update
+                var update = existNonInventoryProducts.FirstOrDefault(n => !n.WarehouseId.HasValue);
+                update.ProductName = productName;
+                update.ProductCode = productCode;
+                await _nonInventoryProductRepository.UpdateAsync(update);
+            }
+            #endregion
+
+            #region Warehouse Summaries
+            foreach (var w in warehouses)
+            {
+                // Creating or Updating Warehouse Summaries
+                if (!existNonInventoryProducts.Any(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id))
+                {
+                    // Create
+                    await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
+                    {
+                        Id = Guid.NewGuid(),
+                        SequenceNumber = 0,
+                        TempSaleId = 0,
+                        ProductId = productId,
+                        ProductCode = productCode,
+                        ProductName = productName,
+                        WarehouseId = w.Id,
+                        WarehouseCode = w.Code,
+                        WarehouseName = w.Name,
+                        Quantity = 0,
+                        QuantityUnitOfMeasureUnit = null,
+                        DiscountRate = 0,
+                        DiscountAmount = 0,
+                        LineTotal = 0,
+                        CostPrice = 0,
+                        SellingPrice = 0,
+                        MaximumRetailPrice = 0,
+                    });
+                }
+                else
+                {
+                    // Update
+                    var update = existNonInventoryProducts.FirstOrDefault(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id);
+                    update.ProductName = productName;
+                    update.ProductCode = productCode;
+                    await _nonInventoryProductRepository.UpdateAsync(update);
+                }
+            }
+            #endregion
+
+        }
+        #endregion
+
+        private async Task CreateOrUpdateWarehouseSummariesInNonInventoryProductAndStockBalanceAsync(Guid warehouseId, string warehouseCode, string warehouseName)
+        {
+            var products = await _productRepository.GetAll().ToListAsync();
+
+            var existNonInventoryProducts = await _nonInventoryProductRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.WarehouseId.HasValue).ToListAsync();
+
+            var existStockBalances = await _stockBalanceRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.WarehouseId.HasValue).ToListAsync();
+
+            foreach (var p in products)
+            {
+                #region Creating or Updating NonInventoryProduct
+                if (!existNonInventoryProducts.Any(n => n.ProductId == p.Id && n.WarehouseId == warehouseId))
+                {
+                    // Create
+                    _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
+                    {
+                        Id = Guid.NewGuid(),
+                        SequenceNumber = 0,
+                        TempSaleId = 0,
+                        ProductId = p.Id,
+                        ProductCode = p.Code,
+                        ProductName = p.Name,
+                        WarehouseId = warehouseId,
+                        WarehouseCode = warehouseCode,
+                        WarehouseName = warehouseName,
+                        Quantity = 0,
+                        QuantityUnitOfMeasureUnit = null,
+                        DiscountRate = 0,
+                        DiscountAmount = 0,
+                        LineTotal = 0,
+                        CostPrice = 0,
+                        SellingPrice = 0,
+                        MaximumRetailPrice = 0,
+                    });
+
+                }
+                else
+                {
+                    // Update
+                    var update = existNonInventoryProducts.FirstOrDefault(n => n.ProductId == p.Id && n.WarehouseId == warehouseId);
+                    update.WarehouseCode = warehouseCode;
+                    update.WarehouseName = warehouseName;
+                    _nonInventoryProductRepository.UpdateAsync(update);
+                }
+                #endregion
+
+                #region Creating or Updating StockBalance
+                if (!existStockBalances.Any(n => n.ProductId == p.Id && n.WarehouseId == warehouseId))
+                {
+                    // Create
+                    _stockBalanceRepository.InsertAsync(new StockBalance
+                    {
+                        Id = Guid.NewGuid(),
+                        SequenceNumber = 0,
+                        ProductId = p.Id,
+                        ProductCode = p.Code,
+                        ProductName = p.Name,
+                        WarehouseId = warehouseId,
+                        WarehouseCode = warehouseCode,
+                        WarehouseName = warehouseName,
+                    });
+
+                }
+                else
+                {
+                    // Update
+                    var update = existStockBalances.FirstOrDefault(n => n.ProductId == p.Id && n.WarehouseId == warehouseId);
+                    update.WarehouseCode = warehouseCode;
+                    update.WarehouseName = warehouseName;
+                    _stockBalanceRepository.UpdateAsync(update);
+                }
+                #endregion
+            }
         }
     }
 }

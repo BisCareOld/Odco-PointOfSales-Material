@@ -5,7 +5,7 @@
     <div class="col-sm-12 col-md-3 child-grid">
       Items
       <span style="float: right;">
-        <button mat-stroked-button color="primary">
+        <button mat-stroked-button color="primary" (click)="navigateBack()">
           <mat-icon>arrow_back</mat-icon>
         </button>
       </span>
@@ -21,6 +21,7 @@
 
   <div class="row">
     <!-- 3. ITEM LIST -->
+    <!-- Inventory Products (Having Stocks) -->
     <div class="col-sm-12 col-md-3 child-grid">
       <ng-container *ngIf="
       tempSalesHeader &&
@@ -29,8 +30,29 @@
     ">
         <table *ngFor="let item of tempSalesHeader.tempSalesProducts">
           <tr>
-            <td style="font-weight: 500;">{{ item.name }} <span style="color: rgb(16, 126, 16);"
-                *ngIf="item.discountRate > 0">{{item.discountRate}}%</span> </td>
+            <td style="font-weight: 500;">{{ item.name }}
+              <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>
+            </td>
+            <!-- This cell will take up space on two rows -->
+            <td rowspan="2">{{ item.lineTotal }}</td>
+          </tr>
+          <tr>
+            <td>{{ item.quantity }} x {{ item.sellingPrice }}</td>
+          </tr>
+        </table>
+      </ng-container>
+
+      <!-- Non Inventory Products (Doesnt have Stocks) -->
+      <ng-container *ngIf="
+      tempSalesHeader &&
+      tempSalesHeader.nonInventoryProducts &&
+      tempSalesHeader.nonInventoryProducts.length > 0
+    ">
+        <table *ngFor="let item of tempSalesHeader.nonInventoryProducts">
+          <tr>
+            <td style="font-weight: 500;"><span class="dot"></span> {{ item.productName }}
+              <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>
+            </td>
             <!-- This cell will take up space on two rows -->
             <td rowspan="2">{{ item.lineTotal }}</td>
           </tr>

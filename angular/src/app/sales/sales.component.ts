@@ -11,14 +11,17 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  CreateOrUpdateTempSalesHeaderDto,
+  CreateOrUpdateTempSaleDto,
   CreateTempSalesProductDto,
-  TempSalesHeaderDto,
+  TempSaleDto,
   ProductSearchResultDto,
   ProductStockBalanceDto,
   SalesServiceProxy,
   TempSalesProductDto,
+  NonInventoryProductDto,
+  CreateNonInventoryProductDto
 } from "@shared/service-proxies/service-proxies";
+import { CreateNonInventoryProductDialogComponent } from "./create-non-inventory-product/create-non-inventory-product-dialog.component";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 
 @Component({
@@ -91,15 +94,19 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     let _tempSalesHeaderId = (this.tempSalesHeaderId =
       +this.route.snapshot.queryParamMap.get("salesHeaderId"));
     if (!_tempSalesHeaderId) this.populateSalesHeaderDetails(true, null);
-    if (_tempSalesHeaderId) this.getTemporarySalesDetails(_tempSalesHeaderId);
+    if (_tempSalesHeaderId) {
+
+      this.getTemporarySalesDetails(_tempSalesHeaderId);
+    }
   }
 
   getTemporarySalesDetails(id: number) {
     this._salesService
       .getTempSales(id)
-      .subscribe((result: TempSalesHeaderDto) => {
-        console.log(result);
+      .subscribe((result: TempSaleDto) => {
+        console.log("1", result);
 
+        this.getNonInventoryProductsByTempSalesHeaderId(id);
         this.populateSalesHeaderDetails(false, result);
 
         let stockBalanceIds: string[] = [];
@@ -112,6 +119,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
           this._salesService
             .getStockBalancesByStockBalanceIds(stockBalanceIds)
             .subscribe((sb) => {
+              console.log("2", sb);
               _stockBalances = sb;
 
               result.tempSalesProducts.forEach((value, i) => {
@@ -132,10 +140,19 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       });
   }
 
+  getNonInventoryProductsByTempSalesHeaderId(id: number) {
+    this._salesService.getNonInventoryProductByTempSaleId(id).subscribe((results) => {
+      results.forEach((n: NonInventoryProductDto) => {
+        console.log("getNonInventoryProductsByTempSalesHeaderId ", n);
+        this.populateSalesProductForNonInventoryDetails(n);
+      });
+    });
+  }
+
   // If "salesheader: Exist => Came from Query string else a new One
   private populateSalesHeaderDetails(
     isNewSale: boolean,
-    salesheader: TempSalesHeaderDto
+    salesheader: TempSaleDto
   ) {
     this.salePanelForm = this.fb.group({
       salesNumber: [
@@ -256,7 +273,80 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         !isNewSale ? _tempSalesProduct.lineTotal : 0,
         Validators.required,
       ],
+      isNonInventoryProductInvolved: [false],
       stockBalance: _stockBalance, // TODO: No needed I guess
+      nonInventoryProduct: null
+    });
+    this.salesProducts.push(item);
+    this.dataSource.data.push(item);
+    return (this.dataSource.filter = "");
+  }
+
+  private populateSalesProductForNonInventoryDetails(
+    _nonInventoryProduct: NonInventoryProductDto,
+  ) {
+    let item = this.fb.group({
+      id: [_nonInventoryProduct.id],
+      tempSalesId: [_nonInventoryProduct.tempSaleId],
+      stockBalanceId: [null],
+      productId: [
+        _nonInventoryProduct.productId,
+        Validators.required,
+      ],
+      productCode: [
+        _nonInventoryProduct.productCode,
+        Validators.required,
+      ],
+      productName: [
+        _nonInventoryProduct.productName,
+        Validators.required,
+      ],
+      warehouseId: [
+        _nonInventoryProduct.warehouseId,
+        Validators.required,
+      ],
+      warehouseCode: [
+        _nonInventoryProduct.warehouseCode,
+        Validators.required,
+      ],
+      warehouseName: [
+        _nonInventoryProduct.warehouseName,
+        Validators.required,
+      ],
+      quantity: [
+        _nonInventoryProduct.quantity,
+        Validators.compose([
+          Validators.required,
+          Validators.min(1),
+        ]),
+      ],
+      freeQuantity: [
+        0,
+        Validators.compose([Validators.required, Validators.min(0)]),
+      ],
+      soldPrice: [
+        _nonInventoryProduct.sellingPrice,
+        Validators.compose([Validators.required, Validators.min(1)]),
+      ],
+      discountRate: [
+        _nonInventoryProduct.discountRate,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(100),
+        ]),
+      ],
+      discountAmount: [
+        _nonInventoryProduct.discountAmount,
+        Validators.required,
+      ],
+      lineTotal: [
+        _nonInventoryProduct.lineTotal,
+        Validators.required,
+      ],
+      isNonInventoryProductInvolved: [true],
+      stockBalance: null, // TODO: No needed I guess
+      nonInventoryProduct: _nonInventoryProduct
     });
     this.salesProducts.push(item);
     this.dataSource.data.push(item);
@@ -403,6 +493,23 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     this.router.navigate(["/app/sales"]);
   }
 
+  showCreateOrEditNonInventoryProductDialog(): void {
+    let materialDialog = this._matDialogService.open(
+      CreateNonInventoryProductDialogComponent,
+      {
+        width: "50%",
+      }
+    );
+
+    materialDialog.afterClosed().subscribe((result) => {
+      // "NonInventoryProduct" came from Dialog
+      if (result && result.event == "NonInventoryProduct") {
+        console.log(result.data);
+        this.populateSalesProductForNonInventoryDetails(result.data);
+      }
+    });
+  }
+
   payment() {
     // 1. Create a Temp Sales Header & Product
     // 2. Get the Id when creating it
@@ -412,9 +519,9 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       return;
     }
 
-    console.log(this.salePanelForm.value);
+    //console.log(this.salePanelForm.value);
 
-    let _header = new CreateOrUpdateTempSalesHeaderDto();
+    let _header = new CreateOrUpdateTempSaleDto();
     _header.id = !this.tempSalesHeaderId ? null : this.tempSalesHeaderId;
     _header.customerId = this.salePanelForm.value.customerId;
     _header.customerCode = this.salePanelForm.value.customerCode;
@@ -428,33 +535,60 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     _header.remarks = this.salePanelForm.value.comments;
     _header.isActive = true;
     _header.tempSalesProducts = [];
+    _header.nonInventoryProducts = [];
 
     this.salePanelForm.value.salesProducts.forEach((item, index) => {
-      let _lineLevel = new CreateTempSalesProductDto();
-      _lineLevel.productId = item.productId;
-      // y.barCode = item.; // missing in item.
-      _lineLevel.code = item.productCode;
-      _lineLevel.name = item.productName;
-      _lineLevel.stockBalanceId = item.stockBalance.stockBalanceId;
-      _lineLevel.expiryDate = item.stockBalance.expiryDate;
-      _lineLevel.batchNumber = item.stockBalance.batchNumber;
-      _lineLevel.warehouseId = item.stockBalance.warehouseId;
-      _lineLevel.warehouseCode = item.stockBalance.warehouseCode;
-      _lineLevel.warehouseName = item.stockBalance.warehouseName;
-      _lineLevel.bookBalanceQuantity = item.stockBalance.bookBalanceQuantity;
-      _lineLevel.bookBalanceUnitOfMeasureUnit =
-        item.stockBalance.bookBalanceUnitOfMeasureUnit;
-      _lineLevel.costPrice = item.stockBalance.costPrice;
-      _lineLevel.sellingPrice = item.stockBalance.sellingPrice;
-      _lineLevel.maximumRetailPrice = item.stockBalance.maximumRetailPrice;
-      _lineLevel.isSelected = item.stockBalance.isSelected;
-      _lineLevel.discountRate = item.discountRate;
-      _lineLevel.discountAmount = item.discountAmount;
-      _lineLevel.quantity = item.quantity;
-      _lineLevel.lineTotal = item.lineTotal;
-      _lineLevel.isActive = true;
+      console.log(item)
 
-      _header.tempSalesProducts.push(_lineLevel);
+      let _a = new CreateTempSalesProductDto();
+      if (!item.isNonInventoryProductInvolved) {
+        _a.productId = item.productId;
+        // y.barCode = item.; // missing in item.
+        _a.code = item.productCode;
+        _a.name = item.productName;
+        _a.stockBalanceId = item.stockBalance.stockBalanceId;
+        _a.expiryDate = item.stockBalance.expiryDate;
+        _a.batchNumber = item.stockBalance.batchNumber;
+        _a.warehouseId = item.stockBalance.warehouseId;
+        _a.warehouseCode = item.stockBalance.warehouseCode;
+        _a.warehouseName = item.stockBalance.warehouseName;
+        _a.bookBalanceQuantity = item.stockBalance.bookBalanceQuantity;
+        _a.bookBalanceUnitOfMeasureUnit =
+          item.stockBalance.bookBalanceUnitOfMeasureUnit;
+        _a.costPrice = item.stockBalance.costPrice;
+        _a.sellingPrice = item.stockBalance.sellingPrice;
+        _a.maximumRetailPrice = item.stockBalance.maximumRetailPrice;
+        _a.isSelected = item.stockBalance.isSelected;
+        _a.discountRate = item.discountRate;
+        _a.discountAmount = item.discountAmount;
+        _a.quantity = item.quantity;
+        _a.lineTotal = item.lineTotal;
+        _a.isActive = true;
+        _header.tempSalesProducts.push(_a);
+      }
+
+      let _b = new CreateNonInventoryProductDto();
+      if (item.isNonInventoryProductInvolved) {
+        _b.id = item.id;
+        _b.sequenceNumber = 1;
+        _b.tempSaleId = item.tempSaleId;
+        _b.productId = item.productId;
+        _b.productCode = item.productCode;
+        _b.productName = item.productName;
+        _b.warehouseId = item.warehouseId;
+        _b.warehouseCode = item.warehouseCode;
+        _b.warehouseName = item.warehouseName;
+        _b.quantity = item.quantity;
+        _b.quantityUnitOfMeasureUnit = item.quantityUnitOfMeasureUnit;
+        _b.discountRate = item.discountRate;
+        _b.discountAmount = item.discountAmount;
+        _b.lineTotal = item.lineTotal;
+        _b.costPrice = item.nonInventoryProduct.costPrice;
+        _b.sellingPrice = item.nonInventoryProduct.sellingPrice;
+        _b.maximumRetailPrice = item.nonInventoryProduct.maximumRetailPrice;
+        _header.nonInventoryProducts.push(_b);
+      }
+
     });
 
     console.log(_header);

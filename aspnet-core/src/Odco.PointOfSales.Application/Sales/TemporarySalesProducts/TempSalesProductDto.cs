@@ -10,7 +10,7 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
     public class TempSalesProductDto : EntityDto<int>
     {
         #region TemporarySalesHeader
-        public int TempSalesHeaderId { get; set; }
+        public int TempSaleId { get; set; }
         #endregion
 
         #region Product

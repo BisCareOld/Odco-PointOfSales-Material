@@ -1,15 +1,16 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
+using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Sales.TemporarySalesProducts;
 using Odco.PointOfSales.Core.Sales;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
+namespace Odco.PointOfSales.Application.Sales.TemporarySales
 {
-    [AutoMapTo(typeof(TempSalesHeaderDto)), AutoMapFrom(typeof(TempSalesHeader))]
-    public class TempSalesHeaderDto : EntityDto<int>
+    [AutoMapTo(typeof(TempSaleDto)), AutoMapFrom(typeof(TempSale))]
+    public class TempSaleDto : EntityDto<int>
     {
         public Guid? CustomerId { get; set; }
 
@@ -37,10 +38,15 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
         public bool IsActive { get; set; }
 
         public ICollection<TempSalesProductDto> TempSalesProducts { get; set; }
+        
+        public ICollection<NonInventoryProductDto> NonInventoryProducts { get; set; }
 
-        public TempSalesHeaderDto()
+        public TempSaleDto()
         {
             TempSalesProducts = new HashSet<TempSalesProductDto>();
+
+            NonInventoryProducts = new HashSet<NonInventoryProductDto>();
+
         }
     }
 }

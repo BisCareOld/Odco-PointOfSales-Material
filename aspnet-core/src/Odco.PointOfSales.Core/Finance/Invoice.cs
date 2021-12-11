@@ -17,7 +17,7 @@ namespace Odco.PointOfSales.Core.Finance
             Payments = new HashSet<Payment>();
         }
 
-        public int? TempSalesHeaderId { get; set; }
+        public int? TempSaleId { get; set; }
 
         [Required]
         [StringLength(15)]

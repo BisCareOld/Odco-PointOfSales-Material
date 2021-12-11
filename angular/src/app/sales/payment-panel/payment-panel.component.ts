@@ -2,14 +2,15 @@ import { ThrowStmt } from "@angular/compiler";
 import { Component, OnChanges, OnInit } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   SalesServiceProxy,
   CommonServiceProxy,
   FinanceServiceProxy,
-  TempSalesHeaderDto,
+  TempSaleDto,
   CommonKeyValuePairDto,
 } from "@shared/service-proxies/service-proxies";
+import { result } from "lodash-es";
 import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.component";
 
 @Component({
@@ -18,19 +19,20 @@ import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.c
   styleUrls: ["./payment-panel.component.scss"],
 })
 export class PaymentPanelComponent implements OnInit {
-  tempSalesHeader: TempSalesHeaderDto;
+  tempSalesHeader: TempSaleDto;
   paymentMethod: number = 0;
   formPayment;
   banks: CommonKeyValuePairDto[] = []
   errors: string[] = [];
 
   constructor(
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private _matDialogService: MatDialog,
     private _salesService: SalesServiceProxy,
     private _commonService: CommonServiceProxy,
     private _financeService: FinanceServiceProxy,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -47,6 +49,12 @@ export class PaymentPanelComponent implements OnInit {
           console.log(this.tempSalesHeader);
           this.InitateForm();
         });
+    });
+  }
+
+  getNonInventoryProductByTempSaleId(tempSaleId: number) {
+    this._salesService.getNonInventoryProductByTempSaleId(tempSaleId).subscribe((result) => {
+
     });
   }
 
@@ -95,6 +103,14 @@ export class PaymentPanelComponent implements OnInit {
       debitCards: this.fb.array([]),
       giftCards: this.fb.array([]),
     });
+  }
+
+  navigateBack() {
+    this.router.navigate(
+      ["/app/sales"],
+      {
+        queryParams: { salesHeaderId: this.tempSalesHeader.id }
+      });
   }
 
   paymentTypeSelection(paymentType: number) {

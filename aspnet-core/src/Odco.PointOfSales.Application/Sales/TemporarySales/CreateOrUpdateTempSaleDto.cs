@@ -1,14 +1,15 @@
 ﻿using Abp.AutoMapper;
+using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Sales.TemporarySalesProducts;
 using Odco.PointOfSales.Core.Sales;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
+namespace Odco.PointOfSales.Application.Sales.TemporarySales
 {
-    [AutoMapTo(typeof(TempSalesHeader))]
-    public class CreateOrUpdateTempSalesHeaderDto
+    [AutoMapTo(typeof(TempSale))]
+    public class CreateOrUpdateTempSaleDto
     {
         /// <summary>
         /// Id Exist: Update
@@ -43,9 +44,12 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesHeaders
 
         public ICollection<CreateTempSalesProductDto> TempSalesProducts { get; set; }
 
-        public CreateOrUpdateTempSalesHeaderDto()
+        public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
+
+        public CreateOrUpdateTempSaleDto()
         {
             TempSalesProducts = new HashSet<CreateTempSalesProductDto>();
+            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
         }
     }
 }

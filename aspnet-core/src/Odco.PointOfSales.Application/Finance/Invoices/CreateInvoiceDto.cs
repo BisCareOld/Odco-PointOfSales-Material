@@ -19,7 +19,7 @@ namespace Odco.PointOfSales.Application.Finance.Invoices
             GiftCards = new HashSet<GiftCardDto>();
         }
 
-        public int? TempSalesHeaderId { get; set; }
+        public int? TempSaleId { get; set; }
 
         public Guid? CustomerId { get; set; }
 
