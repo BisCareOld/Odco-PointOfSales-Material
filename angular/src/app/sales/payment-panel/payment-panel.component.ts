@@ -10,6 +10,7 @@ import {
   TempSaleDto,
   CommonKeyValuePairDto,
 } from "@shared/service-proxies/service-proxies";
+import { result } from "lodash-es";
 import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.component";
 
 @Component({
@@ -48,6 +49,12 @@ export class PaymentPanelComponent implements OnInit {
           this.InitateForm();
         });
     });
+  }
+
+  getNonInventoryProductByTempSaleId(tempSaleId: number) {
+    this._salesService.getNonInventoryProductByTempSaleId(tempSaleId).subscribe((result) => {
+
+    })
   }
 
   showChequeDialog(tempSalesId: number, netAmount: number) {

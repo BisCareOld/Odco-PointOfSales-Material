@@ -42,3 +42,10 @@ td {
   text-align: right;
   border-bottom: 1px solid #000;
 }
+.dot {
+  height: 8px;
+  width: 8px;
+  background-color: rgb(179, 148, 25);
+  border-radius: 50%;
+  display: inline-block;
+}

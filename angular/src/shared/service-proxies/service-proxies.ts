@@ -9249,105 +9249,6 @@ export interface ITempSalesProductDto {
     id: number;
 }
 
-export class TempSaleDto implements ITempSaleDto {
-    customerId: string | undefined;
-    customerCode: string | undefined;
-    customerName: string | undefined;
-    discountRate: number;
-    discountAmount: number;
-    taxRate: number;
-    taxAmount: number;
-    grossAmount: number;
-    netAmount: number;
-    remarks: string | undefined;
-    isActive: boolean;
-    tempSalesProducts: TempSalesProductDto[] | undefined;
-    id: number;
-
-    constructor(data?: ITempSaleDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.customerId = _data["customerId"];
-            this.customerCode = _data["customerCode"];
-            this.customerName = _data["customerName"];
-            this.discountRate = _data["discountRate"];
-            this.discountAmount = _data["discountAmount"];
-            this.taxRate = _data["taxRate"];
-            this.taxAmount = _data["taxAmount"];
-            this.grossAmount = _data["grossAmount"];
-            this.netAmount = _data["netAmount"];
-            this.remarks = _data["remarks"];
-            this.isActive = _data["isActive"];
-            if (Array.isArray(_data["tempSalesProducts"])) {
-                this.tempSalesProducts = [] as any;
-                for (let item of _data["tempSalesProducts"])
-                    this.tempSalesProducts.push(TempSalesProductDto.fromJS(item));
-            }
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): TempSaleDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new TempSaleDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["customerId"] = this.customerId;
-        data["customerCode"] = this.customerCode;
-        data["customerName"] = this.customerName;
-        data["discountRate"] = this.discountRate;
-        data["discountAmount"] = this.discountAmount;
-        data["taxRate"] = this.taxRate;
-        data["taxAmount"] = this.taxAmount;
-        data["grossAmount"] = this.grossAmount;
-        data["netAmount"] = this.netAmount;
-        data["remarks"] = this.remarks;
-        data["isActive"] = this.isActive;
-        if (Array.isArray(this.tempSalesProducts)) {
-            data["tempSalesProducts"] = [];
-            for (let item of this.tempSalesProducts)
-                data["tempSalesProducts"].push(item.toJSON());
-        }
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): TempSaleDto {
-        const json = this.toJSON();
-        let result = new TempSaleDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ITempSaleDto {
-    customerId: string | undefined;
-    customerCode: string | undefined;
-    customerName: string | undefined;
-    discountRate: number;
-    discountAmount: number;
-    taxRate: number;
-    taxAmount: number;
-    grossAmount: number;
-    netAmount: number;
-    remarks: string | undefined;
-    isActive: boolean;
-    tempSalesProducts: TempSalesProductDto[] | undefined;
-    id: number;
-}
-
 export class NonInventoryProductDto implements INonInventoryProductDto {
     sequenceNumber: number;
     tempSaleId: number;
@@ -9453,6 +9354,117 @@ export interface INonInventoryProductDto {
     sellingPrice: number;
     maximumRetailPrice: number;
     id: string;
+}
+
+export class TempSaleDto implements ITempSaleDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    isActive: boolean;
+    tempSalesProducts: TempSalesProductDto[] | undefined;
+    nonInventoryProducts: NonInventoryProductDto[] | undefined;
+    id: number;
+
+    constructor(data?: ITempSaleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.discountRate = _data["discountRate"];
+            this.discountAmount = _data["discountAmount"];
+            this.taxRate = _data["taxRate"];
+            this.taxAmount = _data["taxAmount"];
+            this.grossAmount = _data["grossAmount"];
+            this.netAmount = _data["netAmount"];
+            this.remarks = _data["remarks"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["tempSalesProducts"])) {
+                this.tempSalesProducts = [] as any;
+                for (let item of _data["tempSalesProducts"])
+                    this.tempSalesProducts.push(TempSalesProductDto.fromJS(item));
+            }
+            if (Array.isArray(_data["nonInventoryProducts"])) {
+                this.nonInventoryProducts = [] as any;
+                for (let item of _data["nonInventoryProducts"])
+                    this.nonInventoryProducts.push(NonInventoryProductDto.fromJS(item));
+            }
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): TempSaleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TempSaleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["discountRate"] = this.discountRate;
+        data["discountAmount"] = this.discountAmount;
+        data["taxRate"] = this.taxRate;
+        data["taxAmount"] = this.taxAmount;
+        data["grossAmount"] = this.grossAmount;
+        data["netAmount"] = this.netAmount;
+        data["remarks"] = this.remarks;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.tempSalesProducts)) {
+            data["tempSalesProducts"] = [];
+            for (let item of this.tempSalesProducts)
+                data["tempSalesProducts"].push(item.toJSON());
+        }
+        if (Array.isArray(this.nonInventoryProducts)) {
+            data["nonInventoryProducts"] = [];
+            for (let item of this.nonInventoryProducts)
+                data["nonInventoryProducts"].push(item.toJSON());
+        }
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): TempSaleDto {
+        const json = this.toJSON();
+        let result = new TempSaleDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ITempSaleDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    discountRate: number;
+    discountAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    grossAmount: number;
+    netAmount: number;
+    remarks: string | undefined;
+    isActive: boolean;
+    tempSalesProducts: TempSalesProductDto[] | undefined;
+    nonInventoryProducts: NonInventoryProductDto[] | undefined;
+    id: number;
 }
 
 export class ApplicationInfoDto implements IApplicationInfoDto {

@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
+using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Sales.TemporarySalesProducts;
 using Odco.PointOfSales.Core.Sales;
 using System;
@@ -37,10 +38,15 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySales
         public bool IsActive { get; set; }
 
         public ICollection<TempSalesProductDto> TempSalesProducts { get; set; }
+        
+        public ICollection<NonInventoryProductDto> NonInventoryProducts { get; set; }
 
         public TempSaleDto()
         {
             TempSalesProducts = new HashSet<TempSalesProductDto>();
+
+            NonInventoryProducts = new HashSet<NonInventoryProductDto>();
+
         }
     }
 }

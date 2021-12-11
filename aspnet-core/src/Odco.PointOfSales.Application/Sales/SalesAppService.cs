@@ -311,7 +311,11 @@ namespace Odco.PointOfSales.Application.Sales
             var temp = await _tempSaleRepository
                 .GetAllIncluding(t => t.TempSalesProducts)
                 .FirstOrDefaultAsync(t => t.Id == tempSaleId);
-            return ObjectMapper.Map<TempSaleDto>(temp);
+            var tempDto = ObjectMapper.Map<TempSaleDto>(temp);
+            
+            // Adding NonInventoryProducts
+            tempDto.NonInventoryProducts = await GetNonInventoryProductByTempSaleIdAsync(tempSaleId);
+            return tempDto;
         }
 
         private async Task CreateTempSalesProductAsync(bool isExisting, int? existingTempSaleId, CreateTempSalesProductDto lineLevel, WarehouseDto warehouse)
