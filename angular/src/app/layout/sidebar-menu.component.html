@@ -1,6 +1,7 @@
 <style>
   .active {
     background-color: #3f51b5;
+    color: ivory;
   }
 </style>
 
@@ -86,19 +87,12 @@
 </ul> -->
 
 <ng-container *ngFor="let item of menuItems">
-  <ng-container
-    *ngTemplateOutlet="sidebarInner; context: { item: item }"
-  ></ng-container>
+  <ng-container *ngTemplateOutlet="sidebarInner; context: { item: item }"></ng-container>
 </ng-container>
 
 <ng-template #sidebarInner let-item="item">
-  <a
-    mat-list-item
-    *ngIf="item.route && item.route.indexOf('http') != 0"
-    class="nav-link"
-    [routerLink]="item.route"
-    [class.active]="item.isActive"
-  >
+  <a mat-list-item *ngIf="item.route && item.route.indexOf('http') != 0" class="nav-link" [routerLink]="item.route"
+    [class.active]="item.isActive">
     <mat-icon style="margin-right: 7px">{{ item.icon }}</mat-icon>
     {{ item.label }}
   </a>
