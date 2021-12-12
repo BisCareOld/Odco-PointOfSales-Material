@@ -3447,7 +3447,7 @@ export class SalesServiceProxy {
      * @param keyword (optional) 
      * @return Success
      */
-    getPartialCustomers(keyword: string | null | undefined): Observable<CommonKeyValuePairDto[]> {
+    getPartialCustomers(keyword: string | null | undefined): Observable<CustomerSearchResultDto[]> {
         let url_ = this.baseUrl + "/api/services/app/Sales/GetPartialCustomers?";
         if (keyword !== undefined && keyword !== null)
             url_ += "keyword=" + encodeURIComponent("" + keyword) + "&";
@@ -3468,14 +3468,14 @@ export class SalesServiceProxy {
                 try {
                     return this.processGetPartialCustomers(<any>response_);
                 } catch (e) {
-                    return <Observable<CommonKeyValuePairDto[]>><any>_observableThrow(e);
+                    return <Observable<CustomerSearchResultDto[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<CommonKeyValuePairDto[]>><any>_observableThrow(response_);
+                return <Observable<CustomerSearchResultDto[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetPartialCustomers(response: HttpResponseBase): Observable<CommonKeyValuePairDto[]> {
+    protected processGetPartialCustomers(response: HttpResponseBase): Observable<CustomerSearchResultDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3489,7 +3489,7 @@ export class SalesServiceProxy {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200.push(CommonKeyValuePairDto.fromJS(item));
+                    result200.push(CustomerSearchResultDto.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -3501,7 +3501,7 @@ export class SalesServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<CommonKeyValuePairDto[]>(<any>null);
+        return _observableOf<CustomerSearchResultDto[]>(<any>null);
     }
 
     /**
@@ -8775,6 +8775,73 @@ export class CustomerDtoPagedResultDto implements ICustomerDtoPagedResultDto {
 export interface ICustomerDtoPagedResultDto {
     totalCount: number;
     items: CustomerDto[] | undefined;
+}
+
+export class CustomerSearchResultDto implements ICustomerSearchResultDto {
+    id: string;
+    code: string | undefined;
+    name: string | undefined;
+    contactNumber1: string | undefined;
+    contactNumber2: string | undefined;
+    contactNumber3: string | undefined;
+    isActive: boolean;
+
+    constructor(data?: ICustomerSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.contactNumber1 = _data["contactNumber1"];
+            this.contactNumber2 = _data["contactNumber2"];
+            this.contactNumber3 = _data["contactNumber3"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): CustomerSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CustomerSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["contactNumber1"] = this.contactNumber1;
+        data["contactNumber2"] = this.contactNumber2;
+        data["contactNumber3"] = this.contactNumber3;
+        data["isActive"] = this.isActive;
+        return data; 
+    }
+
+    clone(): CustomerSearchResultDto {
+        const json = this.toJSON();
+        let result = new CustomerSearchResultDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICustomerSearchResultDto {
+    id: string;
+    code: string | undefined;
+    name: string | undefined;
+    contactNumber1: string | undefined;
+    contactNumber2: string | undefined;
+    contactNumber3: string | undefined;
+    isActive: boolean;
 }
 
 export class CreateTempSalesProductDto implements ICreateTempSalesProductDto {

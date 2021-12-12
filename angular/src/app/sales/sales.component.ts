@@ -1,4 +1,4 @@
-import { Component, Injector, OnInit } from "@angular/core";
+import { Component, Injector, OnInit, ViewChild } from "@angular/core";
 import {
   FormArray,
   FormBuilder,
@@ -19,10 +19,12 @@ import {
   SalesServiceProxy,
   TempSalesProductDto,
   NonInventoryProductDto,
-  CreateNonInventoryProductDto
+  CreateNonInventoryProductDto,
+  CustomerSearchResultDto
 } from "@shared/service-proxies/service-proxies";
 import { CreateNonInventoryProductDialogComponent } from "./create-non-inventory-product/create-non-inventory-product-dialog.component";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
+import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
   selector: "app-sales",
@@ -30,6 +32,7 @@ import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialo
   styleUrls: ["./sales.component.scss"],
 })
 export class SalesComponent extends AppComponentBase implements OnInit {
+  @ViewChild(MatAccordion) accordion: MatAccordion;
   tempSalesHeaderId: number = 0;
   selectedSearchProductType: number = 1; // product search type
   salePanelForm;
@@ -104,7 +107,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     this._salesService
       .getTempSales(id)
       .subscribe((result: TempSaleDto) => {
-        console.log("1", result);
+        //console.log("1", result);
 
         this.getNonInventoryProductsByTempSalesHeaderId(id);
         this.populateSalesHeaderDetails(false, result);
@@ -143,7 +146,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   getNonInventoryProductsByTempSalesHeaderId(id: number) {
     this._salesService.getNonInventoryProductByTempSaleId(id).subscribe((results) => {
       results.forEach((n: NonInventoryProductDto) => {
-        console.log("getNonInventoryProductsByTempSalesHeaderId ", n);
+        //console.log("getNonInventoryProductsByTempSalesHeaderId ", n);
         this.populateSalesProductForNonInventoryDetails(n);
       });
     });
@@ -154,6 +157,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     isNewSale: boolean,
     salesheader: TempSaleDto
   ) {
+    console.log(salesheader);
     this.salePanelForm = this.fb.group({
       salesNumber: [
         null,
@@ -388,6 +392,20 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     });
   }
 
+  selectCustomer($event: CustomerSearchResultDto) {
+    console.log($event);
+    this.customerId.setValue($event.id);
+    this.customerCode.setValue($event.code);
+    this.customerName.setValue($event.name);
+    console.log(this.salePanelForm)
+  }
+
+  removeCustomer() {
+    this.customerId.setValue(null);
+    this.customerCode.setValue(null);
+    this.customerName.setValue(null);
+  }
+
   isStockBalanceExist(stockBalanceId): boolean {
     let product = this.salesProducts.controls.find(
       (p) => p.get("stockBalanceId").value == stockBalanceId
@@ -434,8 +452,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   removeProduct(itemIndex: number, item: FormGroup) {
-    console.log(this.salePanelForm);
-    console.log(this.dataSource);
+    //console.log(this.salePanelForm);
+    //console.log(this.dataSource);
     this.salesProducts.removeAt(itemIndex);
     this.dataSource.data.splice(itemIndex, 1);
     this.dataSource._updateChangeSubscription();
@@ -464,7 +482,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       .get("lineTotal")
       .setValue(parseFloat((_lineTotal - _discountAmount).toFixed(2)));
     this.headerLevelCalculation();
-    console.log(item);
+    //console.log(item);
   }
 
   calculateLineLevelTotal() {
@@ -504,7 +522,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     materialDialog.afterClosed().subscribe((result) => {
       // "NonInventoryProduct" came from Dialog
       if (result && result.event == "NonInventoryProduct") {
-        console.log(result.data);
+        //console.log(result.data);
         this.populateSalesProductForNonInventoryDetails(result.data);
       }
     });
@@ -519,13 +537,13 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       return;
     }
 
-    //console.log(this.salePanelForm.value);
+    ////console.log(this.salePanelForm.value);
 
     let _header = new CreateOrUpdateTempSaleDto();
     _header.id = !this.tempSalesHeaderId ? null : this.tempSalesHeaderId;
-    _header.customerId = this.salePanelForm.value.customerId;
-    _header.customerCode = this.salePanelForm.value.customerCode;
-    _header.customerName = this.salePanelForm.value.customerName;
+    _header.customerId = this.customerId.value;
+    _header.customerCode = this.customerCode.value;
+    _header.customerName = this.customerName.value;
     _header.discountRate = this.salePanelForm.value.discountRate;
     _header.discountAmount = this.salePanelForm.value.discountAmount;
     _header.taxRate = this.salePanelForm.value.taxRate;
@@ -538,7 +556,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     _header.nonInventoryProducts = [];
 
     this.salePanelForm.value.salesProducts.forEach((item, index) => {
-      console.log(item)
+      //console.log(item)
 
       let _a = new CreateTempSalesProductDto();
       if (!item.isNonInventoryProductInvolved) {
@@ -591,9 +609,9 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
     });
 
-    console.log(_header);
+    //console.log(_header);
     this._salesService.createOrUpdateTempSales(_header).subscribe((i) => {
-      console.log(i.id);
+      //console.log(i.id);
       this.notify.info(this.l("SavedSuccessfully"));
       this.router.navigate(["/app/payment-component", i.id]);
     });

@@ -22,6 +22,7 @@ import { PartialSuppliersComponent } from "./components/partial-suppliers/partia
 import { PartialProductsComponent } from "./components/partial-products/partial-products.component";
 import { ValidateMinMaxComponent } from "./components/validate-min-max/validate-min-max.component";
 import { PartialProductsByTypeComponent } from "./components/partial-products-by-type/partial-products-by-type.component";
+import { PartialCustomersComponent } from './components/partial-customers/partial-customers.component';
 
 @NgModule({
   imports: [
@@ -43,6 +44,7 @@ import { PartialProductsByTypeComponent } from "./components/partial-products-by
     PartialProductsComponent,
     ValidateMinMaxComponent,
     PartialProductsByTypeComponent,
+    PartialCustomersComponent,
   ],
   exports: [
     AbpPaginationControlsComponent,
@@ -57,6 +59,7 @@ import { PartialProductsByTypeComponent } from "./components/partial-products-by
     PartialProductsComponent,
     ValidateMinMaxComponent,
     PartialProductsByTypeComponent,
+    PartialCustomersComponent
   ],
 })
 export class SharedModule {

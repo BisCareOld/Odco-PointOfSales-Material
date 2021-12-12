@@ -117,6 +117,38 @@
 
   <!-- 3. SALES OPTIONS -->
   <div class="child sales-options">
+
+    <div class="mb-2" *ngIf="customerId.value">
+      <mat-accordion multi>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Customer Details
+            </mat-panel-title>
+            <mat-panel-description>
+              <mat-icon>account_circle</mat-icon>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="row">
+            <div class="col-md-4">Code:</div>
+            <div class="col-md-8">
+              <mat-label>{{ customerCode.value }}</mat-label>
+            </div>
+            <div class="col-md-4">Name:</div>
+            <div class="col-md-8">
+              <mat-label>{{ customerName.value }}</mat-label>
+            </div>
+          </div>
+          <button mat-raised-button color="warn" style="float: right;" (click)="removeCustomer()">Cancel</button>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <div *ngIf="!customerId.value">
+      <app-partial-customers [isClearWhenSelected]="false" [fieldDisabled]="false" [fieldRequired]="false"
+        (selectedEvent)="selectCustomer($event)">
+      </app-partial-customers>
+    </div>
+
     <div class="common-functions mb-3">
       <button mat-button class="remove-product-button">
         <mat-icon>close</mat-icon>Delete

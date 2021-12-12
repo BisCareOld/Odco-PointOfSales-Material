@@ -71,7 +71,28 @@
           <div *ngFor="let error of errors">{{ error }}</div>
         </div>
 
-        <div>Customer</div>
+        <!-- Customer -->
+        <div class="mb-2" *ngIf="tempSalesHeader.customerId">
+          <mat-accordion multi>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Customer Details
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="row">
+                <div class="col-4">Code:</div>
+                <div class="col-8">
+                  <mat-label>{{ tempSalesHeader.customerCode }}</mat-label>
+                </div>
+                <div class="col-4">Name:</div>
+                <div class="col-8">
+                  <mat-label>{{ tempSalesHeader.customerName }}</mat-label>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
 
         <div class="payment-type" style="display: inline-block; width: 100%">
           <button mat-button [class.active-payment]="paymentMethod == 1" (click)="paymentTypeSelection(1)">

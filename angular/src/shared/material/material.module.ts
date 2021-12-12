@@ -24,6 +24,7 @@ import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { MatBadgeModule } from "@angular/material/badge";
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 const AngularMaterialComponents = [
   MatFormFieldModule,
@@ -49,7 +50,8 @@ const AngularMaterialComponents = [
   MatMomentDateModule,
   MatBadgeModule,
   MatMenuModule,
-  MatButtonToggleModule
+  MatButtonToggleModule,
+  MatExpansionModule
 ];
 
 @NgModule({
