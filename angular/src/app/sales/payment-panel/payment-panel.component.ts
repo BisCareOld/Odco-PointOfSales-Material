@@ -1,5 +1,5 @@
 import { ThrowStmt } from "@angular/compiler";
-import { Component, OnChanges, OnInit } from "@angular/core";
+import { Component, OnChanges, OnInit, ViewChild } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -12,6 +12,7 @@ import {
 } from "@shared/service-proxies/service-proxies";
 import { result } from "lodash-es";
 import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.component";
+import { MatAccordion } from '@angular/material/expansion';
 
 @Component({
   selector: "app-payment-panel",
@@ -19,6 +20,7 @@ import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.c
   styleUrls: ["./payment-panel.component.scss"],
 })
 export class PaymentPanelComponent implements OnInit {
+  @ViewChild(MatAccordion) accordion: MatAccordion;
   tempSalesHeader: TempSaleDto;
   paymentMethod: number = 0;
   formPayment;

@@ -1,0 +1,17 @@
+<mat-form-field class="full-width">
+    <mat-label>Customer</mat-label>
+    <input type="text" placeholder="Pick one customer" aria-label="Customer" matInput [(ngModel)]="searchKeyword"
+        (keyup)="changeKeyword()" [matAutocomplete]="auto" [disabled]="fieldDisabled" [required]="fieldRequired" />
+
+    <button *ngIf="searchKeyword" matSuffix mat-icon-button aria-label="Clear" (click)="clearSelectedCustomer()">
+        <mat-icon>close</mat-icon>
+    </button>
+    <mat-icon *ngIf="!searchKeyword" matSuffix>search</mat-icon>
+
+    <mat-autocomplete #auto="matAutocomplete">
+        <mat-option (onSelectionChange)="selectCustomer(option)" *ngFor="let option of filteredOptions | async"
+            [value]="option.name">
+            {{ option.name }} - {{ option.contactNumber1 }}
+        </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

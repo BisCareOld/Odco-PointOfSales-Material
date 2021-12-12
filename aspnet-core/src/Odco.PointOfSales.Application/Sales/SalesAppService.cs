@@ -134,25 +134,31 @@ namespace Odco.PointOfSales.Application.Sales
             }
         }
 
-        public async Task<List<CommonKeyValuePairDto>> GetPartialCustomersAsync(string keyword)
+        public async Task<List<CustomerSearchResultDto>> GetPartialCustomersAsync(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))
-                return new List<CommonKeyValuePairDto>();
+                return new List<CustomerSearchResultDto>();
 
             keyword.ToLower();
 
-            var customers = await _customerRepository
+            var customers = _customerRepository
                 .GetAll()
-                .Where(s => s.FirstName.ToLower().Contains(keyword) || s.MiddleName.ToLower().Contains(keyword) || s.LastName.ToLower().Contains(keyword) || s.Code.Contains(keyword))
-                .Take(20)
-                .ToListAsync();
+                .Where(s => s.Code.Contains(keyword) || s.FirstName.ToLower().Contains(keyword) ||
+                    (string.IsNullOrWhiteSpace(s.MiddleName) && s.MiddleName.ToLower().Contains(keyword)) ||
+                    (string.IsNullOrWhiteSpace(s.LastName) && s.LastName.ToLower().Contains(keyword)) ||
+                    s.ContactNumber1.Contains(keyword) || s.ContactNumber2.Contains(keyword) || s.ContactNumber3.Contains(keyword)
+                );
 
-            return customers.Select(s => new CommonKeyValuePairDto
+            return await customers.OrderBy(c => c.FirstName).Take(20).Select(c => new CustomerSearchResultDto
             {
-                Id = s.Id,
-                Code = s.Code,
-                Name = $"{s.FirstName} {s.MiddleName} {s.LastName}"
-            }).ToList();
+                Id = c.Id,
+                Code = c.Code,
+                Name = $"{c.FirstName} {c.MiddleName} {c.LastName}",
+                ContactNumber1 = c.ContactNumber1,
+                ContactNumber2 = c.ContactNumber2,
+                ContactNumber3 = c.ContactNumber3,
+                IsActive = c.IsActive
+            }).ToListAsync();
         }
         #endregion
 
@@ -167,143 +173,163 @@ namespace Odco.PointOfSales.Application.Sales
         /// <returns></returns>
         public async Task<TempSaleDto> CreateOrUpdateTempSalesAsync(CreateOrUpdateTempSaleDto input)
         {
-            var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
-            var _tempHeader = new TempSale();
-            var _tempId = 0;
-
-            if (input.Id.HasValue)
+            try
             {
-                var tempSales = await _tempSaleRepository
-                    .GetAllIncluding(t => t.TempSalesProducts)
-                    .FirstOrDefaultAsync(t => t.Id == input.Id);
+                var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
+                var _tempHeader = new TempSale();
+                var _tempId = 0;
 
-                if (tempSales != null)
+                if (input.Id.HasValue)
                 {
-                    // AQ = Allocated Qty
-                    // BBQ = Book Balance Qty
-                    // Actual Quantity  &   AQ
-                    // 1. Existing SP   &   Input SP                Result StockBalanceTable
-                    // 2.               =                           No need to do anything
-                    // 3.               >                           
-                    // 4.               <
-                    // 5.               !
+                    var tempSale = await _tempSaleRepository
+                        .GetAllIncluding(t => t.TempSalesProducts)
+                        .FirstOrDefaultAsync(t => t.Id == input.Id);
 
-                    foreach (var existSP in tempSales.TempSalesProducts)
+                    // NOTE: Update existing TempSale & Line Level Details (InventoryProduct & NonInventoryProduct)
+                    if (tempSale != null)
                     {
-                        var iSP = input.TempSalesProducts.FirstOrDefault(isp => isp.StockBalanceId == existSP.StockBalanceId);
+                        // AQ = Allocated Qty
+                        // BBQ = Book Balance Qty
+                        // Actual Quantity  &   AQ
+                        // 1. Existing SP   &   Input SP                Result StockBalanceTable
+                        // 2.               =                           No need to do anything
+                        // 3.               >                           
+                        // 4.               <
+                        // 5.               !
 
-                        if (iSP != null)
+                        foreach (var existSP in tempSale.TempSalesProducts)
                         {
-                            // NOTE: IF exist in DB & exist in new request Dto
-                            // 1. Get Company Summary(1) + Warehouse Summary(1) + GRN Summary(1) based on the SBID
-                            // 2. Update AQ & BBQ
-                            // 3. GRN Summary - Strigth forward set value because Data got from specific StockBalanceId
-                            var stockBalances = await GetStockBalancesByStockBalanceIdAsync(iSP.StockBalanceId, iSP.ProductId, iSP.WarehouseId.Value);
+                            var iSP = input.TempSalesProducts.FirstOrDefault(isp => isp.StockBalanceId == existSP.StockBalanceId);
 
-                            if (existSP.Quantity > iSP.Quantity)
+                            if (iSP != null)
                             {
+                                // NOTE: IF exist in DB & exist in new request Dto
+                                // 1. Get Company Summary(1) + Warehouse Summary(1) + GRN Summary(1) based on the SBID
+                                // 2. Update AQ & BBQ
+                                // 3. GRN Summary - Strigth forward set value because Data got from specific StockBalanceId
+                                var stockBalances = await GetStockBalancesByStockBalanceIdAsync(iSP.StockBalanceId, iSP.ProductId, iSP.WarehouseId.Value);
+
+                                if (existSP.Quantity > iSP.Quantity)
+                                {
+                                    foreach (var sb in stockBalances)
+                                    {
+                                        var differences = existSP.Quantity - iSP.Quantity;
+                                        sb.AllocatedQuantity = iSP.Quantity;
+                                        sb.BookBalanceQuantity += differences;
+                                        await _stockBalanceRepository.UpdateAsync(sb);
+                                    }
+                                }
+                                else if (existSP.Quantity < iSP.Quantity)
+                                {
+                                    foreach (var sb in stockBalances)
+                                    {
+                                        var differences = iSP.Quantity - existSP.Quantity;
+                                        sb.AllocatedQuantity += differences;
+                                        sb.BookBalanceQuantity -= differences;
+                                        await _stockBalanceRepository.UpdateAsync(sb);
+                                    }
+                                }
+
+                                existSP.DiscountRate = iSP.DiscountRate;
+                                existSP.DiscountAmount = iSP.DiscountAmount;
+                                existSP.Quantity = iSP.Quantity;
+                                existSP.LineTotal = iSP.LineTotal;
+                                await _tempSaleProductRepository.UpdateAsync(existSP);
+                            }
+                            else
+                            {
+                                // NOTE: IF exist in DB & not exist in new request Dto
+                                // 1. Remove / Delete from Line Level
+                                // 2. Get Company Summary(1) + Warehouse Summary(1) + GRN Summary(1) based on the SBID
+                                // 3. Update (Revert) AQ & BBQ in all 3 rows
+                                // 4. GRN Summary (Soft Delete it)
+                                var stockBalances = await GetStockBalancesByStockBalanceIdAsync(existSP.StockBalanceId, existSP.ProductId, existSP.WarehouseId.Value);
+                                decimal _AQ = 0; // Related to GRN summary
                                 foreach (var sb in stockBalances)
                                 {
-                                    var differences = existSP.Quantity - iSP.Quantity;
-                                    sb.AllocatedQuantity = iSP.Quantity;
-                                    sb.BookBalanceQuantity += differences;
-                                    await _stockBalanceRepository.UpdateAsync(sb);
-                                }
-                            }
-                            else if (existSP.Quantity < iSP.Quantity)
-                            {
-                                foreach (var sb in stockBalances)
-                                {
-                                    var differences = iSP.Quantity - existSP.Quantity;
-                                    sb.AllocatedQuantity += differences;
-                                    sb.BookBalanceQuantity -= differences;
-                                    await _stockBalanceRepository.UpdateAsync(sb);
-                                }
-                            }
+                                    if (sb.SequenceNumber > 0)
+                                    {
+                                        _AQ = existSP.Quantity;
 
-                            existSP.DiscountRate = iSP.DiscountRate;
-                            existSP.DiscountAmount = iSP.DiscountAmount;
-                            existSP.Quantity = iSP.Quantity;
-                            existSP.LineTotal = iSP.LineTotal;
-                            await _tempSaleProductRepository.UpdateAsync(existSP);
+                                        sb.BookBalanceQuantity += _AQ;
+                                        sb.AllocatedQuantity -= _AQ;
+                                    }
+                                    else
+                                    {
+                                        sb.AllocatedQuantity -= _AQ;
+                                        sb.BookBalanceQuantity += _AQ;
+                                    }
+                                    await _stockBalanceRepository.UpdateAsync(sb);
+
+                                }
+                                await _tempSaleProductRepository.DeleteAsync(existSP);
+                            }
                         }
-                        else
+
+                        // NOTE: IF not exist in DB & exist in new request Dto
+                        // 1. Create a product row for existing TempSaleId
+                        // 2. Update the record in StockBalance Table
+                        var addTempSalesProductDto = new List<CreateTempSalesProductDto>();
+                        foreach (var iSP in input.TempSalesProducts)
                         {
-                            // NOTE: IF exist in DB & not exist in new request Dto
-                            // 1. Remove / Delete from Line Level
-                            // 2. Get Company Summary(1) + Warehouse Summary(1) + GRN Summary(1) based on the SBID
-                            // 3. Update (Revert) AQ & BBQ in all 3 rows
-                            // 4. GRN Summary (Soft Delete it)
-                            var stockBalances = await GetStockBalancesByStockBalanceIdAsync(existSP.StockBalanceId, existSP.ProductId, existSP.WarehouseId.Value);
-                            decimal _AQ = 0; // Related to GRN summary
-                            foreach (var sb in stockBalances)
-                            {
-                                if (sb.SequenceNumber > 0)
-                                {
-                                    _AQ = existSP.Quantity;
-
-                                    sb.BookBalanceQuantity += _AQ;
-                                    sb.AllocatedQuantity -= _AQ;
-                                }
-                                else
-                                {
-                                    sb.AllocatedQuantity -= _AQ;
-                                    sb.BookBalanceQuantity += _AQ;
-                                }
-                                await _stockBalanceRepository.UpdateAsync(sb);
-
-                            }
-                            await _tempSaleProductRepository.DeleteAsync(existSP);
+                            if (!tempSale.TempSalesProducts.Any(existSP => existSP.StockBalanceId == iSP.StockBalanceId))
+                                addTempSalesProductDto.Add(iSP);
                         }
-                    }
 
-                    // NOTE: IF not exist in DB & exist in new request Dto
-                    // 1. Create a product row for existing TempSaleId
-                    // 2. Update the record in StockBalance Table
-                    var addTempSalesProductDto = new List<CreateTempSalesProductDto>();
-                    foreach (var iSP in input.TempSalesProducts)
-                    {
-                        if (!tempSales.TempSalesProducts.Any(existSP => existSP.StockBalanceId == iSP.StockBalanceId))
-                            addTempSalesProductDto.Add(iSP);
-                    }
+                        foreach (var tempSalesProduct in addTempSalesProductDto)
+                        {
+                            await CreateTempSalesProductAsync(
+                                true,
+                                input.Id,
+                                tempSalesProduct,
+                                new WarehouseDto { Id = warehouse.Id, Name = warehouse.Name, Code = warehouse.Code }
+                            );
+                        }
 
-                    foreach (var tempSalesProduct in addTempSalesProductDto)
+                        tempSale.CustomerId = input.CustomerId;
+                        tempSale.CustomerCode = input.CustomerCode;
+                        tempSale.CustomerName = input.CustomerName;
+                        tempSale.DiscountRate = input.DiscountRate;
+                        tempSale.DiscountAmount = input.DiscountAmount;
+                        tempSale.TaxRate = input.TaxRate;
+                        tempSale.TaxAmount = input.TaxAmount;
+                        tempSale.GrossAmount = input.GrossAmount;
+                        tempSale.NetAmount = input.NetAmount;
+                        tempSale.Remarks = input.Remarks;
+                        tempSale.IsActive = input.IsActive;
+
+                        await _tempSaleRepository.UpdateAsync(tempSale);
+                        _tempHeader = new TempSale { Id = tempSale.Id };
+                        _tempId = tempSale.Id;
+                    }
+                }
+                else
+                {
+                    // NOTE: Create a new TempSale & Line Level Details (InventoryProduct & NonInventoryProduct)
+                    foreach (var lineLevel in input.TempSalesProducts)
                     {
                         await CreateTempSalesProductAsync(
-                            true,
-                            input.Id,
-                            tempSalesProduct,
+                            false,
+                            null,
+                            lineLevel,
                             new WarehouseDto { Id = warehouse.Id, Name = warehouse.Name, Code = warehouse.Code }
                         );
                     }
 
-                    _tempHeader = new TempSale { Id = tempSales.Id };
-                    _tempId = tempSales.Id;
+                    var temp = ObjectMapper.Map<TempSale>(input);
+                    _tempId = await _tempSaleRepository.InsertAndGetIdAsync(temp);
                 }
+
+                // Create / Update / Delete NonInventoryProduct
+                await CreateOrUpdateNonInventoryProductAsync(_tempId, input.NonInventoryProducts.ToList());
+
+                await CurrentUnitOfWork.SaveChangesAsync();
+                return new TempSaleDto { Id = _tempId }; //ObjectMapper.Map<TempSaleDto>(_tempHeader);
             }
-            else
+            catch (Exception ex)
             {
-                // NOTE: Create a new (TempSales) Header & Line Level Details
-
-                foreach (var lineLevel in input.TempSalesProducts)
-                {
-                    await CreateTempSalesProductAsync(
-                        false,
-                        null,
-                        lineLevel,
-                        new WarehouseDto { Id = warehouse.Id, Name = warehouse.Name, Code = warehouse.Code }
-                    );
-                }
-
-                var temp = ObjectMapper.Map<TempSale>(input);
-                _tempId = await _tempSaleRepository.InsertAndGetIdAsync(temp);
+                throw;
             }
-
-            // Create / Update / Delete NonInventoryProduct
-            await CreateOrUpdateNonInventoryProductAsync(_tempId, input.NonInventoryProducts.ToList());
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-            return new TempSaleDto { Id = _tempId }; //ObjectMapper.Map<TempSaleDto>(_tempHeader);
         }
 
         public async Task<TempSaleDto> GetTempSalesAsync(int tempSaleId)
