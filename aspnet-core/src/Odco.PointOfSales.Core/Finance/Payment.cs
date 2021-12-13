@@ -22,11 +22,17 @@ namespace Odco.PointOfSales.Core.Finance
 
         public Guid? CustomerId { get; set; }
 
+        [StringLength(10)]
+        public string CustomerCode { get; set; }
+
+        [StringLength(150)]
+        public string CustomerName { get; set; }
+
         [StringLength(15)]
         public string CustomerPhoneNumber { get; set; }
 
         #region Cash
-        public decimal? CashAmount { get; set; }
+
         #endregion
 
         #region Cheque
@@ -44,14 +50,10 @@ namespace Odco.PointOfSales.Core.Finance
         public string Branch { get; set; }
 
         public DateTime? ChequeReturnDate { get; set; }
-
-        public decimal? ChequeAmount { get; set; }
         #endregion
 
         #region Credit Outstanding
         public decimal? OutstandingAmount { get; set; }
-
-        public decimal? OutstandingSettledAmount { get; set; }
         #endregion
 
         #region Debit Card
@@ -59,8 +61,10 @@ namespace Odco.PointOfSales.Core.Finance
         #endregion
 
         #region Gift Card
-        public decimal? GiftCardAmount { get; set; }
+
         #endregion
+
+        public decimal PaidAmount { get; set; }
 
         public bool IsCash { get; set; }
         

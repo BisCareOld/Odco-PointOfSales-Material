@@ -6,12 +6,16 @@ using Abp.Extensions;
 using Abp.Linq;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Odco.PointOfSales.Application.Common.SequenceNumbers;
+using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
 using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Productions.Warehouses;
 using Odco.PointOfSales.Application.Sales.Customers;
 using Odco.PointOfSales.Application.Sales.Sales;
 using Odco.PointOfSales.Application.Sales.SalesProducts;
+using Odco.PointOfSales.Core.Enums;
+using Odco.PointOfSales.Core.Finance;
 using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
 using Odco.PointOfSales.Core.Sales;
@@ -32,13 +36,17 @@ namespace Odco.PointOfSales.Application.Sales
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
         private readonly IRepository<NonInventoryProduct, Guid> _nonInventoryProductRepository;
+        private readonly IDocumentSequenceNumberManager _documentSequenceNumberManager;
+        private readonly IRepository<Payment, Guid> _paymentRepository;
 
         public SalesAppService(IRepository<Customer, Guid> customerRepository,
             IRepository<Sale, Guid> saleRepository,
             IRepository<SalesProduct, Guid> saleProductRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
             IRepository<Warehouse, Guid> warehouseRepository,
-            IRepository<NonInventoryProduct, Guid> nonInventoryProductRepository
+            IRepository<NonInventoryProduct, Guid> nonInventoryProductRepository,
+            IDocumentSequenceNumberManager documentSequenceNumberManager,
+            IRepository<Payment, Guid> paymentRepository
             )
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
@@ -48,6 +56,8 @@ namespace Odco.PointOfSales.Application.Sales
             _stockBalanceRepository = stockBalanceRepository;
             _warehouseRepository = warehouseRepository;
             _nonInventoryProductRepository = nonInventoryProductRepository;
+            _documentSequenceNumberManager = documentSequenceNumberManager;
+            _paymentRepository = paymentRepository;
         }
 
         #region Customer
@@ -176,7 +186,7 @@ namespace Odco.PointOfSales.Application.Sales
             {
                 var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
                 var _tempHeader = new Sale();
-                
+                var salesNumber = string.Empty;
 
                 if (input.Id.HasValue)
                 {
@@ -187,6 +197,15 @@ namespace Odco.PointOfSales.Application.Sales
                     // NOTE: Update existing TempSale & Line Level Details (InventoryProduct & NonInventoryProduct)
                     if (tempSale != null)
                     {
+                        // NOTE: Getting the SalesNumber when making a Payment
+                        if (input.Cashes.Any() || input.Cheques.Any() || input.Outstandings.Any() || input.DebitCards.Any() || input.GiftCards.Any())
+                        {
+                            salesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
+                            input.SalesNumber = salesNumber;
+                            input.SalesProducts.ToList().ForEach(sp => sp.SalesNumber = salesNumber);
+                            await CreatePaymentForSalesIdAsync(input.Id.Value, salesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
+                        }
+
                         // AQ = Allocated Qty
                         // BBQ = Book Balance Qty
                         // Actual Quantity  &   AQ
@@ -229,6 +248,7 @@ namespace Odco.PointOfSales.Application.Sales
                                     }
                                 }
 
+                                existSP.SalesNumber = salesNumber;
                                 existSP.DiscountRate = iSP.DiscountRate;
                                 existSP.DiscountAmount = iSP.DiscountAmount;
                                 existSP.Quantity = iSP.Quantity;
@@ -285,6 +305,7 @@ namespace Odco.PointOfSales.Application.Sales
                             );
                         }
 
+                        tempSale.SalesNumber = salesNumber;
                         tempSale.CustomerId = input.CustomerId;
                         tempSale.CustomerCode = input.CustomerCode;
                         tempSale.CustomerName = input.CustomerName;
@@ -319,7 +340,7 @@ namespace Odco.PointOfSales.Application.Sales
                 }
 
                 // Create / Update / Delete NonInventoryProduct
-                await CreateOrUpdateNonInventoryProductAsync(_tempHeader.Id, input.NonInventoryProducts.ToList());
+                await CreateOrUpdateNonInventoryProductAsync(_tempHeader.Id, salesNumber, input.NonInventoryProducts.ToList());
 
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return new SaleDto { Id = _tempHeader.Id }; //ObjectMapper.Map<TempSaleDto>(_tempHeader);
@@ -398,7 +419,6 @@ namespace Odco.PointOfSales.Application.Sales
                 await _saleProductRepository.InsertAsync(lineLevelProduct);
             }
         }
-
 
         #endregion
 
@@ -503,7 +523,7 @@ namespace Odco.PointOfSales.Application.Sales
                 .ToListAsync();
         }
 
-        private async Task CreateOrUpdateNonInventoryProductAsync(Guid tempSaleId, List<CreateNonInventoryProductDto> nonInventoryProducts)
+        private async Task CreateOrUpdateNonInventoryProductAsync(Guid tempSaleId, string salesNumber, List<CreateNonInventoryProductDto> nonInventoryProducts)
         {
             #region Explanation
             //------- Existing -----------Input Req--------------------------
@@ -548,6 +568,7 @@ namespace Odco.PointOfSales.Application.Sales
                         {
                             SequenceNumber = 1,
                             SaleId = tempSaleId,
+                            SalesNumber = salesNumber,
                             ProductId = input_nip.ProductId,
                             ProductCode = input_nip.ProductCode,
                             ProductName = input_nip.ProductName,
@@ -578,6 +599,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                         updatedDto.SequenceNumber = 1;
                         updatedDto.SaleId = tempSaleId;
+                        updatedDto.SalesNumber = salesNumber;
                         updatedDto.ProductId = input_nip.ProductId;
                         updatedDto.ProductCode = input_nip.ProductCode;
                         updatedDto.ProductName = input_nip.ProductName;
@@ -634,6 +656,84 @@ namespace Odco.PointOfSales.Application.Sales
 
                 await _nonInventoryProductRepository.UpdateAsync(summary);
             }
+        }
+        #endregion
+
+        #region Payment
+        private async Task CreatePaymentForSalesIdAsync(Guid saleId, string saleNumber, Guid? customerId, string customerCode, string customerName, CashDto[] cashes, ChequeDto[] cheques, CustomerCreditOutstandingDto[] outstandings, DebitCardDto[] debitCards, GiftCardDto[] giftCards)
+        {
+            try
+            {
+                var payments = new List<Payment>();
+
+                #region Map Payment from Payments[]
+
+                if (cashes.Any())
+                {
+                    // Get the total amount of cash payments
+                    var totalCashAmount = cashes.Select(c => c.CashAmount).Sum();
+                    payments.Add(new Payment
+                    {
+                        PaidAmount = totalCashAmount,
+                        IsCash = true,
+                    });
+                }
+                foreach (var ip in cheques)
+                {
+                    payments.Add(new Payment
+                    {
+                        PaidAmount = ip.ChequeAmount,
+                        ChequeNumber = ip.ChequeNumber,
+                        ChequeReturnDate = ip.ChequeReturnDate,
+                        BankId = ip.BankId,
+                        Bank = ip.Bank,
+                        BranchId = ip.BranchId,
+                        Branch = ip.Branch,
+                        IsCheque = true,
+                    });
+                }
+                foreach (var ip in outstandings)
+                {
+                    payments.Add(new Payment
+                    {
+                        OutstandingAmount = ip.OutstandingAmount,
+                        PaidAmount = 0,
+                        IsCreditOutstanding = true,
+                    });
+                }
+                foreach (var ip in debitCards)
+                {
+                    payments.Add(new Payment
+                    {
+                        IsDebitCard = true,
+                    });
+                }
+                foreach (var ip in giftCards)
+                {
+                    payments.Add(new Payment
+                    {
+                        PaidAmount = ip.GiftCardAmount,
+                        IsGiftCard = true,
+                    });
+                }
+
+                foreach (var p in payments)
+                {
+                    p.CustomerId = customerId;
+                    p.CustomerCode = customerCode;
+                    p.CustomerCode = customerName;
+                    //p.CustomerPhoneNumber = input.Customer
+                    p.SaleNumber = saleNumber;
+
+                    await _paymentRepository.InsertAsync(p);
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
         #endregion
     }
