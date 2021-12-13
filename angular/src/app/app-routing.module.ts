@@ -17,6 +17,7 @@ import { CreateInventoryTransactionsComponent } from "./inventory/inventory-tran
 import { CreatePurchaseOrderComponent } from "./purchasings/purchase-orders/create-purchase-order/create-purchase-order.component";
 import { SalesComponent } from "./sales/sales.component";
 import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.component";
+import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.component";
 
 @NgModule({
   imports: [
@@ -108,6 +109,12 @@ import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.compo
             canActivate: [AppRouteGuard],
           },
           {
+            path: "sales-list",
+            component: TempSalesListComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
             path: "update-password",
             component: ChangePasswordComponent,
             canActivate: [AppRouteGuard],
@@ -118,4 +125,4 @@ import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.compo
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -23,6 +23,7 @@ namespace Odco.PointOfSales.Application.Sales
 
         #region TemporarySales Header + Products
         Task<TempSaleDto> CreateOrUpdateTempSalesAsync(CreateOrUpdateTempSaleDto input);
+        Task<PagedResultDto<TempSaleDto>> GetAllTempSalesAsync(PagedTempSaleResultRequestDto input);
         Task<TempSaleDto> GetTempSalesAsync(int tempSaleId);
         #endregion
 

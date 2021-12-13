@@ -332,13 +332,38 @@ namespace Odco.PointOfSales.Application.Sales
             }
         }
 
+        public async Task<PagedResultDto<TempSaleDto>> GetAllTempSalesAsync(PagedTempSaleResultRequestDto input)
+        {
+            try
+            {
+                var query = _tempSaleRepository.GetAll()
+                        .WhereIf(!input.Keyword.IsNullOrWhiteSpace(),
+                        x => x.CustomerName.Contains(input.Keyword));
+
+                var result = _asyncQueryableExecuter.ToListAsync
+                    (
+                        query.OrderByDescending(o => o.CreationTime)
+                             .PageBy(input.SkipCount, input.MaxResultCount)
+                    );
+
+                var count = await _asyncQueryableExecuter.CountAsync(query);
+
+                var resultDto = ObjectMapper.Map<List<TempSaleDto>>(result.Result);
+                return new PagedResultDto<TempSaleDto>(count, resultDto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<TempSaleDto> GetTempSalesAsync(int tempSaleId)
         {
             var temp = await _tempSaleRepository
                 .GetAllIncluding(t => t.TempSalesProducts)
                 .FirstOrDefaultAsync(t => t.Id == tempSaleId);
             var tempDto = ObjectMapper.Map<TempSaleDto>(temp);
-            
+
             // Adding NonInventoryProducts
             tempDto.NonInventoryProducts = await GetNonInventoryProductByTempSaleIdAsync(tempSaleId);
             return tempDto;
@@ -607,7 +632,7 @@ namespace Odco.PointOfSales.Application.Sales
                 // Might have positive or negative values in "differentiateQuantity"
                 // Minus will decrease from existing value
                 // positive will increase from existing value 
-                summary.Quantity += differentiateQuantity;  
+                summary.Quantity += differentiateQuantity;
 
                 await _nonInventoryProductRepository.UpdateAsync(summary);
             }
