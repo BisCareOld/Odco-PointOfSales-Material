@@ -634,7 +634,7 @@ namespace Odco.PointOfSales.Application.Productions
                 {
                     Id = Guid.NewGuid(),
                     SequenceNumber = 0,
-                    TempSaleId = 0,
+                    SaleId = null,
                     ProductId = productId,
                     ProductCode = productCode,
                     ProductName = productName,
@@ -672,7 +672,7 @@ namespace Odco.PointOfSales.Application.Productions
                     {
                         Id = Guid.NewGuid(),
                         SequenceNumber = 0,
-                        TempSaleId = 0,
+                        SaleId = null,
                         ProductId = productId,
                         ProductCode = productCode,
                         ProductName = productName,
@@ -721,7 +721,7 @@ namespace Odco.PointOfSales.Application.Productions
                     {
                         Id = Guid.NewGuid(),
                         SequenceNumber = 0,
-                        TempSaleId = 0,
+                        SaleId = null,
                         ProductId = p.Id,
                         ProductCode = p.Code,
                         ProductName = p.Name,

@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Finance;
 using Odco.PointOfSales.Sales.Common;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Odco.PointOfSales.Core.Sales
 {
-    [Table("Sales.TempSale")]
-    public class TempSale : FullAuditedEntity<int>
+    // Sale : SalesProduct = 1: M
+    // Sale : NonInventoryProduct = 1 : M
+    // Sale : Payment = 1 : M
+    [Table("Sales.Sale")]
+    public class Sale : FullAuditedEntity<Guid>
     {
+        /// <summary>
+        /// Exist: When Payment is carried out
+        /// </summary>
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
+
+        [StringLength(15)]
+        public string ReferenceNumber { get; set; }
+
         public Guid? CustomerId { get; set; }
 
         [StringLength(10)]
@@ -35,11 +48,15 @@ namespace Odco.PointOfSales.Core.Sales
 
         public bool IsActive { get; set; }
 
-        public ICollection<TempSalesProduct> TempSalesProducts { get; set; }
+        public ICollection<SalesProduct> SalesProducts { get; set; }
 
-        public TempSale()
+        public ICollection<Payment> Payments { get; set; }
+
+        public Sale()
         {
-            TempSalesProducts = new HashSet<TempSalesProduct>();
+            SalesProducts = new HashSet<SalesProduct>();
+
+            Payments = new HashSet<Payment>();
         }
     }
 }

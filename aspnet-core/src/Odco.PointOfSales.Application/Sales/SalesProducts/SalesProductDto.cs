@@ -4,13 +4,16 @@ using Odco.PointOfSales.Sales.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
+namespace Odco.PointOfSales.Application.Sales.SalesProducts
 {
-    [AutoMapTo(typeof(TempSalesProductDto)), AutoMapFrom(typeof(TempSalesProduct))]
-    public class TempSalesProductDto : EntityDto<int>
+    [AutoMapTo(typeof(SalesProductDto)), AutoMapFrom(typeof(SalesProduct))]
+    public class SalesProductDto : EntityDto<Guid>
     {
-        #region TemporarySalesHeader
-        public int TempSaleId { get; set; }
+        #region SalesHeader
+        public int SaleId { get; set; }
+
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
         #endregion
 
         #region Product
@@ -61,6 +64,8 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
         public bool IsSelected { get; set; }
         #endregion
 
+        public decimal Price { get; set; }
+
         #region Sales
         public decimal DiscountRate { get; set; }
 
@@ -73,6 +78,9 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
 
         public decimal LineTotal { get; set; }
         #endregion
+
+        [StringLength(100)]
+        public string Remarks { get; set; }
 
         public bool IsActive { get; set; }
     }

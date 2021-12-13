@@ -1,22 +1,23 @@
-﻿using Abp.AutoMapper;
+﻿using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
 using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
-using Odco.PointOfSales.Application.Sales.TemporarySalesProducts;
+using Odco.PointOfSales.Application.Sales.SalesProducts;
 using Odco.PointOfSales.Core.Sales;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Sales.TemporarySales
+namespace Odco.PointOfSales.Application.Sales.Sales
 {
-    [AutoMapTo(typeof(TempSale))]
-    public class CreateOrUpdateTempSaleDto
+    [AutoMapTo(typeof(SaleDto)), AutoMapFrom(typeof(Sale))]
+    public class SaleDto : EntityDto<Guid>
     {
-        /// <summary>
-        /// Id Exist: Update
-        /// Id Not Exist: Create
-        /// </summary>
-        public int? Id { get; set; }
-        
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
+
+        [StringLength(15)]
+        public string ReferenceNumber { get; set; }
+
         public Guid? CustomerId { get; set; }
 
         [StringLength(10)]
@@ -42,14 +43,16 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySales
 
         public bool IsActive { get; set; }
 
-        public ICollection<CreateTempSalesProductDto> TempSalesProducts { get; set; }
+        public ICollection<SalesProductDto> TempSalesProducts { get; set; }
+        
+        public ICollection<NonInventoryProductDto> NonInventoryProducts { get; set; }
 
-        public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
-
-        public CreateOrUpdateTempSaleDto()
+        public SaleDto()
         {
-            TempSalesProducts = new HashSet<CreateTempSalesProductDto>();
-            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
+            TempSalesProducts = new HashSet<SalesProductDto>();
+
+            NonInventoryProducts = new HashSet<NonInventoryProductDto>();
+
         }
     }
 }

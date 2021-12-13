@@ -9,7 +9,10 @@ namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
 
         public int SequenceNumber { get; set; }
 
-        public int? TempSaleId { get; set; }
+        public Guid? SaleId { get; set; }
+
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
 
         /// <summary>
         ///     Product *FK
@@ -61,5 +64,7 @@ namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
         public decimal SellingPrice { get; set; }
 
         public decimal MaximumRetailPrice { get; set; }
+        
+        public decimal Price { get; set; }
     }
 }

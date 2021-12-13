@@ -1,13 +1,26 @@
-﻿using Abp.AutoMapper;
-using Odco.PointOfSales.Sales.Common;
+﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Sales;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
+namespace Odco.PointOfSales.Sales.Common
 {
-    [AutoMapTo(typeof(TempSalesProduct))]
-    public class CreateTempSalesProductDto
+    [Table("Sales.SalesProduct")]
+    public class SalesProduct : FullAuditedEntity<Guid>
     {
+        #region SalesHeader
+        public Guid SaleId { get; set; }
+
+        public Sale Sale { get; set; }
+
+        /// <summary>
+        /// Exist: When Payment is carried out
+        /// </summary>
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
+        #endregion
+
         #region Product
         public Guid ProductId { get; set; }
 
@@ -53,12 +66,17 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
 
         public decimal MaximumRetailPrice { get; set; }
 
+        /// <summary>
+        /// Actual Price given for the Customer
+        /// </summary>
+        public decimal Price { get; set; }
+
         public bool IsSelected { get; set; }
         #endregion
 
         #region Sales
         public decimal DiscountRate { get; set; }
-        
+
         public decimal DiscountAmount { get; set; }
 
         /// <summary>
@@ -68,6 +86,9 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
 
         public decimal LineTotal { get; set; }
         #endregion
+
+        [StringLength(100)]
+        public string Remarks { get; set; }
 
         public bool IsActive { get; set; }
     }
