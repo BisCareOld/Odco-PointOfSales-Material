@@ -63,8 +63,6 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         #endregion
 
         #region Finance
-        public virtual DbSet<Invoice> Invoices { get; set; }
-        public virtual DbSet<InvoiceProduct> InvoiceProducts { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         #endregion
 

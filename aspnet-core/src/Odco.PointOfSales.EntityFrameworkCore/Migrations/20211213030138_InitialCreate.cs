@@ -8,6 +8,26 @@ namespace Odco.PointOfSales.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Common.Bank",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Common.Bank", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Common.Classification",
                 columns: table => new
                 {
@@ -164,6 +184,42 @@ namespace Odco.PointOfSales.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Inventory.GoodsRecieved", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Inventory.NonInventoryProduct",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SequenceNumber = table.Column<int>(type: "int", nullable: false),
+                    SaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SalesNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    WarehouseCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    WarehouseName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    QuantityUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    DiscountRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    LineTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MaximumRetailPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Inventory.NonInventoryProduct", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -324,6 +380,69 @@ namespace Odco.PointOfSales.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Sales.Sale",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SalesNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    ReferenceNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CustomerCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    CustomerName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DiscountRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TaxRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    GrossAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    NetAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sales.Sale", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Common.BankBranch",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BankId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: true),
+                    ContactNumber1 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    ContactNumber2 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    ContactNumber3 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    FaxNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    DistrictId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Common.BankBranch", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Common.BankBranch_Common.Bank_BankId",
+                        column: x => x.BankId,
+                        principalTable: "Common.Bank",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Common.City",
                 columns: table => new
                 {
@@ -403,7 +522,7 @@ namespace Odco.PointOfSales.Migrations
                     Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    BarCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BarCode = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     PackSize = table.Column<int>(type: "int", nullable: true),
                     ReOrderLevel = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DiscountRate = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
@@ -584,6 +703,99 @@ namespace Odco.PointOfSales.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Finance.Payment",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SaleNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CustomerPhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    CashAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ChequeNumber = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
+                    BankId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Bank = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BranchId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Branch = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ChequeReturnDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ChequeAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    OutstandingAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    OutstandingSettledAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    GiftCardAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    IsCash = table.Column<bool>(type: "bit", nullable: false),
+                    IsCheque = table.Column<bool>(type: "bit", nullable: false),
+                    IsCreditOutstanding = table.Column<bool>(type: "bit", nullable: false),
+                    IsDebitCard = table.Column<bool>(type: "bit", nullable: false),
+                    IsGiftCard = table.Column<bool>(type: "bit", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Finance.Payment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Finance.Payment_Sales.Sale_SaleId",
+                        column: x => x.SaleId,
+                        principalTable: "Sales.Sale",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sales.SalesProduct",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SalesNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BarCode = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    Code = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    StockBalanceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BatchNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    WarehouseCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    WarehouseName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    BookBalanceQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BookBalanceUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MaximumRetailPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsSelected = table.Column<bool>(type: "bit", nullable: false),
+                    DiscountRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    LineTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sales.SalesProduct", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sales.SalesProduct_Sales.Sale_SaleId",
+                        column: x => x.SaleId,
+                        principalTable: "Sales.Sale",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sales.ProductPriceGroup",
                 columns: table => new
                 {
@@ -719,9 +931,19 @@ namespace Odco.PointOfSales.Migrations
                 column: "WarehouseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Common.BankBranch_BankId",
+                table: "Common.BankBranch",
+                column: "BankId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Common.City_DistrictId",
                 table: "Common.City",
                 column: "DistrictId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Finance.Payment_SaleId",
+                table: "Finance.Payment",
+                column: "SaleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventory.GoodsRecievedProduct_GoodsRecievedId",
@@ -784,6 +1006,11 @@ namespace Odco.PointOfSales.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Sales.SalesProduct_SaleId",
+                table: "Sales.SalesProduct",
+                column: "SaleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sales.SupplierProduct_ProductId",
                 table: "Sales.SupplierProduct",
                 column: "ProductId");
@@ -800,6 +1027,9 @@ namespace Odco.PointOfSales.Migrations
                 name: "Common.Address");
 
             migrationBuilder.DropTable(
+                name: "Common.BankBranch");
+
+            migrationBuilder.DropTable(
                 name: "Common.DocumentSequenceNumber");
 
             migrationBuilder.DropTable(
@@ -809,7 +1039,13 @@ namespace Odco.PointOfSales.Migrations
                 name: "Common.UnitOfMeasure");
 
             migrationBuilder.DropTable(
+                name: "Finance.Payment");
+
+            migrationBuilder.DropTable(
                 name: "Inventory.GoodsRecievedProduct");
+
+            migrationBuilder.DropTable(
+                name: "Inventory.NonInventoryProduct");
 
             migrationBuilder.DropTable(
                 name: "Inventory.StockBalance");
@@ -819,6 +1055,9 @@ namespace Odco.PointOfSales.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sales.ProductPriceGroup");
+
+            migrationBuilder.DropTable(
+                name: "Sales.SalesProduct");
 
             migrationBuilder.DropTable(
                 name: "Sales.SupplierProduct");
@@ -833,10 +1072,16 @@ namespace Odco.PointOfSales.Migrations
                 name: "Sales.Customer");
 
             migrationBuilder.DropTable(
+                name: "Common.Bank");
+
+            migrationBuilder.DropTable(
                 name: "Inventory.GoodsRecieved");
 
             migrationBuilder.DropTable(
                 name: "Purchasing.PurchaseOrder");
+
+            migrationBuilder.DropTable(
+                name: "Sales.Sale");
 
             migrationBuilder.DropTable(
                 name: "Production.Product");

@@ -8,12 +8,12 @@ namespace Odco.PointOfSales.Application.Finance.Payments
     [AutoMapTo(typeof(Payment))]
     public class CreatePaymentDto
     {
-        #region Invoice
-        public Guid InvoiceId { get; set; }
+        #region Sales
+        public Guid SaleId { get; set; }
 
         [Required]
         [StringLength(15)]
-        public string InvoiceNumber { get; set; }
+        public string SaleNumber { get; set; }
         #endregion
 
         public Guid? CustomerId { get; set; }

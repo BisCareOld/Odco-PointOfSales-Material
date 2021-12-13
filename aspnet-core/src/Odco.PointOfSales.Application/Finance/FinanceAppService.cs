@@ -2,35 +2,25 @@
 using Abp.Domain.Repositories;
 using Abp.Linq;
 using Odco.PointOfSales.Application.Common.SequenceNumbers;
-using Odco.PointOfSales.Application.Finance.Invoices;
-using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Finance;
 using Odco.PointOfSales.Core.Sales;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Odco.PointOfSales.Application.Finance
 {
     public class FinanceAppService : ApplicationService, IFinanceAppService
     {
         private readonly IAsyncQueryableExecuter _asyncQueryableExecuter;
-        private readonly IRepository<Invoice, Guid> _invoiceRepository;
-        private readonly IRepository<InvoiceProduct, Guid> _invoiceProductRepository;
         private readonly IRepository<Payment, Guid> _paymentRepository;
         private readonly IRepository<Sale, Guid> _saleRepository;
         private readonly IDocumentSequenceNumberManager _documentSequenceNumberManager;
 
-        public FinanceAppService(IRepository<Invoice, Guid> invoiceRepository,
-            IRepository<InvoiceProduct, Guid> invoiceProductRepository,
+        public FinanceAppService(
             IRepository<Payment, Guid> paymentRepository,
             IRepository<Sale, Guid> saleRepository,
             IDocumentSequenceNumberManager documentSequenceNumberManager)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
-            _invoiceRepository = invoiceRepository;
-            _invoiceProductRepository = invoiceProductRepository;
             _paymentRepository = paymentRepository;
             _saleRepository = saleRepository;
             _documentSequenceNumberManager = documentSequenceNumberManager;

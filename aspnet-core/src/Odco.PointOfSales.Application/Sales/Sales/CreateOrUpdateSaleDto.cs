@@ -1,4 +1,5 @@
 ﻿using Abp.AutoMapper;
+using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
 using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Sales.SalesProducts;
 using Odco.PointOfSales.Core.Sales;
@@ -11,6 +12,18 @@ namespace Odco.PointOfSales.Application.Sales.Sales
     [AutoMapTo(typeof(Sale))]
     public class CreateOrUpdateSaleDto
     {
+        public CreateOrUpdateSaleDto()
+        {
+            SalesProducts = new HashSet<CreateSalesProductDto>();
+            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
+            //PaymentDtos
+            Cashes = new HashSet<CashDto>();
+            Cheques = new HashSet<ChequeDto>();
+            Outstandings = new HashSet<CustomerCreditOutstandingDto>();
+            DebitCards = new HashSet<DebitCardDto>();
+            GiftCards = new HashSet<GiftCardDto>();
+        }
+
         /// <summary>
         /// Exist: Update
         /// Not Exist: Create
@@ -52,10 +65,12 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
 
-        public CreateOrUpdateSaleDto()
-        {
-            SalesProducts = new HashSet<CreateSalesProductDto>();
-            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
-        }
+        #region Payment Types
+        public ICollection<CashDto> Cashes { get; set; }
+        public ICollection<ChequeDto> Cheques { get; set; }
+        public ICollection<CustomerCreditOutstandingDto> Outstandings { get; set; }
+        public ICollection<DebitCardDto> DebitCards { get; set; }
+        public ICollection<GiftCardDto> GiftCards { get; set; }
+        #endregion
     }
 }
