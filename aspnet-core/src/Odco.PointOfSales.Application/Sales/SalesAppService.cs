@@ -171,9 +171,9 @@ namespace Odco.PointOfSales.Application.Sales
         }
         #endregion
 
-        #region TemporarySales Header + Products
+        #region Sales Header + Products
         /// <summary>
-        /// 1. Create Temporary Sales Header & Product
+        /// 1. Create Sales Header & Product
         /// 2. StockBalance: Shift sales quantity to allocated quantity
         /// 3. Set Default warehouse to selected products (Line Level Products)
         /// 4. NonInventoryProduct: Adding a quantity is missed
@@ -185,19 +185,21 @@ namespace Odco.PointOfSales.Application.Sales
             try
             {
                 var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
-                var _tempHeader = new Sale();
+                var _saleHeader = new Sale();
                 var salesNumber = string.Empty;
 
                 if (input.Id.HasValue)
                 {
-                    var tempSale = await _saleRepository
+                    var existingSale = await _saleRepository
                         .GetAllIncluding(t => t.SalesProducts)
-                        .FirstOrDefaultAsync(t => t.Id == input.Id);
+                        .FirstOrDefaultAsync(t => t.Id == input.Id.Value);
 
-                    // NOTE: Update existing TempSale & Line Level Details (InventoryProduct & NonInventoryProduct)
-                    if (tempSale != null)
+                    // NOTE: Update existing Sale & Line Level Details (InventoryProduct & NonInventoryProduct)
+                    if (existingSale != null)
                     {
-                        // NOTE: Getting the SalesNumber when making a Payment
+                        // NOTE:
+                        // 1. Make Payment
+                        // 2. Getting the SalesNumber
                         if (input.Cashes.Any() || input.Cheques.Any() || input.Outstandings.Any() || input.DebitCards.Any() || input.GiftCards.Any())
                         {
                             salesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
@@ -215,7 +217,7 @@ namespace Odco.PointOfSales.Application.Sales
                         // 4.               <
                         // 5.               !
 
-                        foreach (var existSP in tempSale.SalesProducts)
+                        foreach (var existSP in existingSale.SalesProducts)
                         {
                             var iSP = input.SalesProducts.FirstOrDefault(isp => isp.StockBalanceId == existSP.StockBalanceId);
 
@@ -249,6 +251,7 @@ namespace Odco.PointOfSales.Application.Sales
                                 }
 
                                 existSP.SalesNumber = salesNumber;
+                                existSP.Price = iSP.Price;
                                 existSP.DiscountRate = iSP.DiscountRate;
                                 existSP.DiscountAmount = iSP.DiscountAmount;
                                 existSP.Quantity = iSP.Quantity;
@@ -291,13 +294,13 @@ namespace Odco.PointOfSales.Application.Sales
                         var addTempSalesProductDto = new List<CreateSalesProductDto>();
                         foreach (var iSP in input.SalesProducts)
                         {
-                            if (!tempSale.SalesProducts.Any(existSP => existSP.StockBalanceId == iSP.StockBalanceId))
+                            if (!existingSale.SalesProducts.Any(existSP => existSP.StockBalanceId == iSP.StockBalanceId))
                                 addTempSalesProductDto.Add(iSP);
                         }
 
                         foreach (var tempSalesProduct in addTempSalesProductDto)
                         {
-                            await CreateTempSalesProductAsync(
+                            await CreateSalesProductAsync(
                                 true,
                                 input.Id,
                                 tempSalesProduct,
@@ -305,29 +308,30 @@ namespace Odco.PointOfSales.Application.Sales
                             );
                         }
 
-                        tempSale.SalesNumber = salesNumber;
-                        tempSale.CustomerId = input.CustomerId;
-                        tempSale.CustomerCode = input.CustomerCode;
-                        tempSale.CustomerName = input.CustomerName;
-                        tempSale.DiscountRate = input.DiscountRate;
-                        tempSale.DiscountAmount = input.DiscountAmount;
-                        tempSale.TaxRate = input.TaxRate;
-                        tempSale.TaxAmount = input.TaxAmount;
-                        tempSale.GrossAmount = input.GrossAmount;
-                        tempSale.NetAmount = input.NetAmount;
-                        tempSale.Remarks = input.Remarks;
-                        tempSale.IsActive = input.IsActive;
+                        existingSale.SalesNumber = salesNumber;
+                        existingSale.ReferenceNumber = input.ReferenceNumber;
+                        existingSale.CustomerId = input.CustomerId;
+                        existingSale.CustomerCode = input.CustomerCode;
+                        existingSale.CustomerName = input.CustomerName;
+                        existingSale.DiscountRate = input.DiscountRate;
+                        existingSale.DiscountAmount = input.DiscountAmount;
+                        existingSale.TaxRate = input.TaxRate;
+                        existingSale.TaxAmount = input.TaxAmount;
+                        existingSale.GrossAmount = input.GrossAmount;
+                        existingSale.NetAmount = input.NetAmount;
+                        existingSale.Remarks = input.Remarks;
+                        existingSale.IsActive = input.IsActive;
 
-                        await _saleRepository.UpdateAsync(tempSale);
-                        _tempHeader = new Sale { Id = tempSale.Id };
+                        await _saleRepository.UpdateAsync(existingSale);
+                        _saleHeader = new Sale { Id = existingSale.Id };
                     }
                 }
                 else
                 {
-                    // NOTE: Create a new TempSale & Line Level Details (InventoryProduct & NonInventoryProduct)
+                    // NOTE: Create a new Sale & Line Level Details (InventoryProduct & NonInventoryProduct)
                     foreach (var lineLevel in input.SalesProducts)
                     {
-                        await CreateTempSalesProductAsync(
+                        await CreateSalesProductAsync(
                             false,
                             null,
                             lineLevel,
@@ -335,15 +339,15 @@ namespace Odco.PointOfSales.Application.Sales
                         );
                     }
 
-                    var temp = ObjectMapper.Map<Sale>(input);
-                    _tempHeader.Id = await _saleRepository.InsertAndGetIdAsync(temp);
+                    var sale = ObjectMapper.Map<Sale>(input);
+                    _saleHeader.Id = await _saleRepository.InsertAndGetIdAsync(sale);
                 }
 
                 // Create / Update / Delete NonInventoryProduct
-                await CreateOrUpdateNonInventoryProductAsync(_tempHeader.Id, salesNumber, input.NonInventoryProducts.ToList());
+                await CreateOrUpdateNonInventoryProductAsync(_saleHeader.Id, salesNumber, input.NonInventoryProducts.ToList());
 
                 await CurrentUnitOfWork.SaveChangesAsync();
-                return new SaleDto { Id = _tempHeader.Id }; //ObjectMapper.Map<TempSaleDto>(_tempHeader);
+                return new SaleDto { Id = _saleHeader.Id }; //ObjectMapper.Map<TempSaleDto>(_tempHeader);
             }
             catch (Exception ex)
             {
@@ -376,26 +380,25 @@ namespace Odco.PointOfSales.Application.Sales
             }
         }
 
-        public async Task<SaleDto> GetSalesAsync(Guid tempSaleId)
+        public async Task<SaleDto> GetSalesAsync(Guid saleId)
         {
             var temp = await _saleRepository
                 .GetAllIncluding(t => t.SalesProducts)
-                .FirstOrDefaultAsync(t => t.Id == tempSaleId);
+                .FirstOrDefaultAsync(t => t.Id == saleId);
             var tempDto = ObjectMapper.Map<SaleDto>(temp);
 
             // Adding NonInventoryProducts
-            tempDto.NonInventoryProducts = await GetNonInventoryProductByTempSaleIdAsync(tempSaleId);
+            tempDto.NonInventoryProducts = await GetNonInventoryProductBySaleIdAsync(saleId);
             return tempDto;
         }
 
-        private async Task CreateTempSalesProductAsync(bool isExisting, Guid? existingTempSaleId, CreateSalesProductDto lineLevel, WarehouseDto warehouse)
+        private async Task CreateSalesProductAsync(bool isExisting, Guid? existingSaleId, CreateSalesProductDto lineLevel, WarehouseDto warehouse)
         {
             // Set Warehouse Details to Line level 
             lineLevel.WarehouseId = warehouse.Id;
             lineLevel.WarehouseCode = warehouse.Code;
             lineLevel.WarehouseName = warehouse.Name;
 
-            //var stockBalances = await GetStockBalancesAsync(lineLevel.ProductId, warehouse.Id);
             var stockBalances = await GetStockBalancesAsync(lineLevel.ProductId, warehouse.Id);
 
             // * Increase in Allocated Qty & Decrease in Book Balance Qty
@@ -415,7 +418,7 @@ namespace Odco.PointOfSales.Application.Sales
             if (isExisting)
             {
                 var lineLevelProduct = ObjectMapper.Map<SalesProduct>(lineLevel);
-                lineLevelProduct.SaleId = existingTempSaleId.Value;
+                lineLevelProduct.SaleId = existingSaleId.Value;
                 await _saleProductRepository.InsertAsync(lineLevelProduct);
             }
         }
@@ -474,32 +477,16 @@ namespace Odco.PointOfSales.Application.Sales
                 (sb.SequenceNumber == 0 && sb.ProductId == productId && sb.WarehouseId == warehouseId) ||
                 (sb.SequenceNumber == 0 && sb.ProductId == productId && !sb.WarehouseId.HasValue)
             ).ToListAsync();
-
-            //var returnList = new List<StockBalance>();
-
-            //var _sb1 = await _stockBalanceRepository.FirstOrDefaultAsync(sb => sb.Id == stockBalanceId);
-
-            //var _sb2 = await _stockBalanceRepository
-            //    .GetAll()
-            //    .Where(sb => sb.ProductId == _sb1.ProductId
-            //                && sb.SequenceNumber == 0
-            //                && (!sb.WarehouseId.HasValue || sb.WarehouseId == _sb1.WarehouseId))
-            //    .OrderByDescending(sb => sb.SequenceNumber)
-            //    .ToListAsync();
-
-            //returnList.Add(_sb1);
-            //returnList.AddRange(_sb2);
-            //return returnList;
         }
 
         #endregion
 
         #region NonInventoryProduct
-        public async Task<List<NonInventoryProductDto>> GetNonInventoryProductByTempSaleIdAsync(Guid tempSaleId)
+        public async Task<List<NonInventoryProductDto>> GetNonInventoryProductBySaleIdAsync(Guid saleId)
         {
             return await _nonInventoryProductRepository
                 .GetAll()
-                .Where(n => n.SaleId == tempSaleId)
+                .Where(n => n.SaleId == saleId)
                 .Select(n => new NonInventoryProductDto
                 {
                     Id = n.Id,
@@ -523,7 +510,7 @@ namespace Odco.PointOfSales.Application.Sales
                 .ToListAsync();
         }
 
-        private async Task CreateOrUpdateNonInventoryProductAsync(Guid tempSaleId, string salesNumber, List<CreateNonInventoryProductDto> nonInventoryProducts)
+        private async Task CreateOrUpdateNonInventoryProductAsync(Guid saleId, string salesNumber, List<CreateNonInventoryProductDto> nonInventoryProducts)
         {
             #region Explanation
             //------- Existing -----------Input Req--------------------------
@@ -532,7 +519,7 @@ namespace Odco.PointOfSales.Application.Sales
             // 3.        YES                 YES         =>  UPDATE
             #endregion
 
-            var existingNIPs = await _nonInventoryProductRepository.GetAll().Where(n => n.SaleId == tempSaleId).ToListAsync();
+            var existingNIPs = await _nonInventoryProductRepository.GetAll().Where(n => n.SaleId == saleId).ToListAsync();
 
             foreach (var exist_nips in existingNIPs)
             {
@@ -567,7 +554,7 @@ namespace Odco.PointOfSales.Application.Sales
                         await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
                         {
                             SequenceNumber = 1,
-                            SaleId = tempSaleId,
+                            SaleId = saleId,
                             SalesNumber = salesNumber,
                             ProductId = input_nip.ProductId,
                             ProductCode = input_nip.ProductCode,
@@ -598,7 +585,7 @@ namespace Odco.PointOfSales.Application.Sales
                             await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, updatedDto.Quantity, input_nip.Quantity);
 
                         updatedDto.SequenceNumber = 1;
-                        updatedDto.SaleId = tempSaleId;
+                        updatedDto.SaleId = saleId;
                         updatedDto.SalesNumber = salesNumber;
                         updatedDto.ProductId = input_nip.ProductId;
                         updatedDto.ProductCode = input_nip.ProductCode;

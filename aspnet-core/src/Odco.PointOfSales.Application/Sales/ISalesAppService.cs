@@ -21,10 +21,10 @@ namespace Odco.PointOfSales.Application.Sales
         Task<List<CustomerSearchResultDto>> GetPartialCustomersAsync(string keyword);
         #endregion
 
-        #region TemporarySales Header + Products
+        #region Sale Header + Products
         Task<SaleDto> CreateOrUpdateSalesAsync(CreateOrUpdateSaleDto input);
         Task<PagedResultDto<SaleDto>> GetAllSalesAsync(PagedSaleResultRequestDto input);
-        Task<SaleDto> GetSalesAsync(Guid tempSaleId);
+        Task<SaleDto> GetSalesAsync(Guid saleId);
         #endregion
 
         #region StockBalance
@@ -32,7 +32,7 @@ namespace Odco.PointOfSales.Application.Sales
         #endregion
 
         #region NonInventoryProduct
-        Task<List<NonInventoryProductDto>> GetNonInventoryProductByTempSaleIdAsync(Guid tempSaleId);
+        Task<List<NonInventoryProductDto>> GetNonInventoryProductBySaleIdAsync(Guid saleId);
         #endregion
     }
 }
