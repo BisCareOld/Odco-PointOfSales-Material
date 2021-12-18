@@ -8249,6 +8249,12 @@ export interface ICustomerSearchResultDto {
     isActive: boolean;
 }
 
+export enum PaymentStatus {
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+}
+
 export class CreateSalesProductDto implements ICreateSalesProductDto {
     salesNumber: string | undefined;
     productId: string;
@@ -8746,6 +8752,7 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
     grossAmount: number;
     netAmount: number;
     remarks: string | undefined;
+    paymentStatus: PaymentStatus;
     isActive: boolean;
     salesProducts: CreateSalesProductDto[] | undefined;
     nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
@@ -8779,6 +8786,7 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
             this.grossAmount = _data["grossAmount"];
             this.netAmount = _data["netAmount"];
             this.remarks = _data["remarks"];
+            this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
             if (Array.isArray(_data["salesProducts"])) {
                 this.salesProducts = [] as any;
@@ -8840,6 +8848,7 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
         data["grossAmount"] = this.grossAmount;
         data["netAmount"] = this.netAmount;
         data["remarks"] = this.remarks;
+        data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
         if (Array.isArray(this.salesProducts)) {
             data["salesProducts"] = [];
@@ -8901,6 +8910,7 @@ export interface ICreateOrUpdateSaleDto {
     grossAmount: number;
     netAmount: number;
     remarks: string | undefined;
+    paymentStatus: PaymentStatus;
     isActive: boolean;
     salesProducts: CreateSalesProductDto[] | undefined;
     nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
@@ -9182,6 +9192,7 @@ export class SaleDto implements ISaleDto {
     grossAmount: number;
     netAmount: number;
     remarks: string | undefined;
+    paymentStatus: PaymentStatus;
     isActive: boolean;
     salesProducts: SalesProductDto[] | undefined;
     nonInventoryProducts: NonInventoryProductDto[] | undefined;
@@ -9210,6 +9221,7 @@ export class SaleDto implements ISaleDto {
             this.grossAmount = _data["grossAmount"];
             this.netAmount = _data["netAmount"];
             this.remarks = _data["remarks"];
+            this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
             if (Array.isArray(_data["salesProducts"])) {
                 this.salesProducts = [] as any;
@@ -9246,6 +9258,7 @@ export class SaleDto implements ISaleDto {
         data["grossAmount"] = this.grossAmount;
         data["netAmount"] = this.netAmount;
         data["remarks"] = this.remarks;
+        data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
         if (Array.isArray(this.salesProducts)) {
             data["salesProducts"] = [];
@@ -9282,6 +9295,7 @@ export interface ISaleDto {
     grossAmount: number;
     netAmount: number;
     remarks: string | undefined;
+    paymentStatus: PaymentStatus;
     isActive: boolean;
     salesProducts: SalesProductDto[] | undefined;
     nonInventoryProducts: NonInventoryProductDto[] | undefined;

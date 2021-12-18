@@ -2,6 +2,7 @@
 using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
 using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Sales.SalesProducts;
+using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Sales;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,8 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         [StringLength(100)]
         public string Remarks { get; set; }
+
+        public PaymentStatus PaymentStatus { get; set; }
 
         public bool IsActive { get; set; }
 

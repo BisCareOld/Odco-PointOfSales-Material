@@ -188,6 +188,31 @@ namespace Odco.PointOfSales.Application.Sales
                 var _saleHeader = new Sale();
                 var salesNumber = string.Empty;
 
+                #region Payment
+                // NOTE:
+                // 1. Make Payment
+                // 2. Getting the SalesNumber
+                if (input.Id.HasValue && (input.Cashes.Any() || input.Cheques.Any() || input.Outstandings.Any() || input.DebitCards.Any() || input.GiftCards.Any()))
+                {
+                    decimal? t = 0;
+                    t += input.Cashes?.Select(p => p.CashAmount)?.Sum();
+                    t += input.Cheques?.Select(p => p.ChequeAmount)?.Sum();
+                    t += input.GiftCards?.Select(p => p.GiftCardAmount)?.Sum();
+
+                    input.PaymentStatus = await GetPaymentStatusBySaleId(input.Id.Value, input.NetAmount, t.Value);
+
+                    salesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
+                    input.SalesNumber = salesNumber;
+                    input.SalesProducts.ToList().ForEach(sp => sp.SalesNumber = salesNumber);
+                    await CreatePaymentForSalesIdAsync(input.Id.Value, salesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
+                }
+                else
+                {
+                    input.PaymentStatus = PaymentStatus.NotPurchased;
+                }
+                #endregion
+
+                #region SalesProduct = InventoryProduct
                 if (input.Id.HasValue)
                 {
                     var existingSale = await _saleRepository
@@ -197,17 +222,6 @@ namespace Odco.PointOfSales.Application.Sales
                     // NOTE: Update existing Sale & Line Level Details (InventoryProduct & NonInventoryProduct)
                     if (existingSale != null)
                     {
-                        // NOTE:
-                        // 1. Make Payment
-                        // 2. Getting the SalesNumber
-                        if (input.Cashes.Any() || input.Cheques.Any() || input.Outstandings.Any() || input.DebitCards.Any() || input.GiftCards.Any())
-                        {
-                            salesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
-                            input.SalesNumber = salesNumber;
-                            input.SalesProducts.ToList().ForEach(sp => sp.SalesNumber = salesNumber);
-                            await CreatePaymentForSalesIdAsync(input.Id.Value, salesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
-                        }
-
                         // AQ = Allocated Qty
                         // BBQ = Book Balance Qty
                         // Actual Quantity  &   AQ
@@ -320,6 +334,7 @@ namespace Odco.PointOfSales.Application.Sales
                         existingSale.GrossAmount = input.GrossAmount;
                         existingSale.NetAmount = input.NetAmount;
                         existingSale.Remarks = input.Remarks;
+                        existingSale.PaymentStatus = input.PaymentStatus;
                         existingSale.IsActive = input.IsActive;
 
                         await _saleRepository.UpdateAsync(existingSale);
@@ -342,9 +357,12 @@ namespace Odco.PointOfSales.Application.Sales
                     var sale = ObjectMapper.Map<Sale>(input);
                     _saleHeader.Id = await _saleRepository.InsertAndGetIdAsync(sale);
                 }
+                #endregion
 
+                #region NonInventoryProduct
                 // Create / Update / Delete NonInventoryProduct
                 await CreateOrUpdateNonInventoryProductAsync(_saleHeader.Id, salesNumber, input.NonInventoryProducts.ToList());
+                #endregion
 
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return new SaleDto { Id = _saleHeader.Id }; //ObjectMapper.Map<TempSaleDto>(_tempHeader);
@@ -716,6 +734,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                 foreach (var p in payments)
                 {
+                    p.SaleId = saleId;
                     p.CustomerId = customerId;
                     p.CustomerCode = customerCode;
                     p.CustomerCode = customerName;
@@ -731,6 +750,20 @@ namespace Odco.PointOfSales.Application.Sales
                 throw ex;
             }
 
+        }
+
+        private async Task<PaymentStatus> GetPaymentStatusBySaleId(Guid saleId, decimal netAmount, decimal totalPayingAmount)
+        {
+            // 1. Get the total of Previously Paid Amount
+            decimal previouslyPaidAmount = 0;
+            var prevPayments = _paymentRepository.GetAll().Where(p => p.SaleId == saleId);
+            if (prevPayments.Any()) previouslyPaidAmount = prevPayments.Select(p => p.PaidAmount).Sum();
+
+            var _totalPayingAmount = previouslyPaidAmount + totalPayingAmount;
+
+            if(netAmount <= _totalPayingAmount) 
+                return PaymentStatus.Completed;
+            return PaymentStatus.PartiallyPaid;
         }
         #endregion
     }

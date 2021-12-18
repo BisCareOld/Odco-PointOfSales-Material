@@ -171,10 +171,10 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
 
     if (this.errors.length <= 0) {
       console.log(this.formPayment.value);
-      // this._salesService.createOrUpdateSales(this.formPayment.value).subscribe((i) => {
-      //   this.notify.info(this.l("PaymentSuccessfullyCompleted"));
-      //   //this.router.navigate(["/app/payment-component", i.id]);
-      // });
+      this._salesService.createOrUpdateSales(this.formPayment.value).subscribe((i) => {
+        this.notify.info(this.l("PaymentSuccessfullyCompleted"));
+        //this.router.navigate(["/app/payment-component", i.id]);
+      });
 
 
 

@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Finance;
 using Odco.PointOfSales.Sales.Common;
 using System;
@@ -45,6 +46,8 @@ namespace Odco.PointOfSales.Core.Sales
 
         [StringLength(100)]
         public string Remarks { get; set; }
+
+        public PaymentStatus PaymentStatus { get; set; }
 
         public bool IsActive { get; set; }
 
