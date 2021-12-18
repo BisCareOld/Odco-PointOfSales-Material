@@ -10,7 +10,7 @@ namespace Odco.PointOfSales.Application.Sales.SalesProducts
     public class SalesProductDto : EntityDto<Guid>
     {
         #region SalesHeader
-        public int SaleId { get; set; }
+        public Guid SaleId { get; set; }
 
         [StringLength(15)]
         public string SalesNumber { get; set; }

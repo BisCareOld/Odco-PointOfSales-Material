@@ -17,7 +17,7 @@ namespace Odco.PointOfSales.Application.Sales.SalesProducts
         public Guid ProductId { get; set; }
 
         [StringLength(15)]
-        public string BarCode { get; set; }
+        public string BarCode { get; set; } // remove no need
 
         [Required]
         [StringLength(15)]

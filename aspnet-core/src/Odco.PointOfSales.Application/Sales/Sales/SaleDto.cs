@@ -43,13 +43,13 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public bool IsActive { get; set; }
 
-        public ICollection<SalesProductDto> TempSalesProducts { get; set; }
+        public ICollection<SalesProductDto> SalesProducts { get; set; }
         
         public ICollection<NonInventoryProductDto> NonInventoryProducts { get; set; }
 
         public SaleDto()
         {
-            TempSalesProducts = new HashSet<SalesProductDto>();
+            SalesProducts = new HashSet<SalesProductDto>();
 
             NonInventoryProducts = new HashSet<NonInventoryProductDto>();
 

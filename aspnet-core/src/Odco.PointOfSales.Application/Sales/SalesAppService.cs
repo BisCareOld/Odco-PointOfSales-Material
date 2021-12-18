@@ -382,14 +382,21 @@ namespace Odco.PointOfSales.Application.Sales
 
         public async Task<SaleDto> GetSalesAsync(Guid saleId)
         {
-            var temp = await _saleRepository
+            try
+            {
+                var temp = await _saleRepository
                 .GetAllIncluding(t => t.SalesProducts)
                 .FirstOrDefaultAsync(t => t.Id == saleId);
-            var tempDto = ObjectMapper.Map<SaleDto>(temp);
+                var tempDto = ObjectMapper.Map<SaleDto>(temp);
 
-            // Adding NonInventoryProducts
-            tempDto.NonInventoryProducts = await GetNonInventoryProductBySaleIdAsync(saleId);
-            return tempDto;
+                // Adding NonInventoryProducts
+                tempDto.NonInventoryProducts = await GetNonInventoryProductBySaleIdAsync(saleId);
+                return tempDto;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private async Task CreateSalesProductAsync(bool isExisting, Guid? existingSaleId, CreateSalesProductDto lineLevel, WarehouseDto warehouse)
@@ -506,6 +513,7 @@ namespace Odco.PointOfSales.Application.Sales
                     CostPrice = n.CostPrice,
                     SellingPrice = n.SellingPrice,
                     MaximumRetailPrice = n.MaximumRetailPrice,
+                    Price = n.Price
                 })
                 .ToListAsync();
         }
@@ -569,7 +577,8 @@ namespace Odco.PointOfSales.Application.Sales
                             LineTotal = input_nip.LineTotal,
                             CostPrice = input_nip.CostPrice,
                             SellingPrice = input_nip.SellingPrice,
-                            MaximumRetailPrice = input_nip.MaximumRetailPrice
+                            MaximumRetailPrice = input_nip.MaximumRetailPrice,
+                            Price = input_nip.Price
                         });
                     }
                 }
@@ -601,6 +610,7 @@ namespace Odco.PointOfSales.Application.Sales
                         updatedDto.CostPrice = input_nip.CostPrice;
                         updatedDto.SellingPrice = input_nip.SellingPrice;
                         updatedDto.MaximumRetailPrice = input_nip.MaximumRetailPrice;
+                        updatedDto.Price = input_nip.Price;
                         await _nonInventoryProductRepository.UpdateAsync(updatedDto);
                     }
                 }
