@@ -3,7 +3,7 @@ using Abp.Application.Services.Dto;
 using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
 using Odco.PointOfSales.Application.Inventory.StockBalances;
 using Odco.PointOfSales.Application.Sales.Customers;
-using Odco.PointOfSales.Application.Sales.TemporarySales;
+using Odco.PointOfSales.Application.Sales.Sales;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,9 +21,10 @@ namespace Odco.PointOfSales.Application.Sales
         Task<List<CustomerSearchResultDto>> GetPartialCustomersAsync(string keyword);
         #endregion
 
-        #region TemporarySales Header + Products
-        Task<TempSaleDto> CreateOrUpdateTempSalesAsync(CreateOrUpdateTempSaleDto input);
-        Task<TempSaleDto> GetTempSalesAsync(int tempSaleId);
+        #region Sale Header + Products
+        Task<SaleDto> CreateOrUpdateSalesAsync(CreateOrUpdateSaleDto input);
+        Task<PagedResultDto<SaleDto>> GetAllSalesAsync(PagedSaleResultRequestDto input);
+        Task<SaleDto> GetSalesAsync(Guid saleId);
         #endregion
 
         #region StockBalance
@@ -31,7 +32,7 @@ namespace Odco.PointOfSales.Application.Sales
         #endregion
 
         #region NonInventoryProduct
-        Task<List<NonInventoryProductDto>> GetNonInventoryProductByTempSaleIdAsync(int tempSaleId);
+        Task<List<NonInventoryProductDto>> GetNonInventoryProductBySaleIdAsync(Guid saleId);
         #endregion
     }
 }

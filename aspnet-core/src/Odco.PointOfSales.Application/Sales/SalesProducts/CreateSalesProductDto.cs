@@ -1,23 +1,23 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
+﻿using Abp.AutoMapper;
 using Odco.PointOfSales.Sales.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
+namespace Odco.PointOfSales.Application.Sales.SalesProducts
 {
-    [AutoMapTo(typeof(TempSalesProductDto)), AutoMapFrom(typeof(TempSalesProduct))]
-    public class TempSalesProductDto : EntityDto<int>
+    [AutoMapTo(typeof(SalesProduct))]
+    public class CreateSalesProductDto
     {
-        #region TemporarySalesHeader
-        public int TempSaleId { get; set; }
+        #region SalesHeader
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
         #endregion
 
         #region Product
         public Guid ProductId { get; set; }
 
         [StringLength(15)]
-        public string BarCode { get; set; }
+        public string BarCode { get; set; } // remove no need
 
         [Required]
         [StringLength(15)]
@@ -61,9 +61,11 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
         public bool IsSelected { get; set; }
         #endregion
 
+        public decimal Price { get; set; }
+
         #region Sales
         public decimal DiscountRate { get; set; }
-
+        
         public decimal DiscountAmount { get; set; }
 
         /// <summary>
@@ -73,6 +75,9 @@ namespace Odco.PointOfSales.Application.Sales.TemporarySalesProducts
 
         public decimal LineTotal { get; set; }
         #endregion
+
+        [StringLength(100)]
+        public string Remarks { get; set; }
 
         public bool IsActive { get; set; }
     }

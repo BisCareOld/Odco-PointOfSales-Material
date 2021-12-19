@@ -1,31 +1,38 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Sales;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Odco.PointOfSales.Core.Finance
 {
-    // Invoice : Payment = 1 : M
+    // Sale : Payment = 1 : M
     [Table("Finance.Payment")]
     public class Payment : FullAuditedEntity<Guid>
     {
-        #region Invoice
-        public Guid InvoiceId { get; set; }
+        #region Sales
+        public Guid SaleId { get; set; }
 
-        public Invoice Invoice { get; set; }
+        public Sale Sale { get; set; }
 
         [Required]
         [StringLength(15)]
-        public string InvoiceNumber { get; set; }
+        public string SaleNumber { get; set; }
         #endregion
 
         public Guid? CustomerId { get; set; }
+
+        [StringLength(10)]
+        public string CustomerCode { get; set; }
+
+        [StringLength(150)]
+        public string CustomerName { get; set; }
 
         [StringLength(15)]
         public string CustomerPhoneNumber { get; set; }
 
         #region Cash
-        public decimal? CashAmount { get; set; }
+
         #endregion
 
         #region Cheque
@@ -43,14 +50,10 @@ namespace Odco.PointOfSales.Core.Finance
         public string Branch { get; set; }
 
         public DateTime? ChequeReturnDate { get; set; }
-
-        public decimal? ChequeAmount { get; set; }
         #endregion
 
         #region Credit Outstanding
         public decimal? OutstandingAmount { get; set; }
-
-        public decimal? OutstandingSettledAmount { get; set; }
         #endregion
 
         #region Debit Card
@@ -58,8 +61,10 @@ namespace Odco.PointOfSales.Core.Finance
         #endregion
 
         #region Gift Card
-        public decimal? GiftCardAmount { get; set; }
+
         #endregion
+
+        public decimal PaidAmount { get; set; }
 
         public bool IsCash { get; set; }
         

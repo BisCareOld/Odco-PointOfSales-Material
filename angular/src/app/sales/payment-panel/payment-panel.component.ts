@@ -1,41 +1,42 @@
 import { ThrowStmt } from "@angular/compiler";
-import { Component, OnChanges, OnInit, ViewChild } from "@angular/core";
+import { Component, Injector, OnChanges, OnInit, ViewChild } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   SalesServiceProxy,
   CommonServiceProxy,
-  FinanceServiceProxy,
-  TempSaleDto,
+  SaleDto,
   CommonKeyValuePairDto,
 } from "@shared/service-proxies/service-proxies";
-import { result } from "lodash-es";
 import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.component";
 import { MatAccordion } from '@angular/material/expansion';
+import { AppComponentBase } from "@shared/app-component-base";
 
 @Component({
   selector: "app-payment-panel",
   templateUrl: "./payment-panel.component.html",
   styleUrls: ["./payment-panel.component.scss"],
 })
-export class PaymentPanelComponent implements OnInit {
+export class PaymentPanelComponent extends AppComponentBase implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
-  tempSalesHeader: TempSaleDto;
+  saleDto: SaleDto;
   paymentMethod: number = 0;
   formPayment;
   banks: CommonKeyValuePairDto[] = []
   errors: string[] = [];
 
   constructor(
+    injector: Injector,
     private fb: FormBuilder,
     private _matDialogService: MatDialog,
     private _salesService: SalesServiceProxy,
     private _commonService: CommonServiceProxy,
-    private _financeService: FinanceServiceProxy,
     private router: Router,
     private route: ActivatedRoute
-  ) { }
+  ) {
+    super(injector);
+  }
 
   ngOnInit(): void {
     this._commonService.getAllBanks().subscribe((response) => {
@@ -43,26 +44,26 @@ export class PaymentPanelComponent implements OnInit {
     });
 
     this.route.paramMap.subscribe((params) => {
-      let tempSaleHeaderId = +params.get("tempSalesId");
+      let tempSaleHeaderId = params.get("tempSalesId");
       let x = this._salesService
-        .getTempSales(tempSaleHeaderId)
+        .getSales(tempSaleHeaderId)
         .subscribe((response) => {
-          this.tempSalesHeader = response;
-          console.log(this.tempSalesHeader);
+          this.saleDto = response;
+          console.log(this.saleDto);
           this.InitateForm();
         });
     });
   }
 
-  getNonInventoryProductByTempSaleId(tempSaleId: number) {
-    this._salesService.getNonInventoryProductByTempSaleId(tempSaleId).subscribe((result) => {
+  getNonInventoryProductBySaleId(saleId: string) {
+    this._salesService.getNonInventoryProductBySaleId(saleId).subscribe((result) => {
 
     });
   }
 
-  showChequeDialog(tempSalesId: number, netAmount: number) {
+  showChequeDialog(salesId: number, netAmount: number) {
     let materialDialog = this._matDialogService.open(ChequeDialogComponent, {
-      data: { tempSalesId: tempSalesId, netAmount: netAmount },
+      data: { tempSalesId: salesId, netAmount: netAmount },
       width: "70%",
     });
 
@@ -77,28 +78,34 @@ export class PaymentPanelComponent implements OnInit {
   InitateForm() {
 
     this.formPayment = this.fb.group({
-      tempSalesHeaderId: [this.tempSalesHeader.id],
-      customerId: [this.tempSalesHeader.customerId],
-      customerCode: [this.tempSalesHeader.customerCode],
-      customerName: [this.tempSalesHeader.customerName],
-      discountRate: [this.tempSalesHeader.discountRate,
+      id: [this.saleDto.id],
+      salesNumber: [this.saleDto.salesNumber],
+      referenceNumber: [this.saleDto.referenceNumber],
+      customerId: [this.saleDto.customerId],
+      customerCode: [this.saleDto.customerCode],
+      customerName: [this.saleDto.customerName],
+      discountRate: [this.saleDto.discountRate,
       Validators.compose([
         Validators.required,
         Validators.min(0),
         Validators.max(100),
       ]),
       ],
-      discountAmount: [this.tempSalesHeader.discountAmount, Validators.required],
-      taxRate: [this.tempSalesHeader.taxRate,
+      discountAmount: [this.saleDto.discountAmount, Validators.required],
+      taxRate: [this.saleDto.taxRate,
       Validators.compose([
         Validators.required,
         Validators.min(0),
         Validators.max(100),
       ]),
       ],
-      taxAmount: [this.tempSalesHeader.taxAmount, Validators.required],
-      grossAmount: [this.tempSalesHeader.grossAmount, Validators.required],
-      netAmount: [this.tempSalesHeader.netAmount, Validators.required],
+      taxAmount: [this.saleDto.taxAmount, Validators.required],
+      grossAmount: [this.saleDto.grossAmount, Validators.required],
+      netAmount: [this.saleDto.netAmount, Validators.required],
+      remarks: [this.saleDto.remarks],
+      isActive: [this.saleDto.isActive],
+      salesProducts: [this.saleDto.salesProducts],
+      nonInventoryProducts: [this.saleDto.nonInventoryProducts],
       cashes: this.fb.array([]),
       cheques: this.fb.array([]),
       outstandings: this.fb.array([]),
@@ -111,7 +118,7 @@ export class PaymentPanelComponent implements OnInit {
     this.router.navigate(
       ["/app/sales"],
       {
-        queryParams: { salesHeaderId: this.tempSalesHeader.id }
+        queryParams: { salesHeaderId: this.saleDto.id }
       });
   }
 
@@ -134,7 +141,7 @@ export class PaymentPanelComponent implements OnInit {
   }
 
   balanceAmount() {
-    let retunAmount = this.totalPaidAmout() - this.tempSalesHeader.netAmount;
+    let retunAmount = this.totalPaidAmout() - this.saleDto.netAmount;
     return retunAmount.toFixed(2);
   }
 
@@ -163,18 +170,46 @@ export class PaymentPanelComponent implements OnInit {
     this.totalPaidAmout();
 
     if (this.errors.length <= 0) {
-      console.log(this.formPayment);
-      // this._financeService.createInvoice(this.formPayment.value).subscribe((response) => {
-      //   if (response.id) {
-      //     alert("Success");
-      //   }
-      // });
+      console.log(this.formPayment.value);
+      this._salesService.createOrUpdateSales(this.formPayment.value).subscribe((i) => {
+        this.notify.info(this.l("PaymentSuccessfullyCompleted"));
+        //this.router.navigate(["/app/payment-component", i.id]);
+      });
+
+
+
     }
   }
 
   multiSelectPayment(pType) {
     if (pType == 1) this.InitateCash();
     if (pType == 3) this.InitateCheque();
+  }
+
+  calculateLineLevelTotal() {
+    let total = 0;
+    console.log(this.salesProducts);
+    this.salesProducts.value.forEach(function (item) {
+      total += item.lineTotal;
+    });
+    this.nonInventoryProducts.value.forEach(function (item) {
+      total += item.lineTotal;
+    });
+    this.grossAmount.setValue(parseFloat(total.toFixed(2)));
+    return total.toFixed(2);
+  }
+
+  headerLevelCalculation() {
+    // (gross value + tax – discount)
+    let grossTotal = parseFloat(this.calculateLineLevelTotal());
+    let tax = parseFloat((grossTotal * (this.taxRate.value / 100)).toFixed(2));
+    let discount = parseFloat(
+      (grossTotal * (this.discountRate.value / 100)).toFixed(2)
+    );
+    this.discountAmount.setValue(discount);
+    this.taxAmount.setValue(tax);
+    let netAmount = parseFloat((grossTotal + tax - discount).toFixed(2));
+    this.netAmount.setValue(netAmount);
   }
 
   //#region Initiate array of Payment methods into main form
@@ -236,8 +271,16 @@ export class PaymentPanelComponent implements OnInit {
   //#endregion
 
   //#region Propertises
-  get tempSalesHeaderId() {
-    return this.formPayment.get("tempSalesHeaderId") as FormControl;
+  get id() {
+    return this.formPayment.get("id") as FormControl;           // SaleId
+  }
+
+  get salesNumber() {
+    return this.formPayment.get("salesNumber") as FormControl;
+  }
+
+  get referenceNumber() {
+    return this.formPayment.get("referenceNumber") as FormControl;
   }
 
   get customerId() {
@@ -276,6 +319,23 @@ export class PaymentPanelComponent implements OnInit {
     return this.formPayment.get("netAmount") as FormControl;
   }
 
+  get remarks() {
+    return this.formPayment.get("remarks") as FormControl;
+  }
+
+  get isActive() {
+    return this.formPayment.get("IsActive") as FormControl;
+  }
+
+  get salesProducts(): FormArray {
+    return this.formPayment.controls["salesProducts"] as FormArray;
+  }
+
+  get nonInventoryProducts(): FormArray {
+    return this.formPayment.controls["nonInventoryProducts"] as FormArray;
+  }
+
+  //#region Payment
   get cashes(): FormArray {
     return this.formPayment.controls["cashes"] as FormArray;
   }
@@ -295,6 +355,8 @@ export class PaymentPanelComponent implements OnInit {
   get giftCards(): FormArray {
     return this.formPayment.controls["giftCards"] as FormArray;
   }
+  //#endregion
+
   //#endregion
 
 }

@@ -24,11 +24,11 @@
     <!-- Inventory Products (Having Stocks) -->
     <div class="col-sm-12 col-md-3 child-grid">
       <ng-container *ngIf="
-      tempSalesHeader &&
-      tempSalesHeader.tempSalesProducts &&
-      tempSalesHeader.tempSalesProducts.length > 0
+      saleDto &&
+      saleDto.salesProducts &&
+      saleDto.salesProducts.length > 0
     ">
-        <table *ngFor="let item of tempSalesHeader.tempSalesProducts">
+        <table *ngFor="let item of saleDto.salesProducts">
           <tr>
             <td style="font-weight: 500;">{{ item.name }}
               <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>
@@ -37,18 +37,18 @@
             <td rowspan="2">{{ item.lineTotal }}</td>
           </tr>
           <tr>
-            <td>{{ item.quantity }} x {{ item.sellingPrice }}</td>
+            <td>{{ item.quantity }} x {{ item.price }}</td>
           </tr>
         </table>
       </ng-container>
 
       <!-- Non Inventory Products (Doesnt have Stocks) -->
       <ng-container *ngIf="
-      tempSalesHeader &&
-      tempSalesHeader.nonInventoryProducts &&
-      tempSalesHeader.nonInventoryProducts.length > 0
+      saleDto &&
+      saleDto.nonInventoryProducts &&
+      saleDto.nonInventoryProducts.length > 0
     ">
-        <table *ngFor="let item of tempSalesHeader.nonInventoryProducts">
+        <table *ngFor="let item of saleDto.nonInventoryProducts">
           <tr>
             <td style="font-weight: 500;"><span class="dot"></span> {{ item.productName }}
               <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>
@@ -57,7 +57,7 @@
             <td rowspan="2">{{ item.lineTotal }}</td>
           </tr>
           <tr>
-            <td>{{ item.quantity }} x {{ item.sellingPrice }}</td>
+            <td>{{ item.quantity }} x {{ item.price }}</td>
           </tr>
         </table>
       </ng-container>
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Customer -->
-        <div class="mb-2" *ngIf="tempSalesHeader.customerId">
+        <div class="mb-2" *ngIf="customerId.value">
           <mat-accordion multi>
             <mat-expansion-panel>
               <mat-expansion-panel-header>
@@ -83,11 +83,11 @@
               <div class="row">
                 <div class="col-4">Code:</div>
                 <div class="col-8">
-                  <mat-label>{{ tempSalesHeader.customerCode }}</mat-label>
+                  <mat-label>{{ customerCode.value }}</mat-label>
                 </div>
                 <div class="col-4">Name:</div>
                 <div class="col-8">
-                  <mat-label>{{ tempSalesHeader.customerName }}</mat-label>
+                  <mat-label>{{ customerName.value }}</mat-label>
                 </div>
               </div>
             </mat-expansion-panel>
@@ -247,13 +247,13 @@
               <div class="p-2">
                 <div class="d-flex justify-content-between mt-2">
                   <mat-label>{{ "GrossAmount" | localize }}</mat-label>
-                  <span *ngIf="tempSalesHeader">{{ tempSalesHeader.grossAmount }}</span>
+                  <span>{{ grossAmount.value }}</span>
                 </div>
                 <div class="d-flex justify-content-between mt-2">
                   <mat-label>{{ "Taxes" | localize }}</mat-label>
-                  <span *ngIf="tempSalesHeader">
+                  <span *ngIf="saleDto">
                     <input type="number" matInput class="transaction-table-inputs" formControlName="taxRate"
-                      id="taxRate" />
+                      id="taxRate" (change)="headerLevelCalculation()" />
                     <!-- (change)="headerLevelCalculation()" />
                   <mat-error *ngIf="formErrors.taxRate">{{
                     formErrors.taxRate
@@ -262,9 +262,9 @@
                 </div>
                 <div class="d-flex justify-content-between mt-2">
                   <mat-label>{{ "Discount" | localize }}</mat-label>
-                  <span *ngIf="tempSalesHeader">
+                  <span *ngIf="saleDto">
                     <input type="number" matInput class="transaction-table-inputs" formControlName="discountRate"
-                      id="discountRate" />
+                      id="discountRate" (change)="headerLevelCalculation()" />
                     <!-- (change)="headerLevelCalculation()" />
                   <mat-error *ngIf="formErrors.discountRate">{{
                     formErrors.discountRate
@@ -273,22 +273,22 @@
                 </div>
                 <div class="d-flex justify-content-between mt-2">
                   <mat-label>{{ "TotalDiscount" | localize }}</mat-label>
-                  <span *ngIf="tempSalesHeader">{{ tempSalesHeader.discountAmount }}</span>
+                  <span>{{ discountAmount.value }}</span>
                 </div>
                 <hr>
-                <div class="d-flex justify-content-between mt-2">
+                <div class="d-flex justify-content-between mt-2 big-size">
                   <mat-label>{{ "Total" | localize }}</mat-label>
-                  <span *ngIf="tempSalesHeader">{{ tempSalesHeader.netAmount }}</span>
+                  <span>{{ netAmount.value }}</span>
                 </div>
                 <hr>
-                <div class="d-flex justify-content-between mt-2">
+                <div class="d-flex justify-content-between mt-2 big-size">
                   <mat-label>{{ "Paid" | localize }}</mat-label>
-                  <span *ngIf="tempSalesHeader">{{ totalPaidAmout() }}</span>
+                  <span>{{ totalPaidAmout() }}</span>
                 </div>
                 <hr>
-                <div class="d-flex justify-content-between mt-2">
+                <div class="d-flex justify-content-between mt-2 big-size">
                   <mat-label>{{ "Balance" | localize }}</mat-label>
-                  <span class="text-success" *ngIf="tempSalesHeader">{{ balanceAmount() }}</span>
+                  <span class="text-success">{{ balanceAmount() }}</span>
                 </div>
               </div>
 

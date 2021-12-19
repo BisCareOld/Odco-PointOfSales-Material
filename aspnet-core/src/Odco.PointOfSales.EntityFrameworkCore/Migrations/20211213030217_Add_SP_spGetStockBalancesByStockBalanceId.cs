@@ -3,7 +3,7 @@ using Odco.PointOfSales.StoredProcedures;
 
 namespace Odco.PointOfSales.Migrations
 {
-    public partial class Add_SP_sPGetStockBalancesByStockBalanceId : Migration
+    public partial class Add_SP_spGetStockBalancesByStockBalanceId : Migration
     {
         private StoredProcedureHelper spHelper = new StoredProcedureHelper();
 

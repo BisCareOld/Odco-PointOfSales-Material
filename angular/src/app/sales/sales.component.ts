@@ -11,13 +11,13 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  CreateOrUpdateTempSaleDto,
-  CreateTempSalesProductDto,
-  TempSaleDto,
+  CreateOrUpdateSaleDto,
+  CreateSalesProductDto,
+  SaleDto,
   ProductSearchResultDto,
   ProductStockBalanceDto,
   SalesServiceProxy,
-  TempSalesProductDto,
+  SalesProductDto,
   NonInventoryProductDto,
   CreateNonInventoryProductDto,
   CustomerSearchResultDto
@@ -33,7 +33,7 @@ import { MatAccordion } from '@angular/material/expansion';
 })
 export class SalesComponent extends AppComponentBase implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
-  tempSalesHeaderId: number = 0;
+  saleId: string = "";
   selectedSearchProductType: number = 1; // product search type
   salePanelForm;
   displayedColumns: string[] = [
@@ -94,26 +94,27 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
-    let _tempSalesHeaderId = (this.tempSalesHeaderId =
-      +this.route.snapshot.queryParamMap.get("salesHeaderId"));
-    if (!_tempSalesHeaderId) this.populateSalesHeaderDetails(true, null);
-    if (_tempSalesHeaderId) {
+    let _tempSalesHeaderId = (this.saleId = this.route.snapshot.queryParamMap.get("salesHeaderId"));
 
-      this.getTemporarySalesDetails(_tempSalesHeaderId);
+    if (this.isNullOrEmptyString(_tempSalesHeaderId)) {
+      this.populateSalesDetails(true, null);
+    }
+    else {
+      this.getSalesDetails(_tempSalesHeaderId);
     }
   }
 
-  getTemporarySalesDetails(id: number) {
+  getSalesDetails(id: string) {
     this._salesService
-      .getTempSales(id)
-      .subscribe((result: TempSaleDto) => {
-        //console.log("1", result);
+      .getSales(id)
+      .subscribe((result: SaleDto) => {
+        console.log("1", result);
 
-        this.getNonInventoryProductsByTempSalesHeaderId(id);
-        this.populateSalesHeaderDetails(false, result);
+        this.getNonInventoryProductsBySaleId(id);
+        this.populateSalesDetails(false, result);
 
         let stockBalanceIds: string[] = [];
-        result.tempSalesProducts.forEach((value) => {
+        result.salesProducts.forEach((value) => {
           stockBalanceIds.push(value.stockBalanceId);
         });
 
@@ -125,7 +126,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
               console.log("2", sb);
               _stockBalances = sb;
 
-              result.tempSalesProducts.forEach((value, i) => {
+              result.salesProducts.forEach((value, i) => {
                 let particularSB = _stockBalances.find(
                   (sb) => sb.stockBalanceId == value.stockBalanceId
                 );
@@ -143,8 +144,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       });
   }
 
-  getNonInventoryProductsByTempSalesHeaderId(id: number) {
-    this._salesService.getNonInventoryProductByTempSaleId(id).subscribe((results) => {
+  getNonInventoryProductsBySaleId(id: string) {
+    this._salesService.getNonInventoryProductBySaleId(id).subscribe((results) => {
       results.forEach((n: NonInventoryProductDto) => {
         //console.log("getNonInventoryProductsByTempSalesHeaderId ", n);
         this.populateSalesProductForNonInventoryDetails(n);
@@ -153,17 +154,17 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   // If "salesheader: Exist => Came from Query string else a new One
-  private populateSalesHeaderDetails(
+  private populateSalesDetails(
     isNewSale: boolean,
-    salesheader: TempSaleDto
+    salesheader: SaleDto
   ) {
     console.log(salesheader);
     this.salePanelForm = this.fb.group({
       salesNumber: [
-        null,
+        salesheader != null ? salesheader.salesNumber : null,
         Validators.compose([Validators.required, Validators.maxLength(15)]),
       ],
-      referenceNumber: [null, Validators.maxLength(10)],
+      referenceNumber: [salesheader != null ? salesheader.referenceNumber : null, Validators.maxLength(15)],
       customerId: [isNewSale ? null : salesheader.customerId],
       customerCode: [isNewSale ? null : salesheader.customerCode],
       customerName: [isNewSale ? null : salesheader.customerName],
@@ -193,10 +194,11 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         Validators.required,
       ],
       netAmount: [isNewSale ? 0 : salesheader.netAmount, Validators.required],
-      comments: [
+      remarks: [
         isNewSale ? null : salesheader.remarks,
         Validators.maxLength(100),
       ],
+      isActive: [true],
       salesProducts: this.fb.array([]),
     });
 
@@ -209,44 +211,44 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
   private populateSalesProductDetails(
     isNewSale: boolean,
-    _tempSalesProduct: TempSalesProductDto,
+    _salesProduct: SalesProductDto,
     _product: ProductSearchResultDto,
     _stockBalance: ProductStockBalanceDto
   ) {
     let item = this.fb.group({
       stockBalanceId: [_stockBalance.stockBalanceId],
       productId: [
-        !isNewSale ? _tempSalesProduct.productId : _product.id,
+        !isNewSale ? _salesProduct.productId : _product.id,
         Validators.required,
       ],
       productCode: [
-        !isNewSale ? _tempSalesProduct.code : _product.code,
+        !isNewSale ? _salesProduct.code : _product.code,
         Validators.required,
       ],
       productName: [
-        !isNewSale ? _tempSalesProduct.name : _product.name,
+        !isNewSale ? _salesProduct.name : _product.name,
         Validators.required,
       ],
       warehouseId: [
-        !isNewSale ? _tempSalesProduct.warehouseId : null,
+        !isNewSale ? _salesProduct.warehouseId : null,
         Validators.required,
       ],
       warehouseCode: [
-        !isNewSale ? _tempSalesProduct.warehouseCode : null,
+        !isNewSale ? _salesProduct.warehouseCode : null,
         Validators.required,
       ],
       warehouseName: [
-        !isNewSale ? _tempSalesProduct.warehouseName : null,
+        !isNewSale ? _salesProduct.warehouseName : null,
         Validators.required,
       ],
       quantity: [
-        !isNewSale ? _tempSalesProduct.quantity : 0,
+        !isNewSale ? _salesProduct.quantity : 0,
         Validators.compose([
           Validators.required,
           Validators.min(1),
           Validators.max(
             !isNewSale
-              ? _tempSalesProduct.bookBalanceQuantity
+              ? _salesProduct.bookBalanceQuantity
               : _stockBalance.bookBalanceQuantity
           ),
         ]),
@@ -257,12 +259,12 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       ],
       soldPrice: [
         !isNewSale
-          ? _tempSalesProduct.sellingPrice
+          ? _salesProduct.price
           : _stockBalance.sellingPrice,
         Validators.compose([Validators.required, Validators.min(1)]),
       ],
       discountRate: [
-        !isNewSale ? _tempSalesProduct.discountRate : 0,
+        !isNewSale ? _salesProduct.discountRate : 0,
         Validators.compose([
           Validators.required,
           Validators.min(0),
@@ -270,13 +272,14 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         ]),
       ],
       discountAmount: [
-        !isNewSale ? _tempSalesProduct.discountAmount : 0,
+        !isNewSale ? _salesProduct.discountAmount : 0,
         Validators.required,
       ],
       lineTotal: [
-        !isNewSale ? _tempSalesProduct.lineTotal : 0,
+        !isNewSale ? _salesProduct.lineTotal : 0,
         Validators.required,
       ],
+      remarks: [null],
       isNonInventoryProductInvolved: [false],
       stockBalance: _stockBalance, // TODO: No needed I guess
       nonInventoryProduct: null
@@ -291,7 +294,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   ) {
     let item = this.fb.group({
       id: [_nonInventoryProduct.id],
-      tempSalesId: [_nonInventoryProduct.tempSaleId],
+      salesId: [_nonInventoryProduct.saleId],
+      salesNumber: [_nonInventoryProduct.salesNumber],
       stockBalanceId: [null],
       productId: [
         _nonInventoryProduct.productId,
@@ -329,7 +333,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         Validators.compose([Validators.required, Validators.min(0)]),
       ],
       soldPrice: [
-        _nonInventoryProduct.sellingPrice,
+        _nonInventoryProduct.price > 0 ? _nonInventoryProduct.price : _nonInventoryProduct.sellingPrice,
         Validators.compose([Validators.required, Validators.min(1)]),
       ],
       discountRate: [
@@ -348,6 +352,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         _nonInventoryProduct.lineTotal,
         Validators.required,
       ],
+      remarks: [null],
       isNonInventoryProductInvolved: [true],
       stockBalance: null, // TODO: No needed I guess
       nonInventoryProduct: _nonInventoryProduct
@@ -538,28 +543,31 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     }
 
     ////console.log(this.salePanelForm.value);
-
-    let _header = new CreateOrUpdateTempSaleDto();
-    _header.id = !this.tempSalesHeaderId ? null : this.tempSalesHeaderId;
+    console.log(this.comments);
+    let _header = new CreateOrUpdateSaleDto();
+    _header.id = !this.saleId ? null : this.saleId;
+    _header.salesNumber = null;
+    _header.referenceNumber = null;
     _header.customerId = this.customerId.value;
     _header.customerCode = this.customerCode.value;
     _header.customerName = this.customerName.value;
-    _header.discountRate = this.salePanelForm.value.discountRate;
-    _header.discountAmount = this.salePanelForm.value.discountAmount;
-    _header.taxRate = this.salePanelForm.value.taxRate;
-    _header.taxAmount = this.salePanelForm.value.taxAmount;
-    _header.grossAmount = this.salePanelForm.value.grossAmount;
-    _header.netAmount = this.salePanelForm.value.netAmount;
-    _header.remarks = this.salePanelForm.value.comments;
+    _header.discountRate = this.discountRate.value;
+    _header.discountAmount = this.discountAmount.value;
+    _header.taxRate = this.taxRate.value;
+    _header.taxAmount = this.taxAmount.value;
+    _header.grossAmount = this.grossAmount.value;
+    _header.netAmount = this.netAmount.value;
+    _header.remarks = this.comments != null ? this.comments.value : null;
     _header.isActive = true;
-    _header.tempSalesProducts = [];
+    _header.salesProducts = [];
     _header.nonInventoryProducts = [];
 
     this.salePanelForm.value.salesProducts.forEach((item, index) => {
       //console.log(item)
 
-      let _a = new CreateTempSalesProductDto();
+      let _a = new CreateSalesProductDto();
       if (!item.isNonInventoryProductInvolved) {
+        _a.salesNumber = item.salesNumber;
         _a.productId = item.productId;
         // y.barCode = item.; // missing in item.
         _a.code = item.productCode;
@@ -577,19 +585,22 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         _a.sellingPrice = item.stockBalance.sellingPrice;
         _a.maximumRetailPrice = item.stockBalance.maximumRetailPrice;
         _a.isSelected = item.stockBalance.isSelected;
+        _a.price = item.soldPrice;
         _a.discountRate = item.discountRate;
         _a.discountAmount = item.discountAmount;
         _a.quantity = item.quantity;
         _a.lineTotal = item.lineTotal;
+        _a.remarks = item.remarks;
         _a.isActive = true;
-        _header.tempSalesProducts.push(_a);
+        _header.salesProducts.push(_a);
       }
 
       let _b = new CreateNonInventoryProductDto();
       if (item.isNonInventoryProductInvolved) {
         _b.id = item.id;
         _b.sequenceNumber = 1;
-        _b.tempSaleId = item.tempSaleId;
+        _b.saleId = item.tempSaleId;
+        _b.salesNumber = item.salesNumber;
         _b.productId = item.productId;
         _b.productCode = item.productCode;
         _b.productName = item.productName;
@@ -604,20 +615,27 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         _b.costPrice = item.nonInventoryProduct.costPrice;
         _b.sellingPrice = item.nonInventoryProduct.sellingPrice;
         _b.maximumRetailPrice = item.nonInventoryProduct.maximumRetailPrice;
+        _b.price = item.soldPrice;
         _header.nonInventoryProducts.push(_b);
       }
 
     });
 
     //console.log(_header);
-    this._salesService.createOrUpdateTempSales(_header).subscribe((i) => {
-      //console.log(i.id);
+    this._salesService.createOrUpdateSales(_header).subscribe((i) => {
       this.notify.info(this.l("SavedSuccessfully"));
       this.router.navigate(["/app/payment-component", i.id]);
     });
   }
 
   save() { }
+
+  isNullOrEmptyString(stringVal: String): boolean {
+    if (stringVal != undefined && stringVal != null && stringVal.length > 0) {
+      return false;
+    }
+    return true;
+  }
 
   //#region Propertises
   get salesNumber() {

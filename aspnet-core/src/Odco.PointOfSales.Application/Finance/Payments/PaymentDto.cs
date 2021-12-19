@@ -1,4 +1,5 @@
-﻿using Abp.Application.Services.Dto;
+﻿
+using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Odco.PointOfSales.Core.Finance;
 using System;
@@ -9,12 +10,12 @@ namespace Odco.PointOfSales.Application.Finance.Payments
     [AutoMapTo(typeof(PaymentDto)), AutoMapFrom(typeof(Payment))]
     public class PaymentDto : EntityDto<Guid>
     {
-        #region Invoice
-        public Guid InvoiceId { get; set; }
+        #region Sales
+        public Guid SaleId { get; set; }
 
         [Required]
         [StringLength(15)]
-        public string InvoiceNumber { get; set; }
+        public string SaleNumber { get; set; }
         #endregion
 
         public Guid? CustomerId { get; set; }

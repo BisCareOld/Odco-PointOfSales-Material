@@ -1,23 +1,16 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" style="min-height: 3rem; max-height: 3rem;">
   <mat-toolbar-row>
     <button mat-icon-button (click)="sidenav.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
     <span>Odco Point Of Sales</span>
     <span style="flex: auto"></span>
-    <mat-slide-toggle
-      labelPosition="before"
-      [(ngModel)]="isDarkTheme"
-      (change)="storeThemeSelection()"
-    >
+    <mat-slide-toggle labelPosition="before" [(ngModel)]="isDarkTheme" (change)="storeThemeSelection()">
       <mat-icon>bedtime</mat-icon>
     </mat-slide-toggle>
   </mat-toolbar-row>
 </mat-toolbar>
-<mat-sidenav-container
-  class="sidenav-container mat-app-background"
-  [ngClass]="{ 'unicorn-dark-theme': isDarkTheme }"
->
+<mat-sidenav-container class="sidenav-container mat-app-background" [ngClass]="{ 'unicorn-dark-theme': isDarkTheme }">
   <mat-sidenav #sidenav opened="true" mode="side">
     <mat-nav-list>
       <sidebar-menu></sidebar-menu>

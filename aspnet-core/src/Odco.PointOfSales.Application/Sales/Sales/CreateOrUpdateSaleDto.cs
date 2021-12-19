@@ -1,17 +1,23 @@
 ﻿using Abp.AutoMapper;
 using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
-using Odco.PointOfSales.Core.Finance;
+using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
+using Odco.PointOfSales.Application.Sales.SalesProducts;
+using Odco.PointOfSales.Core.Enums;
+using Odco.PointOfSales.Core.Sales;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Finance.Invoices
+namespace Odco.PointOfSales.Application.Sales.Sales
 {
-    [AutoMapTo(typeof(Invoice))]
-    public class CreateInvoiceDto
+    [AutoMapTo(typeof(Sale))]
+    public class CreateOrUpdateSaleDto
     {
-        public CreateInvoiceDto()
+        public CreateOrUpdateSaleDto()
         {
+            SalesProducts = new HashSet<CreateSalesProductDto>();
+            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
+            //PaymentDtos
             Cashes = new HashSet<CashDto>();
             Cheques = new HashSet<ChequeDto>();
             Outstandings = new HashSet<CustomerCreditOutstandingDto>();
@@ -19,7 +25,17 @@ namespace Odco.PointOfSales.Application.Finance.Invoices
             GiftCards = new HashSet<GiftCardDto>();
         }
 
-        public int? TempSaleId { get; set; }
+        /// <summary>
+        /// Exist: Update
+        /// Not Exist: Create
+        /// </summary>
+        public Guid? Id { get; set; }
+
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
+
+        [StringLength(15)]
+        public string ReferenceNumber { get; set; }
 
         public Guid? CustomerId { get; set; }
 
@@ -40,6 +56,17 @@ namespace Odco.PointOfSales.Application.Finance.Invoices
         public decimal GrossAmount { get; set; }
 
         public decimal NetAmount { get; set; }
+
+        [StringLength(100)]
+        public string Remarks { get; set; }
+
+        public PaymentStatus PaymentStatus { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public ICollection<CreateSalesProductDto> SalesProducts { get; set; }
+
+        public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
 
         #region Payment Types
         public ICollection<CashDto> Cashes { get; set; }

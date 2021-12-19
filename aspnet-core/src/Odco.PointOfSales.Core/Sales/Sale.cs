@@ -1,29 +1,27 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Enums;
+using Odco.PointOfSales.Core.Finance;
+using Odco.PointOfSales.Sales.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Odco.PointOfSales.Core.Finance
+namespace Odco.PointOfSales.Core.Sales
 {
-    // Invoice : InvoiceProduct = 1 : M
-    // Invoice : Payment        = 1 : M
-    [Table("Finance.Invoice")]
-    public class Invoice : FullAuditedEntity<Guid>
+    // Sale : SalesProduct = 1: M
+    // Sale : NonInventoryProduct = 1 : M
+    // Sale : Payment = 1 : M
+    [Table("Sales.Sale")]
+    public class Sale : FullAuditedEntity<Guid>
     {
-        public Invoice()
-        {
-            InvoiceProducts = new HashSet<InvoiceProduct>();
-            Payments = new HashSet<Payment>();
-        }
-
-        public int? TempSaleId { get; set; }
-
-        [Required]
+        /// <summary>
+        /// Exist: When Payment is carried out
+        /// </summary>
         [StringLength(15)]
-        public string InvoiceNumber { get; set; }
+        public string SalesNumber { get; set; }
 
-        [StringLength(10)]
+        [StringLength(15)]
         public string ReferenceNumber { get; set; }
 
         public Guid? CustomerId { get; set; }
@@ -49,8 +47,19 @@ namespace Odco.PointOfSales.Core.Finance
         [StringLength(100)]
         public string Remarks { get; set; }
 
-        public ICollection<InvoiceProduct> InvoiceProducts { get; set; }
-        
+        public PaymentStatus PaymentStatus { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public ICollection<SalesProduct> SalesProducts { get; set; }
+
         public ICollection<Payment> Payments { get; set; }
+
+        public Sale()
+        {
+            SalesProducts = new HashSet<SalesProduct>();
+
+            Payments = new HashSet<Payment>();
+        }
     }
 }

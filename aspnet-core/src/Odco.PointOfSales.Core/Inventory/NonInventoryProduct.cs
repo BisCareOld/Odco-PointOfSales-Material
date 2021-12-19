@@ -11,7 +11,7 @@ namespace Odco.PointOfSales.Core.Inventory
     ///      SequenceNo  |   Warehouse
     ///          0              NULL        =>      Company Summary
     ///          0              Exist       =>      Warehouse Summart
-    ///          1 =<           Exist       =>      NonInventory 
+    ///          1 =<           Exist       =>      NonInventory / Sales
     ///          
     /// CRUD
     ///     CREATE  =   Sales -> Payment
@@ -25,9 +25,17 @@ namespace Odco.PointOfSales.Core.Inventory
     [Table("Inventory.NonInventoryProduct")]
     public class NonInventoryProduct : FullAuditedEntity<Guid>
     {
+        /// <summary>
+        /// Company Summary: 0
+        /// Warehouse Summaries: 0
+        /// Sales: 1
+        /// </summary>
         public int SequenceNumber { get; set; }
 
-        public int TempSaleId { get; set; }
+        public Guid? SaleId { get; set; }
+
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
 
         /// <summary>
         ///     Product *FK
@@ -80,6 +88,11 @@ namespace Odco.PointOfSales.Core.Inventory
         public decimal SellingPrice { get; set; }
 
         public decimal MaximumRetailPrice { get; set; }
+
+        /// <summary>
+        /// Actual Price given for the Customer
+        /// </summary>
+        public decimal Price { get; set; }
     }
 }
 

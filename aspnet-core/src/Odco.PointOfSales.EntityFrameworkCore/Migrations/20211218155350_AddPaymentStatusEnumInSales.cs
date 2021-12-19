@@ -2,23 +2,23 @@
 
 namespace Odco.PointOfSales.Migrations
 {
-    public partial class AddLineTotalInNIP : Migration
+    public partial class AddPaymentStatusEnumInSales : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<decimal>(
-                name: "LineTotal",
-                table: "Inventory.NonInventoryProduct",
-                type: "decimal(18,2)",
+            migrationBuilder.AddColumn<byte>(
+                name: "PaymentStatus",
+                table: "Sales.Sale",
+                type: "tinyint",
                 nullable: false,
-                defaultValue: 0m);
+                defaultValue: (byte)0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "LineTotal",
-                table: "Inventory.NonInventoryProduct");
+                name: "PaymentStatus",
+                table: "Sales.Sale");
         }
     }
 }

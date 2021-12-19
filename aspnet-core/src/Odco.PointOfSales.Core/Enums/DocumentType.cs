@@ -5,7 +5,7 @@
         PurchaseOrder = 1,
         GoodsReceivedNote = 2,
         SalesOrder = 3,
-        Invoice = 4,
+        Sales = 4,
         Receipt = 5,
         Dispatch = 6,
         StockTransfer = 7,
