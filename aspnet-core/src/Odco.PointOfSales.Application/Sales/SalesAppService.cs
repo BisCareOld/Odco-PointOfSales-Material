@@ -186,7 +186,6 @@ namespace Odco.PointOfSales.Application.Sales
             {
                 var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
                 var _saleHeader = new Sale();
-                var salesNumber = string.Empty;
 
                 #region Payment
                 // NOTE:
@@ -201,10 +200,9 @@ namespace Odco.PointOfSales.Application.Sales
 
                     input.PaymentStatus = await GetPaymentStatusBySaleId(input.Id.Value, input.NetAmount, t.Value);
 
-                    salesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
-                    input.SalesNumber = salesNumber;
-                    input.SalesProducts.ToList().ForEach(sp => sp.SalesNumber = salesNumber);
-                    await CreatePaymentForSalesIdAsync(input.Id.Value, salesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
+                    input.SalesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
+                    input.SalesProducts.ToList().ForEach(sp => sp.SalesNumber = input.SalesNumber);
+                    await CreatePaymentForSalesIdAsync(input.Id.Value, input.SalesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
                 }
                 else
                 {
@@ -264,7 +262,7 @@ namespace Odco.PointOfSales.Application.Sales
                                     }
                                 }
 
-                                existSP.SalesNumber = salesNumber;
+                                existSP.SalesNumber = input.SalesNumber;
                                 existSP.Price = iSP.Price;
                                 existSP.DiscountRate = iSP.DiscountRate;
                                 existSP.DiscountAmount = iSP.DiscountAmount;
@@ -322,7 +320,7 @@ namespace Odco.PointOfSales.Application.Sales
                             );
                         }
 
-                        existingSale.SalesNumber = salesNumber;
+                        existingSale.SalesNumber = input.SalesNumber;
                         existingSale.ReferenceNumber = input.ReferenceNumber;
                         existingSale.CustomerId = input.CustomerId;
                         existingSale.CustomerCode = input.CustomerCode;
@@ -361,7 +359,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                 #region NonInventoryProduct
                 // Create / Update / Delete NonInventoryProduct
-                await CreateOrUpdateNonInventoryProductAsync(_saleHeader.Id, salesNumber, input.NonInventoryProducts.ToList());
+                await CreateOrUpdateNonInventoryProductAsync(_saleHeader.Id, input.SalesNumber, input.NonInventoryProducts.ToList());
                 #endregion
 
                 await CurrentUnitOfWork.SaveChangesAsync();
@@ -737,8 +735,7 @@ namespace Odco.PointOfSales.Application.Sales
                     p.SaleId = saleId;
                     p.CustomerId = customerId;
                     p.CustomerCode = customerCode;
-                    p.CustomerCode = customerName;
-                    //p.CustomerPhoneNumber = input.Customer
+                    p.CustomerName = customerName.Trim();
                     p.SaleNumber = saleNumber;
 
                     await _paymentRepository.InsertAsync(p);
