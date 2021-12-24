@@ -68,3 +68,9 @@ h1 {
 .transaction-table-inputs {
   width: 50px;
 }
+
+/* Bootstrap 5 override */
+.badge {
+  font-size: 0.8em;
+  font-weight: 400;
+}
