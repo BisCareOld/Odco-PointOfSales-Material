@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odco.PointOfSales.EntityFrameworkCore;
 
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    partial class PointOfSalesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211224050637_AddStockBalancesOfSalesProductModel")]
+    partial class AddStockBalancesOfSalesProductModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3453,10 +3455,24 @@ namespace Odco.PointOfSales.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<string>("BatchNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<decimal>("BookBalanceQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BookBalanceUnitOfMeasureUnit")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -3476,10 +3492,16 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<decimal>("DiscountRate")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSelected")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -3489,6 +3511,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("LineTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MaximumRetailPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Name")
@@ -3519,8 +3544,8 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<decimal>("SellingPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SequenceNumber")
-                        .HasColumnType("int");
+                    b.Property<Guid>("StockBalanceId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("WarehouseCode")
                         .HasMaxLength(10)

@@ -3616,13 +3616,15 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param stockBalanceIds (optional) 
+     * @param productId (optional) 
      * @return Success
      */
-    getStockBalancesByStockBalanceIds(stockBalanceIds: string[] | null | undefined): Observable<ProductStockBalanceDto[]> {
-        let url_ = this.baseUrl + "/api/services/app/Sales/GetStockBalancesByStockBalanceIds?";
-        if (stockBalanceIds !== undefined && stockBalanceIds !== null)
-            stockBalanceIds && stockBalanceIds.forEach(item => { url_ += "stockBalanceIds=" + encodeURIComponent("" + item) + "&"; });
+    getStockBalancesByProductId(productId: string | undefined): Observable<GroupBySellingPriceDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Sales/GetStockBalancesByProductId?";
+        if (productId === null)
+            throw new Error("The parameter 'productId' cannot be null.");
+        else if (productId !== undefined)
+            url_ += "productId=" + encodeURIComponent("" + productId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -3634,20 +3636,20 @@ export class SalesServiceProxy {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetStockBalancesByStockBalanceIds(response_);
+            return this.processGetStockBalancesByProductId(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetStockBalancesByStockBalanceIds(<any>response_);
+                    return this.processGetStockBalancesByProductId(<any>response_);
                 } catch (e) {
-                    return <Observable<ProductStockBalanceDto[]>><any>_observableThrow(e);
+                    return <Observable<GroupBySellingPriceDto[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<ProductStockBalanceDto[]>><any>_observableThrow(response_);
+                return <Observable<GroupBySellingPriceDto[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetStockBalancesByStockBalanceIds(response: HttpResponseBase): Observable<ProductStockBalanceDto[]> {
+    protected processGetStockBalancesByProductId(response: HttpResponseBase): Observable<GroupBySellingPriceDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3661,7 +3663,7 @@ export class SalesServiceProxy {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200.push(ProductStockBalanceDto.fromJS(item));
+                    result200.push(GroupBySellingPriceDto.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -3673,7 +3675,7 @@ export class SalesServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ProductStockBalanceDto[]>(<any>null);
+        return _observableOf<GroupBySellingPriceDto[]>(<any>null);
     }
 
     /**
@@ -8256,23 +8258,18 @@ export enum PaymentStatus {
 }
 
 export class CreateSalesProductDto implements ICreateSalesProductDto {
+    id: string | undefined;
+    sequenceNumber: number;
+    saleId: string | undefined;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -8292,23 +8289,18 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
+            this.sequenceNumber = _data["sequenceNumber"];
+            this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
             this.productId = _data["productId"];
             this.barCode = _data["barCode"];
             this.code = _data["code"];
             this.name = _data["name"];
-            this.stockBalanceId = _data["stockBalanceId"];
-            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
-            this.batchNumber = _data["batchNumber"];
             this.warehouseId = _data["warehouseId"];
             this.warehouseCode = _data["warehouseCode"];
             this.warehouseName = _data["warehouseName"];
-            this.bookBalanceQuantity = _data["bookBalanceQuantity"];
-            this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
-            this.costPrice = _data["costPrice"];
             this.sellingPrice = _data["sellingPrice"];
-            this.maximumRetailPrice = _data["maximumRetailPrice"];
-            this.isSelected = _data["isSelected"];
             this.price = _data["price"];
             this.discountRate = _data["discountRate"];
             this.discountAmount = _data["discountAmount"];
@@ -8328,23 +8320,18 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sequenceNumber"] = this.sequenceNumber;
+        data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
         data["productId"] = this.productId;
         data["barCode"] = this.barCode;
         data["code"] = this.code;
         data["name"] = this.name;
-        data["stockBalanceId"] = this.stockBalanceId;
-        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
-        data["batchNumber"] = this.batchNumber;
         data["warehouseId"] = this.warehouseId;
         data["warehouseCode"] = this.warehouseCode;
         data["warehouseName"] = this.warehouseName;
-        data["bookBalanceQuantity"] = this.bookBalanceQuantity;
-        data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
-        data["costPrice"] = this.costPrice;
         data["sellingPrice"] = this.sellingPrice;
-        data["maximumRetailPrice"] = this.maximumRetailPrice;
-        data["isSelected"] = this.isSelected;
         data["price"] = this.price;
         data["discountRate"] = this.discountRate;
         data["discountAmount"] = this.discountAmount;
@@ -8364,23 +8351,18 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
 }
 
 export interface ICreateSalesProductDto {
+    id: string | undefined;
+    sequenceNumber: number;
+    saleId: string | undefined;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -8922,24 +8904,19 @@ export interface ICreateOrUpdateSaleDto {
 }
 
 export class SalesProductDto implements ISalesProductDto {
+    sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
+    totalBookBalanceQuantity: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
+    receivedQuantity: number;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -8960,24 +8937,19 @@ export class SalesProductDto implements ISalesProductDto {
 
     init(_data?: any) {
         if (_data) {
+            this.sequenceNumber = _data["sequenceNumber"];
             this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
             this.productId = _data["productId"];
             this.barCode = _data["barCode"];
             this.code = _data["code"];
             this.name = _data["name"];
-            this.stockBalanceId = _data["stockBalanceId"];
-            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
-            this.batchNumber = _data["batchNumber"];
             this.warehouseId = _data["warehouseId"];
             this.warehouseCode = _data["warehouseCode"];
             this.warehouseName = _data["warehouseName"];
-            this.bookBalanceQuantity = _data["bookBalanceQuantity"];
-            this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
-            this.costPrice = _data["costPrice"];
+            this.totalBookBalanceQuantity = _data["totalBookBalanceQuantity"];
             this.sellingPrice = _data["sellingPrice"];
-            this.maximumRetailPrice = _data["maximumRetailPrice"];
-            this.isSelected = _data["isSelected"];
+            this.receivedQuantity = _data["receivedQuantity"];
             this.price = _data["price"];
             this.discountRate = _data["discountRate"];
             this.discountAmount = _data["discountAmount"];
@@ -8998,24 +8970,19 @@ export class SalesProductDto implements ISalesProductDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["sequenceNumber"] = this.sequenceNumber;
         data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
         data["productId"] = this.productId;
         data["barCode"] = this.barCode;
         data["code"] = this.code;
         data["name"] = this.name;
-        data["stockBalanceId"] = this.stockBalanceId;
-        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
-        data["batchNumber"] = this.batchNumber;
         data["warehouseId"] = this.warehouseId;
         data["warehouseCode"] = this.warehouseCode;
         data["warehouseName"] = this.warehouseName;
-        data["bookBalanceQuantity"] = this.bookBalanceQuantity;
-        data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
-        data["costPrice"] = this.costPrice;
+        data["totalBookBalanceQuantity"] = this.totalBookBalanceQuantity;
         data["sellingPrice"] = this.sellingPrice;
-        data["maximumRetailPrice"] = this.maximumRetailPrice;
-        data["isSelected"] = this.isSelected;
+        data["receivedQuantity"] = this.receivedQuantity;
         data["price"] = this.price;
         data["discountRate"] = this.discountRate;
         data["discountAmount"] = this.discountAmount;
@@ -9036,24 +9003,19 @@ export class SalesProductDto implements ISalesProductDto {
 }
 
 export interface ISalesProductDto {
+    sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
+    totalBookBalanceQuantity: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
+    receivedQuantity: number;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -9355,6 +9317,73 @@ export class SaleDtoPagedResultDto implements ISaleDtoPagedResultDto {
 export interface ISaleDtoPagedResultDto {
     totalCount: number;
     items: SaleDto[] | undefined;
+}
+
+export class GroupBySellingPriceDto implements IGroupBySellingPriceDto {
+    productId: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    totalBookBalanceQuantity: number;
+    sellingPrice: number;
+    isSelected: boolean;
+
+    constructor(data?: IGroupBySellingPriceDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.productId = _data["productId"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
+            this.totalBookBalanceQuantity = _data["totalBookBalanceQuantity"];
+            this.sellingPrice = _data["sellingPrice"];
+            this.isSelected = _data["isSelected"];
+        }
+    }
+
+    static fromJS(data: any): GroupBySellingPriceDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GroupBySellingPriceDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productId"] = this.productId;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
+        data["totalBookBalanceQuantity"] = this.totalBookBalanceQuantity;
+        data["sellingPrice"] = this.sellingPrice;
+        data["isSelected"] = this.isSelected;
+        return data; 
+    }
+
+    clone(): GroupBySellingPriceDto {
+        const json = this.toJSON();
+        let result = new GroupBySellingPriceDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IGroupBySellingPriceDto {
+    productId: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    totalBookBalanceQuantity: number;
+    sellingPrice: number;
+    isSelected: boolean;
 }
 
 export class ApplicationInfoDto implements IApplicationInfoDto {
