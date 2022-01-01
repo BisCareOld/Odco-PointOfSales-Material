@@ -6,8 +6,9 @@ import {
 } from "lodash-es";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
-  ProductionServiceProxy,
-  ProductStockBalanceDto,
+  SalesServiceProxy,
+  GroupBySellingPriceDto,
+  StockBalanceServiceProxy,
 } from "@shared/service-proxies/service-proxies";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
@@ -18,20 +19,18 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 })
 export class StockBalanceDialogComponent
   extends AppComponentBase
-  implements OnInit
-{
+  implements OnInit {
   displayedColumns: string[] = [
-    "batch-number",
-    "expiry-date",
     "quantity",
     "selling-price",
     "actions",
   ];
-  productStockBalances: ProductStockBalanceDto[] = [];
+  productStockBalances: GroupBySellingPriceDto[] = []; // GropuBy SellingPrice
 
   constructor(
     injector: Injector,
-    private _productionService: ProductionServiceProxy,
+    private _salesService: SalesServiceProxy,
+    private _stockBalanceService: StockBalanceServiceProxy,
     public matDialogRef: MatDialogRef<StockBalanceDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -39,12 +38,10 @@ export class StockBalanceDialogComponent
   }
 
   ngOnInit(): void {
-    this._productionService
-      .getStockBalancesByProductId(this.data.id)
+    this._stockBalanceService
+      .getStockBalancesByProductIdGroupBySellingPrice(this.data.id)
       .subscribe((response) => {
-        if (response.statusCode != 200)
-          this.notify.info(response.message, "404");
-        this.productStockBalances = response.items;
+        this.productStockBalances = response;
       });
   }
 

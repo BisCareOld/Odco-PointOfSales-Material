@@ -82,6 +82,8 @@ namespace Odco.PointOfSales.EntityFrameworkCore.Repositories
                                 };
                                 stockBalances.Add(sb);
                             }
+
+                            dataReader.Close();
                         }
                     }
                 }

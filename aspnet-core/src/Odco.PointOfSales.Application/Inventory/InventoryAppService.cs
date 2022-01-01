@@ -8,6 +8,7 @@ using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.Common.SequenceNumbers;
 using Odco.PointOfSales.Application.Inventory.GoodsReceiveNotes;
+using Odco.PointOfSales.Application.StockBalances;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
@@ -28,13 +29,15 @@ namespace Odco.PointOfSales.Application.Inventory
         private readonly IRepository<Product, Guid> _productRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
         private readonly IStoredProcedureAppService _storedProcedureAppService;
+        private readonly IStockBalanceAppService _stockBalanceAppService;
 
         public InventoryAppService(IRepository<GoodsReceived, Guid> goodsReceivedRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
             IDocumentSequenceNumberManager documentSequenceNumberManager,
             IRepository<Product, Guid> productRepository,
             IRepository<Warehouse, Guid> warehouseRepository,
-            IStoredProcedureAppService storedProcedureAppService)
+            IStoredProcedureAppService storedProcedureAppService,
+            IStockBalanceAppService stockBalanceAppService)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _goodsReceivedRepository = goodsReceivedRepository;
@@ -43,6 +46,7 @@ namespace Odco.PointOfSales.Application.Inventory
             _productRepository = productRepository;
             _warehouseRepository = warehouseRepository;
             _storedProcedureAppService = storedProcedureAppService;
+            _stockBalanceAppService = stockBalanceAppService;
         }
 
         #region Goods Received Notes
@@ -62,7 +66,7 @@ namespace Odco.PointOfSales.Application.Inventory
                 {
                     lineLevel.GoodsRecievedNumber = created.GoodsReceivedNumber;
 
-                    var stockBalances = await GetStockBalancesAsync(lineLevel.ProductId, lineLevel.WarehouseId);
+                    var stockBalances = await _stockBalanceAppService.GetStockBalancesAsync(lineLevel.ProductId, lineLevel.WarehouseId);
 
                     /// Creating a new row in StockBalance table
                     var newStockBalance = new StockBalance
@@ -103,7 +107,6 @@ namespace Odco.PointOfSales.Application.Inventory
                         await _stockBalanceRepository.UpdateAsync(stockSummary);
                     }
                 }
-
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<GoodsReceivedDto>(created);
             }
@@ -136,77 +139,6 @@ namespace Odco.PointOfSales.Application.Inventory
             {
                 throw ex;
             }
-        }
-        #endregion
-
-        #region Stock Balance
-        /// <summary>
-        ///     Sync Product with warehouses in Stock Balance table
-        ///     Creates missing summaries such as company summaries and warehouse summaries
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> SyncStockBalancesAsync()
-        {
-            var products = _productRepository.GetAll().ToList();
-
-            var warehouses = await _warehouseRepository.GetAll().Where(w => w.IsActive).ToListAsync();
-
-            // Company summary + Warehouse summary
-            var stockBalances = _stockBalanceRepository.GetAll().Where(sb => sb.SequenceNumber == 0).ToList();
-
-            var createStockBalances = new List<StockBalance>();
-
-            foreach (var p in products)
-            {
-                foreach (var w in warehouses)
-                    // Check Warehouse summary
-                    if (!stockBalances.Any(sb => sb.ProductId == p.Id && sb.WarehouseId == w.Id))
-                        createStockBalances.Add(new StockBalance
-                        {
-                            SequenceNumber = 0,
-                            ProductId = p.Id,
-                            ProductCode = p.Code,
-                            ProductName = p.Name,
-                            WarehouseId = w.Id,
-                            WarehouseCode = w.Code,
-                            WarehouseName = w.Name
-                        });
-
-                // Check Company summary
-                if (!stockBalances.Any(sb => sb.ProductId == p.Id && !sb.WarehouseId.HasValue))
-                    createStockBalances.Add(new StockBalance
-                    {
-                        SequenceNumber = 0,
-                        ProductId = p.Id,
-                        ProductCode = p.Code,
-                        ProductName = p.Name,
-                        WarehouseId = null,
-                        WarehouseCode = null,
-                        WarehouseName = null
-                    });
-            }
-
-            foreach (var sb in createStockBalances) await _stockBalanceRepository.InsertAsync(sb);
-
-            await CurrentUnitOfWork.SaveChangesAsync();
-
-            return true;
-        }
-        #endregion
-
-        #region Private Methods
-        /// <summary>
-        /// Company summary + Warehouse summaries + GRN summaries
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="warehouseId"></param>
-        /// <returns></returns>
-        private async Task<List<StockBalance>> GetStockBalancesAsync(Guid productId, Guid warehouseId)
-        {
-            return await _stockBalanceRepository
-                .GetAll()
-                .Where(sb => sb.ProductId == productId && (!sb.WarehouseId.HasValue || sb.WarehouseId == warehouseId))
-                .ToListAsync();
         }
         #endregion
     }

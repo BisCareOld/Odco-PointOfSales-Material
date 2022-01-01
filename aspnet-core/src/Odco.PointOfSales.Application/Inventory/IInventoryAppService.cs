@@ -11,9 +11,5 @@ namespace Odco.PointOfSales.Application.Inventory
         Task<GoodsReceivedDto> CreateGoodsReceivedNoteAsync(CreateGoodsReceivedDto input);
         Task<PagedResultDto<GoodsReceivedDto>> GetAllGoodsReceivedProductsAsync(PagedGRNResultRequestDto input);
         #endregion
-
-        #region Stock Balance
-        Task<bool> SyncStockBalancesAsync();
-        #endregion
     }
 }

@@ -52,6 +52,7 @@ namespace Odco.PointOfSales.EntityFrameworkCore
         public virtual DbSet<PriceGroup> PriceGroups { get; set; }
         public virtual DbSet<Sale> TempSale { get; set; }
         public virtual DbSet<SalesProduct> TempSalesProducts { get; set; }
+        public virtual DbSet<StockBalancesOfSalesProduct> StockBalancesOfSalesProducts { get; set; }
 
         #endregion
 

@@ -578,57 +578,6 @@ export class InventoryServiceProxy {
         }
         return _observableOf<GoodsReceivedDtoPagedResultDto>(<any>null);
     }
-
-    /**
-     * @return Success
-     */
-    syncStockBalances(): Observable<boolean> {
-        let url_ = this.baseUrl + "/api/services/app/Inventory/SyncStockBalances";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSyncStockBalances(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSyncStockBalances(<any>response_);
-                } catch (e) {
-                    return <Observable<boolean>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<boolean>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processSyncStockBalances(response: HttpResponseBase): Observable<boolean> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<boolean>(<any>null);
-    }
 }
 
 @Injectable()
@@ -3616,67 +3565,6 @@ export class SalesServiceProxy {
     }
 
     /**
-     * @param stockBalanceIds (optional) 
-     * @return Success
-     */
-    getStockBalancesByStockBalanceIds(stockBalanceIds: string[] | null | undefined): Observable<ProductStockBalanceDto[]> {
-        let url_ = this.baseUrl + "/api/services/app/Sales/GetStockBalancesByStockBalanceIds?";
-        if (stockBalanceIds !== undefined && stockBalanceIds !== null)
-            stockBalanceIds && stockBalanceIds.forEach(item => { url_ += "stockBalanceIds=" + encodeURIComponent("" + item) + "&"; });
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetStockBalancesByStockBalanceIds(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetStockBalancesByStockBalanceIds(<any>response_);
-                } catch (e) {
-                    return <Observable<ProductStockBalanceDto[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<ProductStockBalanceDto[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetStockBalancesByStockBalanceIds(response: HttpResponseBase): Observable<ProductStockBalanceDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200.push(ProductStockBalanceDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<ProductStockBalanceDto[]>(<any>null);
-    }
-
-    /**
      * @param saleId (optional) 
      * @return Success
      */
@@ -3800,6 +3688,470 @@ export class SessionServiceProxy {
             }));
         }
         return _observableOf<GetCurrentLoginInformationsOutput>(<any>null);
+    }
+}
+
+@Injectable()
+export class StockBalanceServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @return Success
+     */
+    syncStockBalances(): Observable<boolean> {
+        let url_ = this.baseUrl + "/api/services/app/StockBalance/SyncStockBalances";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSyncStockBalances(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSyncStockBalances(<any>response_);
+                } catch (e) {
+                    return <Observable<boolean>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<boolean>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSyncStockBalances(response: HttpResponseBase): Observable<boolean> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<boolean>(<any>null);
+    }
+
+    /**
+     * @param productId (optional) 
+     * @return Success
+     */
+    getStockBalancesByProductIdGroupBySellingPrice(productId: string | undefined): Observable<GroupBySellingPriceDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/StockBalance/GetStockBalancesByProductIdGroupBySellingPrice?";
+        if (productId === null)
+            throw new Error("The parameter 'productId' cannot be null.");
+        else if (productId !== undefined)
+            url_ += "productId=" + encodeURIComponent("" + productId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStockBalancesByProductIdGroupBySellingPrice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStockBalancesByProductIdGroupBySellingPrice(<any>response_);
+                } catch (e) {
+                    return <Observable<GroupBySellingPriceDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GroupBySellingPriceDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStockBalancesByProductIdGroupBySellingPrice(response: HttpResponseBase): Observable<GroupBySellingPriceDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(GroupBySellingPriceDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GroupBySellingPriceDto[]>(<any>null);
+    }
+
+    /**
+     * @param productId (optional) 
+     * @param warehouseId (optional) 
+     * @param sellingPrice (optional) 
+     * @return Success
+     */
+    getStockBalancesByProductIdBasedOnSellingPrice(productId: string | undefined, warehouseId: string | undefined, sellingPrice: number | undefined): Observable<StockBalance[]> {
+        let url_ = this.baseUrl + "/api/services/app/StockBalance/GetStockBalancesByProductIdBasedOnSellingPrice?";
+        if (productId === null)
+            throw new Error("The parameter 'productId' cannot be null.");
+        else if (productId !== undefined)
+            url_ += "productId=" + encodeURIComponent("" + productId) + "&";
+        if (warehouseId === null)
+            throw new Error("The parameter 'warehouseId' cannot be null.");
+        else if (warehouseId !== undefined)
+            url_ += "warehouseId=" + encodeURIComponent("" + warehouseId) + "&";
+        if (sellingPrice === null)
+            throw new Error("The parameter 'sellingPrice' cannot be null.");
+        else if (sellingPrice !== undefined)
+            url_ += "sellingPrice=" + encodeURIComponent("" + sellingPrice) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStockBalancesByProductIdBasedOnSellingPrice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStockBalancesByProductIdBasedOnSellingPrice(<any>response_);
+                } catch (e) {
+                    return <Observable<StockBalance[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StockBalance[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStockBalancesByProductIdBasedOnSellingPrice(response: HttpResponseBase): Observable<StockBalance[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(StockBalance.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StockBalance[]>(<any>null);
+    }
+
+    /**
+     * @param productId (optional) 
+     * @param warehouseId (optional) 
+     * @return Success
+     */
+    getStockBalances(productId: string | undefined, warehouseId: string | undefined): Observable<StockBalance[]> {
+        let url_ = this.baseUrl + "/api/services/app/StockBalance/GetStockBalances?";
+        if (productId === null)
+            throw new Error("The parameter 'productId' cannot be null.");
+        else if (productId !== undefined)
+            url_ += "productId=" + encodeURIComponent("" + productId) + "&";
+        if (warehouseId === null)
+            throw new Error("The parameter 'warehouseId' cannot be null.");
+        else if (warehouseId !== undefined)
+            url_ += "warehouseId=" + encodeURIComponent("" + warehouseId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStockBalances(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStockBalances(<any>response_);
+                } catch (e) {
+                    return <Observable<StockBalance[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StockBalance[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStockBalances(response: HttpResponseBase): Observable<StockBalance[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(StockBalance.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StockBalance[]>(<any>null);
+    }
+
+    /**
+     * @param productId (optional) 
+     * @param warehouseId (optional) 
+     * @return Success
+     */
+    getStockBalanceSummaries(productId: string | undefined, warehouseId: string | undefined): Observable<StockBalance[]> {
+        let url_ = this.baseUrl + "/api/services/app/StockBalance/GetStockBalanceSummaries?";
+        if (productId === null)
+            throw new Error("The parameter 'productId' cannot be null.");
+        else if (productId !== undefined)
+            url_ += "productId=" + encodeURIComponent("" + productId) + "&";
+        if (warehouseId === null)
+            throw new Error("The parameter 'warehouseId' cannot be null.");
+        else if (warehouseId !== undefined)
+            url_ += "warehouseId=" + encodeURIComponent("" + warehouseId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStockBalanceSummaries(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStockBalanceSummaries(<any>response_);
+                } catch (e) {
+                    return <Observable<StockBalance[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StockBalance[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStockBalanceSummaries(response: HttpResponseBase): Observable<StockBalance[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(StockBalance.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StockBalance[]>(<any>null);
+    }
+
+    /**
+     * @param stockBalanceId (optional) 
+     * @param productId (optional) 
+     * @param warehouseId (optional) 
+     * @return Success
+     */
+    getStockBalancesByStockBalanceId(stockBalanceId: string | undefined, productId: string | undefined, warehouseId: string | undefined): Observable<StockBalance[]> {
+        let url_ = this.baseUrl + "/api/services/app/StockBalance/GetStockBalancesByStockBalanceId?";
+        if (stockBalanceId === null)
+            throw new Error("The parameter 'stockBalanceId' cannot be null.");
+        else if (stockBalanceId !== undefined)
+            url_ += "stockBalanceId=" + encodeURIComponent("" + stockBalanceId) + "&";
+        if (productId === null)
+            throw new Error("The parameter 'productId' cannot be null.");
+        else if (productId !== undefined)
+            url_ += "productId=" + encodeURIComponent("" + productId) + "&";
+        if (warehouseId === null)
+            throw new Error("The parameter 'warehouseId' cannot be null.");
+        else if (warehouseId !== undefined)
+            url_ += "warehouseId=" + encodeURIComponent("" + warehouseId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStockBalancesByStockBalanceId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStockBalancesByStockBalanceId(<any>response_);
+                } catch (e) {
+                    return <Observable<StockBalance[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StockBalance[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStockBalancesByStockBalanceId(response: HttpResponseBase): Observable<StockBalance[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(StockBalance.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StockBalance[]>(<any>null);
+    }
+
+    /**
+     * @param stockBalanceId (optional) 
+     * @return Success
+     */
+    getStockBalanceById(stockBalanceId: string | undefined): Observable<StockBalance> {
+        let url_ = this.baseUrl + "/api/services/app/StockBalance/GetStockBalanceById?";
+        if (stockBalanceId === null)
+            throw new Error("The parameter 'stockBalanceId' cannot be null.");
+        else if (stockBalanceId !== undefined)
+            url_ += "stockBalanceId=" + encodeURIComponent("" + stockBalanceId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetStockBalanceById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetStockBalanceById(<any>response_);
+                } catch (e) {
+                    return <Observable<StockBalance>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StockBalance>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetStockBalanceById(response: HttpResponseBase): Observable<StockBalance> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StockBalance.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StockBalance>(<any>null);
     }
 }
 
@@ -8256,23 +8608,18 @@ export enum PaymentStatus {
 }
 
 export class CreateSalesProductDto implements ICreateSalesProductDto {
+    id: string | undefined;
+    sequenceNumber: number;
+    saleId: string | undefined;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -8292,23 +8639,18 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
+            this.sequenceNumber = _data["sequenceNumber"];
+            this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
             this.productId = _data["productId"];
             this.barCode = _data["barCode"];
             this.code = _data["code"];
             this.name = _data["name"];
-            this.stockBalanceId = _data["stockBalanceId"];
-            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
-            this.batchNumber = _data["batchNumber"];
             this.warehouseId = _data["warehouseId"];
             this.warehouseCode = _data["warehouseCode"];
             this.warehouseName = _data["warehouseName"];
-            this.bookBalanceQuantity = _data["bookBalanceQuantity"];
-            this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
-            this.costPrice = _data["costPrice"];
             this.sellingPrice = _data["sellingPrice"];
-            this.maximumRetailPrice = _data["maximumRetailPrice"];
-            this.isSelected = _data["isSelected"];
             this.price = _data["price"];
             this.discountRate = _data["discountRate"];
             this.discountAmount = _data["discountAmount"];
@@ -8328,23 +8670,18 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["sequenceNumber"] = this.sequenceNumber;
+        data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
         data["productId"] = this.productId;
         data["barCode"] = this.barCode;
         data["code"] = this.code;
         data["name"] = this.name;
-        data["stockBalanceId"] = this.stockBalanceId;
-        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
-        data["batchNumber"] = this.batchNumber;
         data["warehouseId"] = this.warehouseId;
         data["warehouseCode"] = this.warehouseCode;
         data["warehouseName"] = this.warehouseName;
-        data["bookBalanceQuantity"] = this.bookBalanceQuantity;
-        data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
-        data["costPrice"] = this.costPrice;
         data["sellingPrice"] = this.sellingPrice;
-        data["maximumRetailPrice"] = this.maximumRetailPrice;
-        data["isSelected"] = this.isSelected;
         data["price"] = this.price;
         data["discountRate"] = this.discountRate;
         data["discountAmount"] = this.discountAmount;
@@ -8364,23 +8701,18 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
 }
 
 export interface ICreateSalesProductDto {
+    id: string | undefined;
+    sequenceNumber: number;
+    saleId: string | undefined;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -8922,24 +9254,19 @@ export interface ICreateOrUpdateSaleDto {
 }
 
 export class SalesProductDto implements ISalesProductDto {
+    sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
+    totalBookBalanceQuantity: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
+    receivedQuantity: number;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -8960,24 +9287,19 @@ export class SalesProductDto implements ISalesProductDto {
 
     init(_data?: any) {
         if (_data) {
+            this.sequenceNumber = _data["sequenceNumber"];
             this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
             this.productId = _data["productId"];
             this.barCode = _data["barCode"];
             this.code = _data["code"];
             this.name = _data["name"];
-            this.stockBalanceId = _data["stockBalanceId"];
-            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
-            this.batchNumber = _data["batchNumber"];
             this.warehouseId = _data["warehouseId"];
             this.warehouseCode = _data["warehouseCode"];
             this.warehouseName = _data["warehouseName"];
-            this.bookBalanceQuantity = _data["bookBalanceQuantity"];
-            this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
-            this.costPrice = _data["costPrice"];
+            this.totalBookBalanceQuantity = _data["totalBookBalanceQuantity"];
             this.sellingPrice = _data["sellingPrice"];
-            this.maximumRetailPrice = _data["maximumRetailPrice"];
-            this.isSelected = _data["isSelected"];
+            this.receivedQuantity = _data["receivedQuantity"];
             this.price = _data["price"];
             this.discountRate = _data["discountRate"];
             this.discountAmount = _data["discountAmount"];
@@ -8998,24 +9320,19 @@ export class SalesProductDto implements ISalesProductDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["sequenceNumber"] = this.sequenceNumber;
         data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
         data["productId"] = this.productId;
         data["barCode"] = this.barCode;
         data["code"] = this.code;
         data["name"] = this.name;
-        data["stockBalanceId"] = this.stockBalanceId;
-        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
-        data["batchNumber"] = this.batchNumber;
         data["warehouseId"] = this.warehouseId;
         data["warehouseCode"] = this.warehouseCode;
         data["warehouseName"] = this.warehouseName;
-        data["bookBalanceQuantity"] = this.bookBalanceQuantity;
-        data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
-        data["costPrice"] = this.costPrice;
+        data["totalBookBalanceQuantity"] = this.totalBookBalanceQuantity;
         data["sellingPrice"] = this.sellingPrice;
-        data["maximumRetailPrice"] = this.maximumRetailPrice;
-        data["isSelected"] = this.isSelected;
+        data["receivedQuantity"] = this.receivedQuantity;
         data["price"] = this.price;
         data["discountRate"] = this.discountRate;
         data["discountAmount"] = this.discountAmount;
@@ -9036,24 +9353,19 @@ export class SalesProductDto implements ISalesProductDto {
 }
 
 export interface ISalesProductDto {
+    sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
     name: string;
-    stockBalanceId: string;
-    expiryDate: moment.Moment | undefined;
-    batchNumber: string | undefined;
     warehouseId: string | undefined;
     warehouseCode: string | undefined;
     warehouseName: string | undefined;
-    bookBalanceQuantity: number;
-    bookBalanceUnitOfMeasureUnit: string | undefined;
-    costPrice: number;
+    totalBookBalanceQuantity: number;
     sellingPrice: number;
-    maximumRetailPrice: number;
-    isSelected: boolean;
+    receivedQuantity: number;
     price: number;
     discountRate: number;
     discountAmount: number;
@@ -9579,6 +9891,232 @@ export interface IGetCurrentLoginInformationsOutput {
     application: ApplicationInfoDto;
     user: UserLoginInfoDto;
     tenant: TenantLoginInfoDto;
+}
+
+export class GroupBySellingPriceDto implements IGroupBySellingPriceDto {
+    productId: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    totalBookBalanceQuantity: number;
+    sellingPrice: number;
+    isSelected: boolean;
+
+    constructor(data?: IGroupBySellingPriceDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.productId = _data["productId"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
+            this.totalBookBalanceQuantity = _data["totalBookBalanceQuantity"];
+            this.sellingPrice = _data["sellingPrice"];
+            this.isSelected = _data["isSelected"];
+        }
+    }
+
+    static fromJS(data: any): GroupBySellingPriceDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GroupBySellingPriceDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productId"] = this.productId;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
+        data["totalBookBalanceQuantity"] = this.totalBookBalanceQuantity;
+        data["sellingPrice"] = this.sellingPrice;
+        data["isSelected"] = this.isSelected;
+        return data; 
+    }
+
+    clone(): GroupBySellingPriceDto {
+        const json = this.toJSON();
+        let result = new GroupBySellingPriceDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IGroupBySellingPriceDto {
+    productId: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    totalBookBalanceQuantity: number;
+    sellingPrice: number;
+    isSelected: boolean;
+}
+
+export class StockBalance implements IStockBalance {
+    sequenceNumber: number;
+    productId: string;
+    productCode: string;
+    productName: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    receivedQuantity: number;
+    receivedQuantityUnitOfMeasureUnit: string | undefined;
+    bookBalanceQuantity: number;
+    bookBalanceUnitOfMeasureUnit: string | undefined;
+    onOrderQuantity: number;
+    onOrderQuantityUnitOfMeasureUnit: string | undefined;
+    allocatedQuantity: number;
+    allocatedQuantityUnitOfMeasureUnit: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    goodsRecievedNumber: string | undefined;
+    purchaseOrderNumber: string | undefined;
+    isDeleted: boolean;
+    deleterUserId: number | undefined;
+    deletionTime: moment.Moment | undefined;
+    lastModificationTime: moment.Moment | undefined;
+    lastModifierUserId: number | undefined;
+    creationTime: moment.Moment;
+    creatorUserId: number | undefined;
+    id: string;
+
+    constructor(data?: IStockBalance) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.sequenceNumber = _data["sequenceNumber"];
+            this.productId = _data["productId"];
+            this.productCode = _data["productCode"];
+            this.productName = _data["productName"];
+            this.warehouseId = _data["warehouseId"];
+            this.warehouseCode = _data["warehouseCode"];
+            this.warehouseName = _data["warehouseName"];
+            this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
+            this.batchNumber = _data["batchNumber"];
+            this.receivedQuantity = _data["receivedQuantity"];
+            this.receivedQuantityUnitOfMeasureUnit = _data["receivedQuantityUnitOfMeasureUnit"];
+            this.bookBalanceQuantity = _data["bookBalanceQuantity"];
+            this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
+            this.onOrderQuantity = _data["onOrderQuantity"];
+            this.onOrderQuantityUnitOfMeasureUnit = _data["onOrderQuantityUnitOfMeasureUnit"];
+            this.allocatedQuantity = _data["allocatedQuantity"];
+            this.allocatedQuantityUnitOfMeasureUnit = _data["allocatedQuantityUnitOfMeasureUnit"];
+            this.costPrice = _data["costPrice"];
+            this.sellingPrice = _data["sellingPrice"];
+            this.maximumRetailPrice = _data["maximumRetailPrice"];
+            this.goodsRecievedNumber = _data["goodsRecievedNumber"];
+            this.purchaseOrderNumber = _data["purchaseOrderNumber"];
+            this.isDeleted = _data["isDeleted"];
+            this.deleterUserId = _data["deleterUserId"];
+            this.deletionTime = _data["deletionTime"] ? moment(_data["deletionTime"].toString()) : <any>undefined;
+            this.lastModificationTime = _data["lastModificationTime"] ? moment(_data["lastModificationTime"].toString()) : <any>undefined;
+            this.lastModifierUserId = _data["lastModifierUserId"];
+            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
+            this.creatorUserId = _data["creatorUserId"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): StockBalance {
+        data = typeof data === 'object' ? data : {};
+        let result = new StockBalance();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["sequenceNumber"] = this.sequenceNumber;
+        data["productId"] = this.productId;
+        data["productCode"] = this.productCode;
+        data["productName"] = this.productName;
+        data["warehouseId"] = this.warehouseId;
+        data["warehouseCode"] = this.warehouseCode;
+        data["warehouseName"] = this.warehouseName;
+        data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
+        data["batchNumber"] = this.batchNumber;
+        data["receivedQuantity"] = this.receivedQuantity;
+        data["receivedQuantityUnitOfMeasureUnit"] = this.receivedQuantityUnitOfMeasureUnit;
+        data["bookBalanceQuantity"] = this.bookBalanceQuantity;
+        data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
+        data["onOrderQuantity"] = this.onOrderQuantity;
+        data["onOrderQuantityUnitOfMeasureUnit"] = this.onOrderQuantityUnitOfMeasureUnit;
+        data["allocatedQuantity"] = this.allocatedQuantity;
+        data["allocatedQuantityUnitOfMeasureUnit"] = this.allocatedQuantityUnitOfMeasureUnit;
+        data["costPrice"] = this.costPrice;
+        data["sellingPrice"] = this.sellingPrice;
+        data["maximumRetailPrice"] = this.maximumRetailPrice;
+        data["goodsRecievedNumber"] = this.goodsRecievedNumber;
+        data["purchaseOrderNumber"] = this.purchaseOrderNumber;
+        data["isDeleted"] = this.isDeleted;
+        data["deleterUserId"] = this.deleterUserId;
+        data["deletionTime"] = this.deletionTime ? this.deletionTime.toISOString() : <any>undefined;
+        data["lastModificationTime"] = this.lastModificationTime ? this.lastModificationTime.toISOString() : <any>undefined;
+        data["lastModifierUserId"] = this.lastModifierUserId;
+        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
+        data["creatorUserId"] = this.creatorUserId;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): StockBalance {
+        const json = this.toJSON();
+        let result = new StockBalance();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IStockBalance {
+    sequenceNumber: number;
+    productId: string;
+    productCode: string;
+    productName: string;
+    warehouseId: string | undefined;
+    warehouseCode: string | undefined;
+    warehouseName: string | undefined;
+    expiryDate: moment.Moment | undefined;
+    batchNumber: string | undefined;
+    receivedQuantity: number;
+    receivedQuantityUnitOfMeasureUnit: string | undefined;
+    bookBalanceQuantity: number;
+    bookBalanceUnitOfMeasureUnit: string | undefined;
+    onOrderQuantity: number;
+    onOrderQuantityUnitOfMeasureUnit: string | undefined;
+    allocatedQuantity: number;
+    allocatedQuantityUnitOfMeasureUnit: string | undefined;
+    costPrice: number;
+    sellingPrice: number;
+    maximumRetailPrice: number;
+    goodsRecievedNumber: string | undefined;
+    purchaseOrderNumber: string | undefined;
+    isDeleted: boolean;
+    deleterUserId: number | undefined;
+    deletionTime: moment.Moment | undefined;
+    lastModificationTime: moment.Moment | undefined;
+    lastModifierUserId: number | undefined;
+    creationTime: moment.Moment;
+    creatorUserId: number | undefined;
+    id: string;
 }
 
 export class CreateTenantDto implements ICreateTenantDto {

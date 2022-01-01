@@ -9,6 +9,8 @@ namespace Odco.PointOfSales.Sales.Common
     [Table("Sales.SalesProduct")]
     public class SalesProduct : FullAuditedEntity<Guid>
     {
+        public int SequenceNumber { get; set; }
+
         #region SalesHeader
         public Guid SaleId { get; set; }
 
@@ -37,12 +39,12 @@ namespace Odco.PointOfSales.Sales.Common
         #endregion
 
         #region StockBalance
-        public Guid StockBalanceId { get; set; }
+        //public Guid StockBalanceId { get; set; }
 
-        public DateTime? ExpiryDate { get; set; }
+        //public DateTime? ExpiryDate { get; set; }
 
-        [StringLength(15)]
-        public string BatchNumber { get; set; }
+        //[StringLength(15)]
+        //public string BatchNumber { get; set; }
 
         public Guid? WarehouseId { get; set; }
 
@@ -55,23 +57,23 @@ namespace Odco.PointOfSales.Sales.Common
         /// <summary>
         /// Store when the time being
         /// </summary>
-        public decimal BookBalanceQuantity { get; set; }
+        //public decimal BookBalanceQuantity { get; set; }
 
-        [StringLength(10)]
-        public string BookBalanceUnitOfMeasureUnit { get; set; }
+        //[StringLength(10)]
+        //public string BookBalanceUnitOfMeasureUnit { get; set; }
 
-        public decimal CostPrice { get; set; }
+        //public decimal CostPrice { get; set; }
 
         public decimal SellingPrice { get; set; }
 
-        public decimal MaximumRetailPrice { get; set; }
+        //public decimal MaximumRetailPrice { get; set; }
 
         /// <summary>
         /// Actual Price given for the Customer
         /// </summary>
         public decimal Price { get; set; }
 
-        public bool IsSelected { get; set; }
+        //public bool IsSelected { get; set; }
         #endregion
 
         #region Sales
