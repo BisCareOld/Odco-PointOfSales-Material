@@ -42,6 +42,7 @@ export class StockBalanceDialogComponent
       .getStockBalancesByProductIdGroupBySellingPrice(this.data.id)
       .subscribe((response) => {
         this.productStockBalances = response;
+        console.log(this.productStockBalances);
       });
   }
 

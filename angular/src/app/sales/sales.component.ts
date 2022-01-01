@@ -72,7 +72,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       max: "Discount rate should contain maximum 100",
     },
   };
-
   formErrors = {
     goodsReceivedNumber: "",
     referenceNumber: "",
@@ -109,7 +108,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     this._salesService
       .getSales(id)
       .subscribe((result: SaleDto) => {
-        console.log("getSalesDetails()", result);
 
         this.getNonInventoryProductsBySaleId(id);
         this.populateSalesDetails(false, result);
@@ -139,7 +137,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     isNewSale: boolean,
     salesheader: SaleDto
   ) {
-    console.log(salesheader);
     this.salePanelForm = this.fb.group({
       salesNumber: [
         salesheader != null ? salesheader.salesNumber : null,
@@ -182,8 +179,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       isActive: [true],
       salesProducts: this.fb.array([]),
     });
-
-    console.log(this.salePanelForm);
 
     this.salePanelForm.valueChanges.subscribe((data) => {
       this.logValidationErrors(this.salePanelForm);
@@ -381,11 +376,9 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   selectCustomer($event: CustomerSearchResultDto) {
-    console.log($event);
     this.customerId.setValue($event.id);
     this.customerCode.setValue($event.code);
     this.customerName.setValue($event.name);
-    console.log(this.salePanelForm)
   }
 
   removeCustomer() {
@@ -469,7 +462,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       .get("lineTotal")
       .setValue(parseFloat((_lineTotal - _discountAmount).toFixed(2)));
     this.headerLevelCalculation();
-    //console.log(item);
   }
 
   calculateLineLevelTotal() {
@@ -509,7 +501,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     materialDialog.afterClosed().subscribe((result) => {
       // "NonInventoryProduct" came from Dialog
       if (result && result.event == "NonInventoryProduct") {
-        //console.log(result.data);
         this.populateSalesProductForNonInventoryDetails(result.data);
       }
     });
@@ -524,8 +515,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       return;
     }
 
-    ////console.log(this.salePanelForm.value);
-    console.log(this.comments);
     let _header = new CreateOrUpdateSaleDto();
     _header.id = !this.saleId ? null : this.saleId;
     _header.salesNumber = null;
@@ -547,7 +536,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     let sequenceNumber = 1;
 
     this.salePanelForm.value.salesProducts.forEach((item, index) => {
-      console.log("Payment() => salesProducts", item);
 
       let _a = new CreateSalesProductDto();
       if (!item.isNonInventoryProductInvolved) {
@@ -608,9 +596,6 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
     });
 
-    console.log("RequestDTO", _header);
-
-    //console.log(_header);
     this._salesService.createOrUpdateSales(_header).subscribe((i) => {
       this.notify.info(this.l("SavedSuccessfully"));
       this.router.navigate(["/app/payment-component", i.id]);
