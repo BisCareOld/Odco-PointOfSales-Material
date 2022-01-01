@@ -8,6 +8,7 @@ import { AppComponentBase } from "@shared/app-component-base";
 import {
   SalesServiceProxy,
   GroupBySellingPriceDto,
+  StockBalanceServiceProxy,
 } from "@shared/service-proxies/service-proxies";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
@@ -29,6 +30,7 @@ export class StockBalanceDialogComponent
   constructor(
     injector: Injector,
     private _salesService: SalesServiceProxy,
+    private _stockBalanceService: StockBalanceServiceProxy,
     public matDialogRef: MatDialogRef<StockBalanceDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -36,8 +38,8 @@ export class StockBalanceDialogComponent
   }
 
   ngOnInit(): void {
-    this._salesService
-      .getStockBalancesByProductId(this.data.id)
+    this._stockBalanceService
+      .getStockBalancesByProductIdGroupBySellingPrice(this.data.id)
       .subscribe((response) => {
         this.productStockBalances = response;
       });

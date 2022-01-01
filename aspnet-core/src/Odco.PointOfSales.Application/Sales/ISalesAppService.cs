@@ -27,11 +27,6 @@ namespace Odco.PointOfSales.Application.Sales
         Task<SaleDto> GetSalesAsync(Guid saleId);
         #endregion
 
-        #region StockBalance
-        /// GroupBy SellingPrice
-        Task<List<GroupBySellingPriceDto>> GetStockBalancesByProductIdAsync(Guid productId);
-        #endregion
-
         #region NonInventoryProduct
         Task<List<NonInventoryProductDto>> GetNonInventoryProductBySaleIdAsync(Guid saleId);
         #endregion
