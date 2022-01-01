@@ -544,22 +544,12 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         _a.saleId = item.salesId;
         _a.salesNumber = item.salesNumber;
         _a.productId = item.productId;
-        // y.barCode = item.; // missing in item.
         _a.code = item.productCode;
         _a.name = item.productName;
-        // _a.stockBalanceIds = item.stockBalance.stockBalanceId;
-        // _a.expiryDate = item.stockBalance.expiryDate;
-        // _a.batchNumber = item.stockBalance.batchNumber;
         _a.warehouseId = item.warehouseId;
         _a.warehouseCode = item.warehouseCode;
         _a.warehouseName = item.warehouseName;
-        // _a.bookBalanceQuantity = item.stockBalance.bookBalanceQuantity;
-        // _a.bookBalanceUnitOfMeasureUnit =
-        //   item.stockBalance.bookBalanceUnitOfMeasureUnit;
-        // _a.costPrice = item.stockBalance.costPrice;
         _a.sellingPrice = item.sellingPrice;
-        // _a.maximumRetailPrice = item.stockBalance.maximumRetailPrice;
-        // _a.isSelected = item.stockBalance.isSelected;
         _a.price = item.soldPrice;
         _a.discountRate = item.discountRate;
         _a.discountAmount = item.discountAmount;
