@@ -211,7 +211,6 @@ namespace Odco.PointOfSales.Application.Sales
                     input.PaymentStatus = await GetPaymentStatusBySaleId(input.Id.Value, input.NetAmount, t.Value);
 
                     input.SalesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
-                    input.SalesProducts.ToList().ForEach(sp => sp.SalesNumber = input.SalesNumber);
                     await CreatePaymentForSalesIdAsync(input.Id.Value, input.SalesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
                 }
                 else
@@ -228,7 +227,10 @@ namespace Odco.PointOfSales.Application.Sales
 
                 #region SalesProduct = InventoryTransaction
                 // Create / Update / Delete SalesProduct
-                input.SalesProducts.ToList().ForEach(isp => isp.SaleId = _saleHeader.Id);
+                input.SalesProducts.ToList().ForEach(isp => {
+                    isp.SaleId = _saleHeader.Id;
+                    isp.SalesNumber = input.SalesNumber;
+                });
 
                 await CreateOrUpdateSalesProductsAsync(_saleHeader.Id, input.SalesNumber, input.SalesProducts.ToList());
                 #endregion
@@ -307,37 +309,6 @@ namespace Odco.PointOfSales.Application.Sales
             catch (Exception ex)
             {
                 throw ex;
-            }
-        }
-
-        private async Task CreateSalesProductAsync(bool isExisting, Guid? existingSaleId, CreateSalesProductDto lineLevel, WarehouseDto warehouse)
-        {
-            // Set Warehouse Details to Line level 
-            lineLevel.WarehouseId = warehouse.Id;
-            lineLevel.WarehouseCode = warehouse.Code;
-            lineLevel.WarehouseName = warehouse.Name;
-
-            //var stockBalances = await _stockBalanceAppService.GetStockBalancesAsync(lineLevel.ProductId, warehouse.Id);
-
-            // * Increase in Allocated Qty & Decrease in Book Balance Qty
-            // 1. Company Summary
-            // 2. Warehouse Summary
-            // 3. GRN Summary reduce (specific)
-            //foreach (var sb in stockBalances)
-            //{
-            //    //if (sb.SequenceNumber <= 0 || sb.Id == lineLevel.StockBalanceId)
-            //    //{
-            //    //    sb.AllocatedQuantity += lineLevel.Quantity;
-            //    //    sb.BookBalanceQuantity -= lineLevel.Quantity;
-            //    //    await _stockBalanceRepository.UpdateAsync(sb);
-            //    //}
-            //}
-
-            if (isExisting)
-            {
-                var lineLevelProduct = ObjectMapper.Map<SalesProduct>(lineLevel);
-                lineLevelProduct.SaleId = existingSaleId.Value;
-                await _saleProductRepository.InsertAsync(lineLevelProduct);
             }
         }
 
@@ -553,8 +524,8 @@ namespace Odco.PointOfSales.Application.Sales
                             foreach (var sb in alreadyConsumedStockBalances)
                             {
                                 var specificSB = eSBSPs.FirstOrDefault(sbsp => sbsp.StockBalanceId == sb.Id);
-                                
-                                if(sb.BookBalanceQuantity > 0)
+
+                                if (sb.BookBalanceQuantity > 0)
                                 {
                                     if (increasingQuantity < sb.BookBalanceQuantity)
                                     {

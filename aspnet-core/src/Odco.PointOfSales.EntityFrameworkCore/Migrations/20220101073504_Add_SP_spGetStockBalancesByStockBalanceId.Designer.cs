@@ -10,8 +10,8 @@ using Odco.PointOfSales.EntityFrameworkCore;
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    [Migration("20211227025524_AddingNewOne")]
-    partial class AddingNewOne
+    [Migration("20220101073504_Add_SP_spGetStockBalancesByStockBalanceId")]
+    partial class Add_SP_spGetStockBalancesByStockBalanceId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
