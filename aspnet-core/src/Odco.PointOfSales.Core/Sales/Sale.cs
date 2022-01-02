@@ -16,10 +16,16 @@ namespace Odco.PointOfSales.Core.Sales
     public class Sale : FullAuditedEntity<Guid>
     {
         /// <summary>
-        /// Exist: When Payment is carried out
+        /// Exist: When navigate to Payment screen
         /// </summary>
         [StringLength(15)]
         public string SalesNumber { get; set; }
+
+        /// <summary>
+        /// Exist: When Payment is conducted
+        /// </summary>
+        [StringLength(15)]
+        public string InvoiceNumber { get; set; }
 
         [StringLength(15)]
         public string ReferenceNumber { get; set; }

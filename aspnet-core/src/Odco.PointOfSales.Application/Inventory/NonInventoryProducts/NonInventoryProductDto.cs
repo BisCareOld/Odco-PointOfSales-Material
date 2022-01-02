@@ -16,6 +16,9 @@ namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
         [StringLength(15)]
         public string SalesNumber { get; set; }
 
+        [StringLength(15)]
+        public string InvoiceNumber { get; set; }
+
         /// <summary>
         ///     Product *FK
         /// </summary>

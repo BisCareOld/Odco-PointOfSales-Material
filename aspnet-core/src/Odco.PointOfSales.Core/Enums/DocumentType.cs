@@ -6,11 +6,12 @@
         GoodsReceivedNote = 2,
         SalesOrder = 3,
         Sales = 4,
-        Receipt = 5,
-        Dispatch = 6,
-        StockTransfer = 7,
-        StockAdjustment = 8,
-        CompanyReturn = 9,
-        SalesReturn = 10
+        Invoice = 5,
+        Receipt = 6,
+        Dispatch = 7,
+        StockTransfer = 8,
+        StockAdjustment = 9,
+        CompanyReturn = 10,
+        SalesReturn = 11
     }
 }

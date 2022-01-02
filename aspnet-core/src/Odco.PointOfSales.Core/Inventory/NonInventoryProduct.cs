@@ -37,6 +37,9 @@ namespace Odco.PointOfSales.Core.Inventory
         [StringLength(15)]
         public string SalesNumber { get; set; }
 
+        [StringLength(15)]
+        public string InvoiceNumber { get; set; }
+
         /// <summary>
         ///     Product *FK
         /// </summary>

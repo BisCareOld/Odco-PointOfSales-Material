@@ -17,6 +17,9 @@ namespace Odco.PointOfSales.Application.Sales.SalesProducts
 
         [StringLength(15)]
         public string SalesNumber { get; set; }
+
+        [StringLength(15)]
+        public string InvoiceNumber { get; set; }
         #endregion
 
         #region Product

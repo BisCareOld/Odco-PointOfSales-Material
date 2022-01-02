@@ -17,6 +17,9 @@ namespace Odco.PointOfSales.Application.Sales.Sales
         public string SalesNumber { get; set; }
 
         [StringLength(15)]
+        public string InvoiceNumber { get; set; }
+
+        [StringLength(15)]
         public string ReferenceNumber { get; set; }
 
         public Guid? CustomerId { get; set; }

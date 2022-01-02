@@ -197,6 +197,11 @@ namespace Odco.PointOfSales.Application.Sales
                 var warehouse = await _warehouseRepository.FirstOrDefaultAsync(w => w.IsActive && w.IsDefault);
                 var _saleHeader = new Sale();
 
+                #region Sales Number
+                if(!input.Id.HasValue)
+                    input.SalesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
+                #endregion
+
                 #region Payment
                 // NOTE:
                 // 1. Make Payment
@@ -210,8 +215,8 @@ namespace Odco.PointOfSales.Application.Sales
 
                     input.PaymentStatus = await GetPaymentStatusBySaleId(input.Id.Value, input.NetAmount, t.Value);
 
-                    input.SalesNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Sales);
-                    await CreatePaymentForSalesIdAsync(input.Id.Value, input.SalesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
+                    input.InvoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
+                    await CreatePaymentForSalesIdAsync(input.Id.Value, input.SalesNumber, input.InvoiceNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
                 }
                 else
                 {
@@ -225,11 +230,12 @@ namespace Odco.PointOfSales.Application.Sales
                 _saleHeader.Id = await _saleRepository.InsertOrUpdateAndGetIdAsync(sale);
                 #endregion
 
-                #region SalesProduct = InventoryTransaction
+                #region SalesProduct = InventoryProduct
                 // Create / Update / Delete SalesProduct
                 input.SalesProducts.ToList().ForEach(isp => {
                     isp.SaleId = _saleHeader.Id;
                     isp.SalesNumber = input.SalesNumber;
+                    isp.InvoiceNumber = input.InvoiceNumber;
                 });
 
                 await CreateOrUpdateSalesProductsAsync(_saleHeader.Id, input.SalesNumber, input.SalesProducts.ToList());
@@ -237,7 +243,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                 #region NonInventoryProduct
                 // Create / Update / Delete NonInventoryProduct
-                await CreateOrUpdateNonInventoryProductAsync(_saleHeader.Id, input.SalesNumber, input.NonInventoryProducts.ToList());
+                await CreateOrUpdateNonInventoryProductAsync(_saleHeader.Id, input.SalesNumber, input.InvoiceNumber, input.NonInventoryProducts.ToList());
                 #endregion
 
                 await CurrentUnitOfWork.SaveChangesAsync();
@@ -638,7 +644,7 @@ namespace Odco.PointOfSales.Application.Sales
                 .ToListAsync();
         }
 
-        private async Task CreateOrUpdateNonInventoryProductAsync(Guid saleId, string salesNumber, List<CreateNonInventoryProductDto> nonInventoryProducts)
+        private async Task CreateOrUpdateNonInventoryProductAsync(Guid saleId, string salesNumber, string invoiceNumber, List<CreateNonInventoryProductDto> nonInventoryProducts)
         {
             #region Explanation
             //------- Existing -----------Input Req--------------------------
@@ -684,6 +690,7 @@ namespace Odco.PointOfSales.Application.Sales
                             SequenceNumber = 1,
                             SaleId = saleId,
                             SalesNumber = salesNumber,
+                            InvoiceNumber = invoiceNumber,
                             ProductId = input_nip.ProductId,
                             ProductCode = input_nip.ProductCode,
                             ProductName = input_nip.ProductName,
@@ -716,6 +723,7 @@ namespace Odco.PointOfSales.Application.Sales
                         updatedDto.SequenceNumber = 1;
                         updatedDto.SaleId = saleId;
                         updatedDto.SalesNumber = salesNumber;
+                        updatedDto.InvoiceNumber = invoiceNumber;
                         updatedDto.ProductId = input_nip.ProductId;
                         updatedDto.ProductCode = input_nip.ProductCode;
                         updatedDto.ProductName = input_nip.ProductName;
@@ -777,7 +785,7 @@ namespace Odco.PointOfSales.Application.Sales
         #endregion
 
         #region Payment
-        private async Task CreatePaymentForSalesIdAsync(Guid saleId, string saleNumber, Guid? customerId, string customerCode, string customerName, CashDto[] cashes, ChequeDto[] cheques, CustomerCreditOutstandingDto[] outstandings, DebitCardDto[] debitCards, GiftCardDto[] giftCards)
+        private async Task CreatePaymentForSalesIdAsync(Guid saleId, string saleNumber, string invoiceNumber, Guid? customerId, string customerCode, string customerName, CashDto[] cashes, ChequeDto[] cheques, CustomerCreditOutstandingDto[] outstandings, DebitCardDto[] debitCards, GiftCardDto[] giftCards)
         {
             try
             {
@@ -841,6 +849,7 @@ namespace Odco.PointOfSales.Application.Sales
                     p.CustomerCode = customerCode;
                     p.CustomerName = customerName.Trim();
                     p.SaleNumber = saleNumber;
+                    p.InvoiceNumber = invoiceNumber;
 
                     await _paymentRepository.InsertAsync(p);
                 }

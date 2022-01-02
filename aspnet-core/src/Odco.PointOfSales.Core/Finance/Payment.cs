@@ -18,6 +18,9 @@ namespace Odco.PointOfSales.Core.Finance
         [Required]
         [StringLength(15)]
         public string SaleNumber { get; set; }
+
+        [StringLength(15)]
+        public string InvoiceNumber { get; set; }
         #endregion
 
         public Guid? CustomerId { get; set; }

@@ -142,6 +142,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         salesheader != null ? salesheader.salesNumber : null,
         Validators.compose([Validators.required, Validators.maxLength(15)]),
       ],
+      invoiceNumber: [salesheader != null ? salesheader.invoiceNumber : null],
       referenceNumber: [salesheader != null ? salesheader.referenceNumber : null, Validators.maxLength(15)],
       customerId: [isNewSale ? null : salesheader.customerId],
       customerCode: [isNewSale ? null : salesheader.customerCode],
@@ -195,6 +196,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       id: [!isNewSale ? _salesProduct.id : null],
       salesId: [!isNewSale ? _salesProduct.saleId : null],
       salesNumber: [!isNewSale ? _salesProduct.salesNumber : null],
+      invoiceNumber: [!isNewSale ? _salesProduct.invoiceNumber : null],
       productId: [
         !isNewSale ? _salesProduct.productId : _product.id,
         Validators.required,
@@ -276,6 +278,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       id: [_nonInventoryProduct.id],
       salesId: [_nonInventoryProduct.saleId],
       salesNumber: [_nonInventoryProduct.salesNumber],
+      invoiceNumber: [_nonInventoryProduct.invoiceNumber],
       productId: [
         _nonInventoryProduct.productId,
         Validators.required,
@@ -404,7 +407,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       StockBalanceDialogComponent,
       {
         data: { id: product.id, productName: product.name },
-        width: "70%",
+        width: "65%",
       }
     );
 
@@ -517,7 +520,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
     let _header = new CreateOrUpdateSaleDto();
     _header.id = !this.saleId ? null : this.saleId;
-    _header.salesNumber = null;
+    _header.salesNumber = this.salesNumber.value;
+    _header.invoiceNumber = this.invoiceNumber.value;
     _header.referenceNumber = null;
     _header.customerId = this.customerId.value;
     _header.customerCode = this.customerCode.value;
@@ -543,6 +547,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         _a.sequenceNumber = sequenceNumber++;
         _a.saleId = item.salesId;
         _a.salesNumber = item.salesNumber;
+        _a.invoiceNumber = item.invoiceNumber;
         _a.productId = item.productId;
         _a.code = item.productCode;
         _a.name = item.productName;
@@ -566,6 +571,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         _b.sequenceNumber = sequenceNumber++;
         _b.saleId = item.tempSaleId;
         _b.salesNumber = item.salesNumber;
+        _b.invoiceNumber = item.invoiceNumber;
         _b.productId = item.productId;
         _b.productCode = item.productCode;
         _b.productName = item.productName;
@@ -604,6 +610,10 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   //#region Propertises
   get salesNumber() {
     return this.salePanelForm.get("salesNumber") as FormControl;
+  }
+
+  get invoiceNumber() {
+    return this.salePanelForm.get("invoiceNumber") as FormControl;
   }
 
   get referenceNumber() {
