@@ -8613,7 +8613,6 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
@@ -8645,7 +8644,6 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
             this.sequenceNumber = _data["sequenceNumber"];
             this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
-            this.invoiceNumber = _data["invoiceNumber"];
             this.productId = _data["productId"];
             this.barCode = _data["barCode"];
             this.code = _data["code"];
@@ -8677,7 +8675,6 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
         data["sequenceNumber"] = this.sequenceNumber;
         data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
-        data["invoiceNumber"] = this.invoiceNumber;
         data["productId"] = this.productId;
         data["barCode"] = this.barCode;
         data["code"] = this.code;
@@ -8709,7 +8706,6 @@ export interface ICreateSalesProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
@@ -8732,7 +8728,6 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     productCode: string;
     productName: string;
@@ -8764,7 +8759,6 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
             this.sequenceNumber = _data["sequenceNumber"];
             this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
-            this.invoiceNumber = _data["invoiceNumber"];
             this.productId = _data["productId"];
             this.productCode = _data["productCode"];
             this.productName = _data["productName"];
@@ -8796,7 +8790,6 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
         data["sequenceNumber"] = this.sequenceNumber;
         data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
-        data["invoiceNumber"] = this.invoiceNumber;
         data["productId"] = this.productId;
         data["productCode"] = this.productCode;
         data["productName"] = this.productName;
@@ -8828,7 +8821,6 @@ export interface ICreateNonInventoryProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     productCode: string;
     productName: string;
@@ -9082,7 +9074,6 @@ export interface IGiftCardDto {
 export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
     id: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     referenceNumber: string | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
@@ -9117,7 +9108,6 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
         if (_data) {
             this.id = _data["id"];
             this.salesNumber = _data["salesNumber"];
-            this.invoiceNumber = _data["invoiceNumber"];
             this.referenceNumber = _data["referenceNumber"];
             this.customerId = _data["customerId"];
             this.customerCode = _data["customerCode"];
@@ -9180,7 +9170,6 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["salesNumber"] = this.salesNumber;
-        data["invoiceNumber"] = this.invoiceNumber;
         data["referenceNumber"] = this.referenceNumber;
         data["customerId"] = this.customerId;
         data["customerCode"] = this.customerCode;
@@ -9243,7 +9232,6 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
 export interface ICreateOrUpdateSaleDto {
     id: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     referenceNumber: string | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
@@ -9270,7 +9258,6 @@ export class SalesProductDto implements ISalesProductDto {
     sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
@@ -9304,7 +9291,6 @@ export class SalesProductDto implements ISalesProductDto {
             this.sequenceNumber = _data["sequenceNumber"];
             this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
-            this.invoiceNumber = _data["invoiceNumber"];
             this.productId = _data["productId"];
             this.barCode = _data["barCode"];
             this.code = _data["code"];
@@ -9338,7 +9324,6 @@ export class SalesProductDto implements ISalesProductDto {
         data["sequenceNumber"] = this.sequenceNumber;
         data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
-        data["invoiceNumber"] = this.invoiceNumber;
         data["productId"] = this.productId;
         data["barCode"] = this.barCode;
         data["code"] = this.code;
@@ -9372,7 +9357,6 @@ export interface ISalesProductDto {
     sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     barCode: string | undefined;
     code: string;
@@ -9397,7 +9381,6 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     productCode: string;
     productName: string;
@@ -9429,7 +9412,6 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
             this.sequenceNumber = _data["sequenceNumber"];
             this.saleId = _data["saleId"];
             this.salesNumber = _data["salesNumber"];
-            this.invoiceNumber = _data["invoiceNumber"];
             this.productId = _data["productId"];
             this.productCode = _data["productCode"];
             this.productName = _data["productName"];
@@ -9461,7 +9443,6 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
         data["sequenceNumber"] = this.sequenceNumber;
         data["saleId"] = this.saleId;
         data["salesNumber"] = this.salesNumber;
-        data["invoiceNumber"] = this.invoiceNumber;
         data["productId"] = this.productId;
         data["productCode"] = this.productCode;
         data["productName"] = this.productName;
@@ -9493,7 +9474,6 @@ export interface INonInventoryProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     productId: string;
     productCode: string;
     productName: string;
@@ -9514,7 +9494,6 @@ export interface INonInventoryProductDto {
 
 export class SaleDto implements ISaleDto {
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     referenceNumber: string | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;
@@ -9544,7 +9523,6 @@ export class SaleDto implements ISaleDto {
     init(_data?: any) {
         if (_data) {
             this.salesNumber = _data["salesNumber"];
-            this.invoiceNumber = _data["invoiceNumber"];
             this.referenceNumber = _data["referenceNumber"];
             this.customerId = _data["customerId"];
             this.customerCode = _data["customerCode"];
@@ -9582,7 +9560,6 @@ export class SaleDto implements ISaleDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["salesNumber"] = this.salesNumber;
-        data["invoiceNumber"] = this.invoiceNumber;
         data["referenceNumber"] = this.referenceNumber;
         data["customerId"] = this.customerId;
         data["customerCode"] = this.customerCode;
@@ -9620,7 +9597,6 @@ export class SaleDto implements ISaleDto {
 
 export interface ISaleDto {
     salesNumber: string | undefined;
-    invoiceNumber: string | undefined;
     referenceNumber: string | undefined;
     customerId: string | undefined;
     customerCode: string | undefined;

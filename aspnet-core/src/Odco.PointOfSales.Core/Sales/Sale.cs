@@ -21,12 +21,6 @@ namespace Odco.PointOfSales.Core.Sales
         [StringLength(15)]
         public string SalesNumber { get; set; }
 
-        /// <summary>
-        /// Exist: When Payment is conducted
-        /// </summary>
-        [StringLength(15)]
-        public string InvoiceNumber { get; set; }
-
         [StringLength(15)]
         public string ReferenceNumber { get; set; }
 
@@ -49,6 +43,12 @@ namespace Odco.PointOfSales.Core.Sales
         public decimal GrossAmount { get; set; }
 
         public decimal NetAmount { get; set; }
+
+        #region Based on Customer Payment
+        public decimal ReceivedAmount { get; set; }
+
+        public decimal BalanceAmount { get; set; }
+        #endregion
 
         [StringLength(100)]
         public string Remarks { get; set; }

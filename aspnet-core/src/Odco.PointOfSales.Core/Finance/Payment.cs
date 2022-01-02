@@ -19,6 +19,12 @@ namespace Odco.PointOfSales.Core.Finance
         [StringLength(15)]
         public string SaleNumber { get; set; }
 
+        /// <summary>
+        /// Similar to PaymentNumber = InvoiceNumber
+        /// Exist: When creating a Payment
+        /// Sale : InvoiceNumber = 1 : M
+        /// </summary>
+        [Required]
         [StringLength(15)]
         public string InvoiceNumber { get; set; }
         #endregion

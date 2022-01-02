@@ -21,12 +21,6 @@ namespace Odco.PointOfSales.Sales.Common
         /// </summary>
         [StringLength(15)]
         public string SalesNumber { get; set; }
-
-        /// <summary>
-        /// Exist: When Payment is conducted
-        /// </summary>
-        [StringLength(15)]
-        public string InvoiceNumber { get; set; }
         #endregion
 
         #region Product

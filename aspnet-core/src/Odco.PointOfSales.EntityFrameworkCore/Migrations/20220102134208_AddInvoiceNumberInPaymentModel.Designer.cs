@@ -10,8 +10,8 @@ using Odco.PointOfSales.EntityFrameworkCore;
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    [Migration("20220102042649_AddInvoiceNumber")]
-    partial class AddInvoiceNumber
+    [Migration("20220102134208_AddInvoiceNumberInPaymentModel")]
+    partial class AddInvoiceNumberInPaymentModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2346,6 +2346,7 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InvoiceNumber")
+                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
@@ -2683,10 +2684,6 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<decimal>("DiscountRate")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("InvoiceNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -3128,10 +3125,6 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<decimal>("GrossAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("InvoiceNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3489,10 +3482,6 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<decimal>("DiscountRate")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("InvoiceNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");

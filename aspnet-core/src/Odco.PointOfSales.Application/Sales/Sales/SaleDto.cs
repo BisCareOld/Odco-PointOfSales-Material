@@ -17,9 +17,6 @@ namespace Odco.PointOfSales.Application.Sales.Sales
         public string SalesNumber { get; set; }
 
         [StringLength(15)]
-        public string InvoiceNumber { get; set; }
-
-        [StringLength(15)]
         public string ReferenceNumber { get; set; }
 
         public Guid? CustomerId { get; set; }
@@ -41,6 +38,10 @@ namespace Odco.PointOfSales.Application.Sales.Sales
         public decimal GrossAmount { get; set; }
 
         public decimal NetAmount { get; set; }
+
+        public decimal ReceivedAmount { get; set; }
+
+        public decimal BalanceAmount { get; set; }
 
         [StringLength(100)]
         public string Remarks { get; set; }
