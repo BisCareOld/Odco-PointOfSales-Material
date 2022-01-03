@@ -8,14 +8,14 @@ namespace Odco.PointOfSales.Migrations
         {
             migrationBuilder.AddColumn<decimal>(
                 name: "BalanceAmount",
-                table: "Sales.Sale",
+                table: "Finance.Payment",
                 type: "decimal(18,2)",
                 nullable: false,
                 defaultValue: 0m);
 
             migrationBuilder.AddColumn<decimal>(
                 name: "ReceivedAmount",
-                table: "Sales.Sale",
+                table: "Finance.Payment",
                 type: "decimal(18,2)",
                 nullable: false,
                 defaultValue: 0m);
@@ -25,11 +25,11 @@ namespace Odco.PointOfSales.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "BalanceAmount",
-                table: "Sales.Sale");
+                table: "Finance.Payment");
 
             migrationBuilder.DropColumn(
                 name: "ReceivedAmount",
-                table: "Sales.Sale");
+                table: "Finance.Payment");
         }
     }
 }

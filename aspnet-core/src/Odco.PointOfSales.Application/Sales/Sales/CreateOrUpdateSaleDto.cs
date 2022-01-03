@@ -57,9 +57,11 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public decimal NetAmount { get; set; }
 
-        public decimal ReceivedAmount { get; set; }
+        #region Used for storing Received & Balance Amounts of Customer in "Payment" Model
+        public decimal ReceivedAmount { get; set; } = 0;
 
-        public decimal BalanceAmount { get; set; }
+        public decimal BalanceAmount { get; set; } = 0;
+        #endregion
 
         [StringLength(100)]
         public string Remarks { get; set; }

@@ -288,13 +288,15 @@
                 <hr>
                 <div class="d-flex justify-content-between mt-2 big-size">
                   <mat-label>{{ "Balance" | localize }}</mat-label>
-                  <span class="text-success">{{ balanceAmount() }}</span>
+                  <span [class]='calculateBalanceAmount() >= 0 ? "text-success" : "text-danger"'>
+                    {{ calculateBalanceAmount() }}
+                  </span>
                 </div>
               </div>
 
               <div style="float: right; margin-right: 10px;">
                 <button type="submit" mat-raised-button color="primary" style="margin-right: 0.5rem;"
-                  (click)="save()">Submit</button>
+                  [disabled]="formPayment.invalid" (click)="save()">Submit</button>
                 <button type="button" mat-raised-button color="warn">Cancel</button>
               </div>
 

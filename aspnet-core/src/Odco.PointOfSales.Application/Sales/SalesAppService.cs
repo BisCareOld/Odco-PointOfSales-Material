@@ -215,7 +215,10 @@ namespace Odco.PointOfSales.Application.Sales
 
                     input.PaymentStatus = await GetPaymentStatusBySaleId(input.Id.Value, input.NetAmount, t.Value);
 
-                    await CreatePaymentForSalesIdAsync(input.Id.Value, input.SalesNumber, input.CustomerId, input.CustomerCode, input.CustomerName, input.Cashes.ToArray(), input.Cheques.ToArray(), input.Outstandings.ToArray(), input.DebitCards.ToArray(), input.GiftCards.ToArray());
+                    var requestDto = input;
+                    requestDto.SalesProducts.Clear();
+                    requestDto.NonInventoryProducts.Clear();
+                    await CreatePaymentForSalesIdAsync(requestDto);
                 }
                 else
                 {
@@ -784,7 +787,7 @@ namespace Odco.PointOfSales.Application.Sales
         #endregion
 
         #region Payment
-        private async Task CreatePaymentForSalesIdAsync(Guid saleId, string saleNumber, Guid? customerId, string customerCode, string customerName, CashDto[] cashes, ChequeDto[] cheques, CustomerCreditOutstandingDto[] outstandings, DebitCardDto[] debitCards, GiftCardDto[] giftCards)
+        private async Task CreatePaymentForSalesIdAsync(CreateOrUpdateSaleDto input)
         {
             try
             {
@@ -794,17 +797,17 @@ namespace Odco.PointOfSales.Application.Sales
 
                 #region Map Payment from Payments[]
 
-                if (cashes.Any())
+                if (input.Cashes.Any())
                 {
                     // Get the total amount of cash payments
-                    var totalCashAmount = cashes.Select(c => c.CashAmount).Sum();
+                    var totalCashAmount = input.Cashes.Select(c => c.CashAmount).Sum();
                     payments.Add(new Payment
                     {
                         PaidAmount = totalCashAmount,
                         IsCash = true,
                     });
                 }
-                foreach (var ip in cheques)
+                foreach (var ip in input.Cheques)
                 {
                     payments.Add(new Payment
                     {
@@ -818,7 +821,7 @@ namespace Odco.PointOfSales.Application.Sales
                         IsCheque = true,
                     });
                 }
-                foreach (var ip in outstandings)
+                foreach (var ip in input.Outstandings)
                 {
                     payments.Add(new Payment
                     {
@@ -827,14 +830,14 @@ namespace Odco.PointOfSales.Application.Sales
                         IsCreditOutstanding = true,
                     });
                 }
-                foreach (var ip in debitCards)
+                foreach (var ip in input.DebitCards)
                 {
                     payments.Add(new Payment
                     {
                         IsDebitCard = true,
                     });
                 }
-                foreach (var ip in giftCards)
+                foreach (var ip in input.GiftCards)
                 {
                     payments.Add(new Payment
                     {
@@ -845,12 +848,14 @@ namespace Odco.PointOfSales.Application.Sales
 
                 foreach (var p in payments)
                 {
-                    p.SaleId = saleId;
-                    p.CustomerId = customerId;
-                    p.CustomerCode = customerCode;
-                    p.CustomerName = !string.IsNullOrEmpty(customerName) ? customerName.Trim() : null;
-                    p.SaleNumber = saleNumber;
+                    p.SaleId = input.Id.Value;
+                    p.CustomerId = input.CustomerId;
+                    p.CustomerCode = input.CustomerCode;
+                    p.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
+                    p.SaleNumber = input.SalesNumber;
                     p.InvoiceNumber = invoiceNumber;
+                    p.ReceivedAmount = input.ReceivedAmount;
+                    p.BalanceAmount = input.BalanceAmount;
 
                     await _paymentRepository.InsertAsync(p);
                 }

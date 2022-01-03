@@ -2295,6 +2295,9 @@ namespace Odco.PointOfSales.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("BalanceAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Bank")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -2376,6 +2379,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ReceivedAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("SaleId")
@@ -3091,9 +3097,6 @@ namespace Odco.PointOfSales.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("BalanceAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -3143,9 +3146,6 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<byte>("PaymentStatus")
                         .HasColumnType("tinyint");
-
-                    b.Property<decimal>("ReceivedAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ReferenceNumber")
                         .HasMaxLength(15)

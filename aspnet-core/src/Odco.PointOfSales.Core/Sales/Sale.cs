@@ -44,12 +44,6 @@ namespace Odco.PointOfSales.Core.Sales
 
         public decimal NetAmount { get; set; }
 
-        #region Based on Customer Payment
-        public decimal ReceivedAmount { get; set; }
-
-        public decimal BalanceAmount { get; set; }
-        #endregion
-
         [StringLength(100)]
         public string Remarks { get; set; }
 

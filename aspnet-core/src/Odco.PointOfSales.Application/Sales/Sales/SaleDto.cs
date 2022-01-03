@@ -38,11 +38,7 @@ namespace Odco.PointOfSales.Application.Sales.Sales
         public decimal GrossAmount { get; set; }
 
         public decimal NetAmount { get; set; }
-
-        public decimal ReceivedAmount { get; set; }
-
-        public decimal BalanceAmount { get; set; }
-
+        
         [StringLength(100)]
         public string Remarks { get; set; }
 

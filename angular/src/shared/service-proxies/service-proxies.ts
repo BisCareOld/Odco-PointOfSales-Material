@@ -9084,6 +9084,8 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
     taxAmount: number;
     grossAmount: number;
     netAmount: number;
+    receivedAmount: number;
+    balanceAmount: number;
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
@@ -9118,6 +9120,8 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
             this.taxAmount = _data["taxAmount"];
             this.grossAmount = _data["grossAmount"];
             this.netAmount = _data["netAmount"];
+            this.receivedAmount = _data["receivedAmount"];
+            this.balanceAmount = _data["balanceAmount"];
             this.remarks = _data["remarks"];
             this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
@@ -9180,6 +9184,8 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
         data["taxAmount"] = this.taxAmount;
         data["grossAmount"] = this.grossAmount;
         data["netAmount"] = this.netAmount;
+        data["receivedAmount"] = this.receivedAmount;
+        data["balanceAmount"] = this.balanceAmount;
         data["remarks"] = this.remarks;
         data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
@@ -9242,6 +9248,8 @@ export interface ICreateOrUpdateSaleDto {
     taxAmount: number;
     grossAmount: number;
     netAmount: number;
+    receivedAmount: number;
+    balanceAmount: number;
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;

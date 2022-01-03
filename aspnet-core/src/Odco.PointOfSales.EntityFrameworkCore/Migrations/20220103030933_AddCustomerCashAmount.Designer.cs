@@ -10,7 +10,7 @@ using Odco.PointOfSales.EntityFrameworkCore;
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    [Migration("20220102150755_AddCustomerCashAmount")]
+    [Migration("20220103030933_AddCustomerCashAmount")]
     partial class AddCustomerCashAmount
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2297,6 +2297,9 @@ namespace Odco.PointOfSales.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("BalanceAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Bank")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -2378,6 +2381,9 @@ namespace Odco.PointOfSales.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ReceivedAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("SaleId")
@@ -3093,9 +3099,6 @@ namespace Odco.PointOfSales.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("BalanceAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -3145,9 +3148,6 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<byte>("PaymentStatus")
                         .HasColumnType("tinyint");
-
-                    b.Property<decimal>("ReceivedAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ReferenceNumber")
                         .HasMaxLength(15)

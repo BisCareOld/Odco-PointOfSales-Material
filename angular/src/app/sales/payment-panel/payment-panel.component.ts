@@ -1,5 +1,4 @@
-import { ThrowStmt } from "@angular/compiler";
-import { Component, Injector, OnChanges, OnInit, ViewChild } from "@angular/core";
+import { Component, Injector, OnInit, ViewChild } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -102,6 +101,8 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
       taxAmount: [this.saleDto.taxAmount, Validators.required],
       grossAmount: [this.saleDto.grossAmount, Validators.required],
       netAmount: [this.saleDto.netAmount, Validators.required],
+      receivedAmount: [0],
+      balanceAmount: [0],
       remarks: [this.saleDto.remarks],
       isActive: [this.saleDto.isActive],
       salesProducts: [this.saleDto.salesProducts],
@@ -140,14 +141,15 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
     return totalAmount;
   }
 
-  balanceAmount() {
+  calculateBalanceAmount(): number {
     let retunAmount = this.totalPaidAmout() - this.saleDto.netAmount;
-    return retunAmount.toFixed(2);
+    return +retunAmount.toFixed(2);
   }
 
   paymentValidation() {
     this.errors = [];
     let totalSum = 0;
+
     this.cashes.value.forEach(element => {
       totalSum += element.cashAmount;
     });
@@ -163,21 +165,56 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
     if (this.cheques.length > 0 && totalSum <= 0) {
       this.errors.push("Invalid cheque amount.");
     }
+    if (totalSum < this.netAmount.value) {
+      this.errors.push("There is a shortage of Rs." + (this.netAmount.value - totalSum).toFixed(2));
+    }
+
   }
 
   save() {
-    this.paymentValidation();
-    this.totalPaidAmout();
+    this.errors = [];
+    this.outstandings.clear();  // Only one is required, So clear the existing one & generate a new one
 
+    let _totPaidAmount = this.totalPaidAmout();
+    let _totBalanceAmount = this.calculateBalanceAmount();
+
+    this.receivedAmount.setValue(_totPaidAmount);
+    this.balanceAmount.setValue(_totBalanceAmount < 0 ? 0 : _totBalanceAmount);
+
+    if (_totPaidAmount < this.netAmount.value && this.customerId.value) {
+
+      let _outstandingAmount = Math.abs(_totBalanceAmount); // Make a negative number to positive
+
+      abp.message.confirm(
+        "An amount of Rs. " + _outstandingAmount.toFixed(2) + " for " + this.customerName.value,
+        "Move to Customer Outstanding?",
+        (result: boolean) => {
+          if (result) {
+            console.log(1);
+            this.InitiateOutstanding(_outstandingAmount);
+            this.submitPayment();
+
+          } else {
+            console.log(2)
+            this.paymentValidation();
+            this.submitPayment();
+          }
+        }
+      );
+    } else {
+      console.log(3)
+      this.paymentValidation();
+      this.submitPayment();
+    }
+  }
+
+  submitPayment() {
     if (this.errors.length <= 0) {
-      console.log(this.formPayment.value);
+      console.log("Final", this.formPayment.value);
       this._salesService.createOrUpdateSales(this.formPayment.value).subscribe((i) => {
-        this.notify.info(this.l("PaymentSuccessfullyCompleted"));
+        this.notify.success(this.l("PaymentSuccessfullyCompleted"));
         //this.router.navigate(["/app/payment-component", i.id]);
       });
-
-
-
     }
   }
 
@@ -234,7 +271,7 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
         ])],
       bankId: [null, Validators.required],
       bank: [null],
-      branchId: [null, Validators.required],
+      branchId: [null], //Validators.required
       branch: [null],
       chequeReturnDate: [null, Validators.required],
       chequeAmount: [,
@@ -245,6 +282,17 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
 
     });
     this.cheques.push(cheque);
+  }
+
+  InitiateOutstanding(outstandingAmount: number) {
+    let o = this.fb.group({
+      outstandingAmount: [outstandingAmount,
+        Validators.compose([
+          Validators.required,
+          Validators.min(1)
+        ])]
+    });
+    this.outstandings.push(o);
   }
 
   EmptyArraysInForm() {
@@ -317,6 +365,14 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
 
   get netAmount() {
     return this.formPayment.get("netAmount") as FormControl;
+  }
+
+  get receivedAmount() {
+    return this.formPayment.get("receivedAmount") as FormControl;
+  }
+
+  get balanceAmount() {
+    return this.formPayment.get("balanceAmount") as FormControl;
   }
 
   get remarks() {
