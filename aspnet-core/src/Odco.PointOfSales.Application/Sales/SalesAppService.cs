@@ -795,23 +795,49 @@ namespace Odco.PointOfSales.Application.Sales
 
                 var payments = new List<Payment>();
 
+                #region
+                decimal remainingReceivedAmount = input.ReceivedAmount - input.BalanceAmount - (input.Outstandings?.FirstOrDefault()?.OutstandingAmount ?? 0);
+                #endregion
+
                 #region Map Payment from Payments[]
 
                 if (input.Cashes.Any())
                 {
+                    decimal _amountPaid = 0;
+
                     // Get the total amount of cash payments
                     var totalCashAmount = input.Cashes.Select(c => c.CashAmount).Sum();
+                    if(remainingReceivedAmount <= totalCashAmount) {
+                        _amountPaid = remainingReceivedAmount;
+                        remainingReceivedAmount = 0;
+                    }
+                    else {
+                        _amountPaid = totalCashAmount;
+                        remainingReceivedAmount -= totalCashAmount;
+                    }
                     payments.Add(new Payment
                     {
-                        PaidAmount = totalCashAmount,
+                        PaidAmount = _amountPaid,
                         IsCash = true,
+                        SpecificReceivedAmount = totalCashAmount,
+                        SpecificBalanceAmount = totalCashAmount - _amountPaid,
                     });
                 }
                 foreach (var ip in input.Cheques)
                 {
+                    decimal _amountPaid = 0;
+
+                    if(remainingReceivedAmount <= ip.ChequeAmount) {
+                        _amountPaid = remainingReceivedAmount;
+                        remainingReceivedAmount = 0;
+                    }
+                    else {
+                        _amountPaid = ip.ChequeAmount;
+                        remainingReceivedAmount -= ip.ChequeAmount;
+                    }
                     payments.Add(new Payment
                     {
-                        PaidAmount = ip.ChequeAmount,
+                        PaidAmount = _amountPaid,
                         ChequeNumber = ip.ChequeNumber,
                         ChequeReturnDate = ip.ChequeReturnDate,
                         BankId = ip.BankId,
@@ -819,6 +845,8 @@ namespace Odco.PointOfSales.Application.Sales
                         BranchId = ip.BranchId,
                         Branch = ip.Branch,
                         IsCheque = true,
+                        SpecificReceivedAmount = ip.ChequeAmount,
+                        SpecificBalanceAmount = ip.ChequeAmount - _amountPaid,
                     });
                 }
                 foreach (var ip in input.Outstandings)
@@ -854,8 +882,8 @@ namespace Odco.PointOfSales.Application.Sales
                     p.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
                     p.SaleNumber = input.SalesNumber;
                     p.InvoiceNumber = invoiceNumber;
-                    p.ReceivedAmount = input.ReceivedAmount;
-                    p.BalanceAmount = input.BalanceAmount;
+                    p.TotalReceivedAmount = input.ReceivedAmount;
+                    p.TotalBalanceAmount = input.BalanceAmount;
 
                     await _paymentRepository.InsertAsync(p);
                 }
@@ -865,7 +893,6 @@ namespace Odco.PointOfSales.Application.Sales
             {
                 throw ex;
             }
-
         }
 
         private async Task<PaymentStatus> GetPaymentStatusBySaleId(Guid saleId, decimal netAmount, decimal totalPayingAmount)

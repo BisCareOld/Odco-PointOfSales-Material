@@ -73,10 +73,16 @@ namespace Odco.PointOfSales.Core.Finance
 
         #endregion
 
-        #region Based on Customer Payment
-        public decimal ReceivedAmount { get; set; }
+        #region Based on Customer Payment, Getting Summery of Payment
+        public decimal TotalReceivedAmount { get; set; }
 
-        public decimal BalanceAmount { get; set; }
+        public decimal TotalBalanceAmount { get; set; }
+        #endregion
+
+        #region Based on Customer Payment
+        public decimal SpecificReceivedAmount { get; set; }
+
+        public decimal SpecificBalanceAmount { get; set; }
         #endregion
 
         public decimal PaidAmount { get; set; }
