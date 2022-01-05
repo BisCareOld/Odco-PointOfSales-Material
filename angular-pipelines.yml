@@ -20,7 +20,7 @@ steps:
 
  - script: | 
    npm install -g @angular/cli
-   npm install |
+   npm install
    displayName: 'install dependencies'
 
  - script: ng build --prod --configuration=production
