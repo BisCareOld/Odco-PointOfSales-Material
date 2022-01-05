@@ -42,6 +42,8 @@ namespace Odco.PointOfSales.Application.Sales
         private readonly IRepository<StockBalancesOfSalesProduct, long> _stockBalancesOfSalesProductRepository;
         private readonly IStoredProcedureAppService _storedProcedureAppService;
         private readonly IStockBalanceAppService _stockBalanceAppService;
+        private readonly IRepository<CustomerOutstanding, Guid> _customerOutstandingRepository;
+        private readonly IRepository<CustomerOutstandingSettlement, Guid> _customerOutstandingSettlementRepository;
 
         public SalesAppService(IRepository<Customer, Guid> customerRepository,
             IRepository<Sale, Guid> saleRepository,
@@ -53,7 +55,9 @@ namespace Odco.PointOfSales.Application.Sales
             IRepository<Payment, Guid> paymentRepository,
             IRepository<StockBalancesOfSalesProduct, long> stockBalancesOfSalesProductRepository,
             IStoredProcedureAppService storedProcedureAppService,
-            IStockBalanceAppService stockBalanceAppService
+            IStockBalanceAppService stockBalanceAppService,
+            IRepository<CustomerOutstanding, Guid> customerOutstandingRepository,
+            IRepository<CustomerOutstandingSettlement, Guid> customerOutstandingSettlementRepository
             )
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
@@ -68,6 +72,8 @@ namespace Odco.PointOfSales.Application.Sales
             _stockBalancesOfSalesProductRepository = stockBalancesOfSalesProductRepository;
             _storedProcedureAppService = storedProcedureAppService;
             _stockBalanceAppService = stockBalanceAppService;
+            _customerOutstandingRepository = customerOutstandingRepository;
+            _customerOutstandingSettlementRepository = customerOutstandingSettlementRepository;
         }
 
         #region Customer
@@ -215,10 +221,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                     input.PaymentStatus = await GetPaymentStatusBySaleId(input.Id.Value, input.NetAmount, t.Value);
 
-                    var requestDto = input;
-                    requestDto.SalesProducts.Clear();
-                    requestDto.NonInventoryProducts.Clear();
-                    await CreatePaymentForSalesIdAsync(requestDto);
+                    await CreatePaymentForSalesIdAsync(input);
                 }
                 else
                 {
@@ -791,12 +794,19 @@ namespace Odco.PointOfSales.Application.Sales
         {
             try
             {
-                var invoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
+                var invoiceNumber = string.Empty;
+
+                if(input.Cashes.Any() || input.Cheques.Any() || input.DebitCards.Any() || input.GiftCards.Any())
+                    invoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
 
                 var payments = new List<Payment>();
 
                 #region
-                decimal remainingReceivedAmount = input.ReceivedAmount - input.BalanceAmount - (input.Outstandings?.FirstOrDefault()?.OutstandingAmount ?? 0);
+                decimal remainingReceivedAmount = 0;
+                if (input.ReceivedAmount < input.NetAmount)
+                    remainingReceivedAmount = input.ReceivedAmount;
+                else
+                    remainingReceivedAmount = input.ReceivedAmount - input.BalanceAmount - (input.Outstandings?.FirstOrDefault()?.OutstandingAmount ?? 0);
                 #endregion
 
                 #region Map Payment from Payments[]
@@ -849,15 +859,6 @@ namespace Odco.PointOfSales.Application.Sales
                         SpecificBalanceAmount = ip.ChequeAmount - _amountPaid,
                     });
                 }
-                foreach (var ip in input.Outstandings)
-                {
-                    payments.Add(new Payment
-                    {
-                        OutstandingAmount = ip.OutstandingAmount,
-                        PaidAmount = 0,
-                        IsCreditOutstanding = true,
-                    });
-                }
                 foreach (var ip in input.DebitCards)
                 {
                     payments.Add(new Payment
@@ -887,6 +888,22 @@ namespace Odco.PointOfSales.Application.Sales
 
                     await _paymentRepository.InsertAsync(p);
                 }
+
+                if (input.Outstandings.Any())
+                {
+                    var outstandingAmount = input.Outstandings.FirstOrDefault().OutstandingAmount;
+                    await CreateCustomerOutstandingAsync(new CustomerOutstanding
+                    {
+                        CustomerId = input.CustomerId.Value,
+                        Code = input.CustomerCode,
+                        CustomerName = input.CustomerName,
+                        SaleId = input.Id.Value,
+                        SalesNumber = input.SalesNumber,
+                        CreatedInvoiceNumber = invoiceNumber,
+                        OutstandingAmount = outstandingAmount,
+                        DueOutstandingAmount = outstandingAmount
+                    });
+                }
                 #endregion
             }
             catch (Exception ex)
@@ -907,6 +924,13 @@ namespace Odco.PointOfSales.Application.Sales
             if (netAmount <= _totalPayingAmount)
                 return PaymentStatus.Completed;
             return PaymentStatus.PartiallyPaid;
+        }
+        #endregion
+
+        #region CustomerOutstanding & CustomerOutstandingSettlement
+        private async Task CreateCustomerOutstandingAsync(CustomerOutstanding input)
+        {
+            await _customerOutstandingRepository.InsertAsync(input);
         }
         #endregion
 

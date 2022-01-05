@@ -6,7 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Odco.PointOfSales.Core.Finance
 {
-    // Sale : Payment = 1 : M
+    /// <summary>
+    /// Sale : Payment = 1 : M
+    /// Payment will generate the "InvoiceNumber"
+    /// </summary>
     [Table("Finance.Payment")]
     public class Payment : FullAuditedEntity<Guid>
     {
@@ -61,10 +64,6 @@ namespace Odco.PointOfSales.Core.Finance
         public DateTime? ChequeReturnDate { get; set; }
         #endregion
 
-        #region Credit Outstanding
-        public decimal? OutstandingAmount { get; set; }
-        #endregion
-
         #region Debit Card
 
         #endregion
@@ -90,8 +89,6 @@ namespace Odco.PointOfSales.Core.Finance
         public bool IsCash { get; set; }
         
         public bool IsCheque { get; set; }
-        
-        public bool IsCreditOutstanding { get; set; }
         
         public bool IsDebitCard { get; set; }
         

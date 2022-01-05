@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odco.PointOfSales.EntityFrameworkCore;
 
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    partial class PointOfSalesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220104105822_AddOutstandingModel")]
+    partial class AddOutstandingModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2300,10 +2302,6 @@ namespace Odco.PointOfSales.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<string>("CreatedInvoiceNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -2326,6 +2324,11 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<decimal>("DueOutstandingAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -2402,9 +2405,6 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<decimal>("PaidAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("PaymentId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("SaleId")
                         .HasColumnType("uniqueidentifier");
@@ -2484,6 +2484,9 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<bool>("IsCheque")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsCreditOutstanding")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDebitCard")
                         .HasColumnType("bit");
 
@@ -2498,6 +2501,9 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
+
+                    b.Property<decimal?>("OutstandingAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("PaidAmount")
                         .HasColumnType("decimal(18,2)");

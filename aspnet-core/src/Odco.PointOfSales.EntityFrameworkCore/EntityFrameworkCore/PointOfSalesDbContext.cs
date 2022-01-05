@@ -65,6 +65,8 @@ namespace Odco.PointOfSales.EntityFrameworkCore
 
         #region Finance
         public virtual DbSet<Payment> Payments { get; set; }
+        public virtual DbSet<CustomerOutstanding> CustomerOutstandings { get; set; }
+        public virtual DbSet<CustomerOutstandingSettlement> CustomerOutstandingSettlements { get; set; }
         #endregion
 
         public PointOfSalesDbContext(DbContextOptions<PointOfSalesDbContext> options)
