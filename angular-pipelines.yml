@@ -21,7 +21,6 @@ steps:
  - script: | 
    npm install -g @angular/cli
    npm install
-   displayName: 'install dependencies'
 
  - script: ng build --prod --configuration=production
    displayName: 'Build app for production'
