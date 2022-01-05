@@ -9,6 +9,12 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  artifactName: APP_$(Build.BuildNumber)
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}: branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}: branchName: $[ replace(variables['System.PullRequest.TargetBranch'], 'refs/heads/', '') ]
+
+
 steps:
 - task: NodeTool@0
   inputs:
