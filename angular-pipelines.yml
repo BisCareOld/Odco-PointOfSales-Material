@@ -19,9 +19,11 @@ steps:
     versionSpec: '14.x'
 
  - script: | 
-   npm install -g @angular/cli
-   npm install
-   ng build --prod --configuration=production
+    npm install -g @angular/cli
+    npm install
+   displayName: 'install dependencies'
+
+ - script: ng build --prod --configuration=production
    displayName: 'Build app for production'
           
  - task: PublishBuildArtifacts@1
@@ -30,7 +32,6 @@ steps:
     PathtoPublish: dist
     ArtifactName: $(artifactName)
     publishLocation: 'Container'       
-    condition: ne(variables['Build.Reason'], 'PullRequest')
 
  - script: ng test --no-watch --karma-config karma.pipeline.conf.js
    displayName: 'Run Unit Tests'
@@ -40,4 +41,4 @@ steps:
    inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: '**/tests.xml'
-    displayName: 'Publish Unit Test Results'
+   displayName: 'Publish Unit Test Results'
