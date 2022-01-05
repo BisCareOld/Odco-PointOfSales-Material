@@ -21,8 +21,7 @@ steps:
  - script: | 
    npm install -g @angular/cli
    npm install
-
- - script: ng build --prod --configuration=production
+   ng build --prod --configuration=production
    displayName: 'Build app for production'
           
  - task: PublishBuildArtifacts@1
