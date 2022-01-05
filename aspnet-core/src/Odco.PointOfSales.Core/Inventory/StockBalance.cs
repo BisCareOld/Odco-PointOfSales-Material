@@ -47,6 +47,11 @@ namespace Odco.PointOfSales.Core.Inventory
         [StringLength(15)]
         public string BatchNumber { get; set; }
 
+        public decimal OnOrderQuantity { get; set; }
+
+        [StringLength(10)]
+        public string OnOrderQuantityUnitOfMeasureUnit { get; set; }
+
         public decimal ReceivedQuantity { get; set; }
 
         [StringLength(10)]
@@ -64,15 +69,15 @@ namespace Odco.PointOfSales.Core.Inventory
         [StringLength(10)]
         public string BookBalanceUnitOfMeasureUnit { get; set; }
 
-        public decimal OnOrderQuantity { get; set; }
-
-        [StringLength(10)]
-        public string OnOrderQuantityUnitOfMeasureUnit { get; set; }
-
         public decimal AllocatedQuantity { get; set; }
 
         [StringLength(10)]
         public string AllocatedQuantityUnitOfMeasureUnit { get; set; }
+
+        public decimal SoldQuantity { get; set; }
+
+        [StringLength(10)]
+        public string SoldQuantityUnitOfMeasureUnit { get; set; }
 
         public decimal CostPrice { get; set; }
 
