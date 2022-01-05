@@ -16,13 +16,42 @@ variables:
 
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+ - task: NodeTool@0
+   displayName: 'Install Node.js'
+   inputs:
+    versionSpec: '14.x'
 
-- script: |
-    npm install -g @angular/cli
-    npm install
-    ng build --prod
-  displayName: 'npm install and build'
+ - script: | 
+   npm install -g @angular/cli
+   npm install |
+   displayName: 'install dependencies'
+
+ - script: ng build --prod --configuration=dev
+   displayName: 'Build app for dev'
+   condition:  eq(variables['branchName'], 'dev')
+
+ - script: ng build --prod --configuration=staging
+   displayName: 'Build app for staging'
+   condition:  eq(variables['branchName'], 'staging')
+
+ - script: ng build --prod --configuration=production
+   displayName: 'Build app for production'
+   condition:  eq(variables['branchName'], 'main')
+          
+ - task: PublishBuildArtifacts@1
+   displayName: 'Publish artifacts'
+   inputs:
+    PathtoPublish: dist
+    ArtifactName: $(artifactName)
+    publishLocation: 'Container'       
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+
+ - script: ng test --no-watch --karma-config karma.pipeline.conf.js
+   displayName: 'Run Unit Tests'
+
+ - task: PublishTestResults@2
+   condition: succeededOrFailed()
+   inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/tests.xml'
+    displayName: 'Publish Unit Test Results'
