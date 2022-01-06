@@ -66,6 +66,8 @@ namespace Odco.PointOfSales.EntityFrameworkCore.Repositories
                                     OnOrderQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "OnOrderQuantityUnitOfMeasureUnit"),
                                     AllocatedQuantity = SafeGetDecimal(dataReader, "AllocatedQuantity").Value,
                                     AllocatedQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "AllocatedQuantityUnitOfMeasureUnit"),
+                                    SoldQuantity = SafeGetDecimal(dataReader, "SoldQuantity").Value,
+                                    SoldQuantityUnitOfMeasureUnit = SafeGetString(dataReader, "SoldQuantityUnitOfMeasureUnit"),
                                     CostPrice = SafeGetDecimal(dataReader, "CostPrice").Value,
                                     SellingPrice = SafeGetDecimal(dataReader, "SellingPrice").Value,
                                     MaximumRetailPrice = SafeGetDecimal(dataReader, "MaximumRetailPrice").Value,
