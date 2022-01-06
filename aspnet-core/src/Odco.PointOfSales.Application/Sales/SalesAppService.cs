@@ -240,7 +240,8 @@ namespace Odco.PointOfSales.Application.Sales
 
                 #region SalesProduct = InventoryProduct
                 // Create / Update / Delete SalesProduct
-                input.SalesProducts.ToList().ForEach(isp => {
+                input.SalesProducts.ToList().ForEach(isp =>
+                {
                     isp.SaleId = _saleHeader.Id;
                     isp.SalesNumber = input.SalesNumber;
                 });
@@ -325,6 +326,18 @@ namespace Odco.PointOfSales.Application.Sales
             }
         }
 
+        /// <summary>
+        /// Sales Product => Create / Update / Delete 
+        /// SalesProduct => StockBalancesOfSalesProduct => StockBalance
+        /// </summary>
+        /// <param name="saleId"></param>
+        /// <param name="salesNumber"></param>
+        /// <param name="inputSalesProducts"></param>
+        /// <param name="isPaymentConducted">
+        ///     If TRUE then Payment is completed, where Quantity (AQ) will shift/moved from AllocatedQuantity to SoldQuantity in StockBalance table
+        ///     Definetly all the "inputSalesProducts" will contain an Id which means all "inputSalesProducts" is already stored, So check the Update area
+        /// </param>
+        /// <returns></returns>
         private async Task CreateOrUpdateSalesProductsAsync(Guid saleId, string salesNumber, List<CreateSalesProductDto> inputSalesProducts, bool isPaymentConducted)
         {
             try
@@ -492,166 +505,152 @@ namespace Odco.PointOfSales.Application.Sales
 
                         if (eSP != null)
                         {
-                            if (true)
+                            if (isp.Quantity <= eSP.Quantity)
                             {
-                                if (isp.Quantity <= eSP.Quantity)
-                                {
-                                    // Initially "reduceQuantity" will have values where it should be 0 to finish the loop
-                                    decimal reduceQuantity = eSP.Quantity - isp.Quantity;
+                                // Initially "reduceQuantity" will have values where it should be 0 to finish the loop
+                                decimal reduceQuantity = eSP.Quantity - isp.Quantity;
 
-                                    foreach (var sb in alreadyConsumedStockBalances)
+                                foreach (var sb in alreadyConsumedStockBalances)
+                                {
+                                    var specificSB = eSBSPs.FirstOrDefault(sbsp => sbsp.StockBalanceId == sb.Id);
+                                    decimal _reduceQuantityAfterPayment = 0;
+                                    if (reduceQuantity < specificSB.QuantityTaken)
                                     {
-                                        var specificSB = eSBSPs.FirstOrDefault(sbsp => sbsp.StockBalanceId == sb.Id);
-                                        decimal _reduceQuantityAfterPayment = 0;
-                                        if (reduceQuantity < specificSB.QuantityTaken)
+                                        _reduceQuantityAfterPayment = specificSB.QuantityTaken - reduceQuantity;
+
+                                        // UPDATE SBSP
+                                        specificSB.QuantityTaken -= reduceQuantity;
+
+                                        sb.AllocatedQuantity -= reduceQuantity;
+                                        sb.BookBalanceQuantity += reduceQuantity;
+                                        reduceQuantity = 0;
+                                    }
+                                    else
+                                    {
+                                        _reduceQuantityAfterPayment = reduceQuantity - specificSB.QuantityTaken;
+
+                                        sb.AllocatedQuantity -= specificSB.QuantityTaken;
+                                        sb.BookBalanceQuantity += specificSB.QuantityTaken;
+                                        reduceQuantity -= specificSB.QuantityTaken;
+
+                                        // DELETE SBSP
+                                        specificSB.QuantityTaken = 0;
+                                        await _stockBalancesOfSalesProductRepository.HardDeleteAsync(specificSB);
+                                    }
+                                    if (isPaymentConducted)
+                                    {
+                                        sb.AllocatedQuantity -= _reduceQuantityAfterPayment;
+                                        sb.SoldQuantity += _reduceQuantityAfterPayment;
+                                    }
+                                    if (reduceQuantity == 0 && !isPaymentConducted) break;
+                                }
+
+                                // UPDATE Company & Warehouse Summaries
+                                foreach (var sb in sbSummaries)
+                                {
+                                    if (isPaymentConducted)
+                                    {
+                                        sb.AllocatedQuantity -= isp.Quantity;
+                                        sb.SoldQuantity += isp.Quantity;
+                                    }
+
+                                    sb.AllocatedQuantity -= eSP.Quantity - isp.Quantity;
+                                    sb.BookBalanceQuantity += eSP.Quantity - isp.Quantity;
+                                    await _stockBalanceRepository.UpdateAsync(sb);
+                                }
+                            }
+                            else
+                            {
+                                var increasingQuantity = isp.Quantity - eSP.Quantity;
+
+                                // Existing SB's
+                                foreach (var sb in alreadyConsumedStockBalances)
+                                {
+                                    var specificSB = eSBSPs.FirstOrDefault(sbsp => sbsp.StockBalanceId == sb.Id);
+                                    decimal _reduceQuantityAfterPayment = 0;
+                                    if (sb.BookBalanceQuantity > 0)
+                                    {
+                                        if (increasingQuantity < sb.BookBalanceQuantity)
                                         {
-                                            _reduceQuantityAfterPayment = specificSB.QuantityTaken - reduceQuantity;
+                                            _reduceQuantityAfterPayment = specificSB.QuantityTaken + increasingQuantity;
+                                            sb.AllocatedQuantity += increasingQuantity;
+                                            sb.BookBalanceQuantity -= increasingQuantity;
 
                                             // UPDATE SBSP
-                                            specificSB.QuantityTaken -= reduceQuantity;
+                                            specificSB.QuantityTaken += increasingQuantity;
 
-                                            sb.AllocatedQuantity -= reduceQuantity;
-                                            sb.BookBalanceQuantity += reduceQuantity;
-                                            reduceQuantity = 0;
+                                            increasingQuantity = 0;
                                         }
                                         else
                                         {
-                                            _reduceQuantityAfterPayment = reduceQuantity - specificSB.QuantityTaken;
+                                            _reduceQuantityAfterPayment = specificSB.QuantityTaken + sb.BookBalanceQuantity;
 
-                                            sb.AllocatedQuantity -= specificSB.QuantityTaken;
-                                            sb.BookBalanceQuantity += specificSB.QuantityTaken;
-                                            reduceQuantity -= specificSB.QuantityTaken;
+                                            sb.AllocatedQuantity += sb.BookBalanceQuantity;
+                                            increasingQuantity -= sb.BookBalanceQuantity;
 
-                                            // DELETE SBSP
-                                            specificSB.QuantityTaken = 0;
-                                            await _stockBalancesOfSalesProductRepository.HardDeleteAsync(specificSB);
+                                            // UPDATE SBSP
+                                            specificSB.QuantityTaken += sb.BookBalanceQuantity;
+
+                                            sb.BookBalanceQuantity = 0;
                                         }
                                         if (isPaymentConducted)
                                         {
                                             sb.AllocatedQuantity -= _reduceQuantityAfterPayment;
                                             sb.SoldQuantity += _reduceQuantityAfterPayment;
                                         }
-                                        if (reduceQuantity == 0 && !isPaymentConducted) break;
-                                    }
-
-                                    // UPDATE Company & Warehouse Summaries
-                                    foreach (var sb in sbSummaries)
-                                    {
-                                        if (isPaymentConducted)
-                                        {
-                                            sb.AllocatedQuantity -= isp.Quantity;
-                                            sb.SoldQuantity += isp.Quantity;
-                                        }
-
-                                        sb.AllocatedQuantity -= eSP.Quantity - isp.Quantity;
-                                        sb.BookBalanceQuantity += eSP.Quantity - isp.Quantity;
-                                        await _stockBalanceRepository.UpdateAsync(sb);
+                                        if (increasingQuantity == 0 && !isPaymentConducted) break;
                                     }
                                 }
-                                else
+
+                                // New SB's
+                                if (increasingQuantity > 0)
                                 {
-                                    var increasingQuantity = isp.Quantity - eSP.Quantity;
-
-                                    // Existing SB's
-                                    foreach (var sb in alreadyConsumedStockBalances)
+                                    foreach (var nsb in relatedNewStockBalances)
                                     {
-                                        var specificSB = eSBSPs.FirstOrDefault(sbsp => sbsp.StockBalanceId == sb.Id);
-                                        decimal _reduceQuantityAfterPayment = 0;
-                                        if (sb.BookBalanceQuantity > 0)
+                                        if (!alreadyConsumedStockBalances.Any(eSB => eSB.Id == nsb.Id))
                                         {
-                                            if (increasingQuantity < sb.BookBalanceQuantity)
+                                            decimal _reduceQuantityAfterPayment = 0;
+                                            if (increasingQuantity < nsb.BookBalanceQuantity)
                                             {
-                                                _reduceQuantityAfterPayment = specificSB.QuantityTaken + increasingQuantity;
-                                                sb.AllocatedQuantity += increasingQuantity;
-                                                sb.BookBalanceQuantity -= increasingQuantity;
+                                                await CreateStockBalancesOfSalesProductAsync(saleId, isp.Id.Value, nsb, increasingQuantity, isp.Price);
 
-                                                // UPDATE SBSP
-                                                specificSB.QuantityTaken += increasingQuantity;
-
+                                                _reduceQuantityAfterPayment = increasingQuantity;
+                                                nsb.AllocatedQuantity += increasingQuantity;
+                                                nsb.BookBalanceQuantity -= increasingQuantity;
                                                 increasingQuantity = 0;
                                             }
                                             else
                                             {
-                                                _reduceQuantityAfterPayment = specificSB.QuantityTaken + sb.BookBalanceQuantity;
+                                                await CreateStockBalancesOfSalesProductAsync(saleId, isp.Id.Value, nsb, nsb.BookBalanceQuantity, isp.Price);
 
-                                                sb.AllocatedQuantity += sb.BookBalanceQuantity;
-                                                increasingQuantity -= sb.BookBalanceQuantity;
-
-                                                // UPDATE SBSP
-                                                specificSB.QuantityTaken += sb.BookBalanceQuantity;
-
-                                                sb.BookBalanceQuantity = 0;
+                                                _reduceQuantityAfterPayment = nsb.BookBalanceQuantity;
+                                                nsb.AllocatedQuantity += nsb.BookBalanceQuantity;
+                                                increasingQuantity -= nsb.BookBalanceQuantity;
+                                                nsb.BookBalanceQuantity = 0;
                                             }
                                             if (isPaymentConducted)
                                             {
-                                                sb.AllocatedQuantity -= _reduceQuantityAfterPayment;
-                                                sb.SoldQuantity += _reduceQuantityAfterPayment;
+                                                nsb.AllocatedQuantity -= _reduceQuantityAfterPayment;
+                                                nsb.SoldQuantity += _reduceQuantityAfterPayment;
                                             }
                                             if (increasingQuantity == 0 && !isPaymentConducted) break;
                                         }
                                     }
+                                }
 
-                                    // New SB's
-                                    if(increasingQuantity > 0)
+                                /// NOT YET Implemented 
+                                /// Update Company & Warehouse Summaries
+                                /// Create in SBSP
+                                foreach (var sbSum in sbSummaries)
+                                {
+                                    if (isPaymentConducted)
                                     {
-                                        foreach (var nsb in relatedNewStockBalances)
-                                        {
-                                            if (!alreadyConsumedStockBalances.Any(eSB => eSB.Id == nsb.Id))
-                                            {
-                                                decimal _reduceQuantityAfterPayment = 0;
-                                                if (increasingQuantity < nsb.BookBalanceQuantity)
-                                                {
-                                                    await CreateStockBalancesOfSalesProductAsync(saleId, isp.Id.Value, nsb, increasingQuantity, isp.Price);
-
-                                                    //foreach (var sbSum in sbSummaries)
-                                                    //{
-                                                    //    sbSum.AllocatedQuantity += increasingQuantity;
-                                                    //    sbSum.BookBalanceQuantity -= increasingQuantity;
-                                                    //}
-                                                    _reduceQuantityAfterPayment = increasingQuantity;
-                                                    nsb.AllocatedQuantity += increasingQuantity;
-                                                    nsb.BookBalanceQuantity -= increasingQuantity;
-                                                    increasingQuantity = 0;
-                                                }
-                                                else
-                                                {
-                                                    await CreateStockBalancesOfSalesProductAsync(saleId, isp.Id.Value, nsb, nsb.BookBalanceQuantity, isp.Price);
-
-                                                    //foreach (var sbSum in sbSummaries)
-                                                    //{
-                                                    //    sbSum.AllocatedQuantity += nsb.BookBalanceQuantity;
-                                                    //    sbSum.BookBalanceQuantity -= nsb.BookBalanceQuantity;
-                                                    //}
-                                                    _reduceQuantityAfterPayment = nsb.BookBalanceQuantity;
-
-                                                    nsb.AllocatedQuantity += nsb.BookBalanceQuantity;
-                                                    increasingQuantity -= nsb.BookBalanceQuantity;
-                                                    nsb.BookBalanceQuantity = 0;
-                                                }
-                                                if (isPaymentConducted)
-                                                {
-                                                    nsb.AllocatedQuantity -= _reduceQuantityAfterPayment;
-                                                    nsb.SoldQuantity += _reduceQuantityAfterPayment;
-                                                }
-                                                if (increasingQuantity == 0 && !isPaymentConducted) break;
-                                            }
-                                        }
+                                        sbSum.AllocatedQuantity -= isp.Quantity;
+                                        sbSum.SoldQuantity += isp.Quantity;
                                     }
-                                    
-                                    /// NOT YET Implemented 
-                                    /// Update Company & Warehouse Summaries
-                                    /// Create in SBSP
-                                    foreach (var sbSum in sbSummaries)
-                                    {
-                                        if (isPaymentConducted)
-                                        {
-                                            sbSum.AllocatedQuantity -= isp.Quantity;
-                                            sbSum.SoldQuantity += isp.Quantity;
-                                        }
-                                        sbSum.AllocatedQuantity += isp.Quantity - eSP.Quantity;
-                                        sbSum.BookBalanceQuantity -= isp.Quantity - eSP.Quantity;
-                                        await _stockBalanceRepository.UpdateAsync(sbSum);
-                                    }
+                                    sbSum.AllocatedQuantity += isp.Quantity - eSP.Quantity;
+                                    sbSum.BookBalanceQuantity -= isp.Quantity - eSP.Quantity;
+                                    await _stockBalanceRepository.UpdateAsync(sbSum);
                                 }
                             }
 
@@ -661,38 +660,6 @@ namespace Odco.PointOfSales.Application.Sales
                     }
                 }
 
-                //if (isPaymentConducted)
-                //{
-                //    foreach (var isp in inputSalesProducts)
-                //    {
-                //        var eSBSPs = existingSBSPs.Where(sbsp => sbsp.ProductId == isp.ProductId && sbsp.SellingPrice == isp.SellingPrice).ToList();
-
-                //        foreach (var sbsp in eSBSPs)
-                //        {
-                //            var singleSB = existingTakenStockBalances.FirstOrDefault(sb => sb.Id == sbsp.StockBalanceId);
-                //            var sbSummaries = existingTakenStockBalances
-                //                .Where(sb => sb.SequenceNumber == 0 && sb.ProductId == sbsp.ProductId && (!sb.WarehouseId.HasValue || sb.WarehouseId == sbsp.WarehouseId.Value))
-                //                .ToList();
-
-                //            //var x = existingTakenStockBalances
-                //            //    .Where(sb =>
-                //            //    sb.Id == sbsp.StockBalanceId ||
-                //            //    sb.ProductId == sbsp.ProductId &&
-                //            //    (sb.SequenceNumber == 0 && (!sb.WarehouseId.HasValue || sb.WarehouseId == sbsp.WarehouseId.Value)))
-                //            //    .ToList();
-
-                //            singleSB.AllocatedQuantity -= sbsp.QuantityTaken;
-                //            singleSB.SoldQuantity += sbsp.QuantityTaken;
-                //            await _stockBalanceRepository.UpdateAsync(singleSB);
-                //            foreach (var sb in sbSummaries)
-                //            {
-                //                sb.AllocatedQuantity -= sbsp.QuantityTaken;
-                //                sb.SoldQuantity += sbsp.QuantityTaken;
-                //                await _stockBalanceRepository.UpdateAsync(sb);
-                //            }
-                //        }
-                //    }
-                //}
             }
             catch (Exception ex)
             {
@@ -877,7 +844,7 @@ namespace Odco.PointOfSales.Application.Sales
             {
                 var invoiceNumber = string.Empty;
 
-                if(input.Cashes.Any() || input.Cheques.Any() || input.DebitCards.Any() || input.GiftCards.Any())
+                if (input.Cashes.Any() || input.Cheques.Any() || input.DebitCards.Any() || input.GiftCards.Any())
                     invoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
 
                 var payments = new List<Payment>();
@@ -898,11 +865,13 @@ namespace Odco.PointOfSales.Application.Sales
 
                     // Get the total amount of cash payments
                     var totalCashAmount = input.Cashes.Select(c => c.CashAmount).Sum();
-                    if(remainingReceivedAmount <= totalCashAmount) {
+                    if (remainingReceivedAmount <= totalCashAmount)
+                    {
                         _amountPaid = remainingReceivedAmount;
                         remainingReceivedAmount = 0;
                     }
-                    else {
+                    else
+                    {
                         _amountPaid = totalCashAmount;
                         remainingReceivedAmount -= totalCashAmount;
                     }
@@ -918,11 +887,13 @@ namespace Odco.PointOfSales.Application.Sales
                 {
                     decimal _amountPaid = 0;
 
-                    if(remainingReceivedAmount <= ip.ChequeAmount) {
+                    if (remainingReceivedAmount <= ip.ChequeAmount)
+                    {
                         _amountPaid = remainingReceivedAmount;
                         remainingReceivedAmount = 0;
                     }
-                    else {
+                    else
+                    {
                         _amountPaid = ip.ChequeAmount;
                         remainingReceivedAmount -= ip.ChequeAmount;
                     }
