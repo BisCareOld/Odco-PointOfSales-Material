@@ -25,10 +25,10 @@
     <div class="col-sm-12 col-md-3 child-grid">
       <ng-container *ngIf="
       saleDto &&
-      saleDto.salesProducts &&
-      saleDto.salesProducts.length > 0
+      saleDto.inventorySalesProducts &&
+      saleDto.inventorySalesProducts.length > 0
     ">
-        <table *ngFor="let item of saleDto.salesProducts">
+        <table *ngFor="let item of saleDto.inventorySalesProducts">
           <tr>
             <td style="font-weight: 500;">{{ item.name }}
               <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>

@@ -12,12 +12,12 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AppComponentBase } from "@shared/app-component-base";
 import {
   CreateOrUpdateSaleDto,
-  CreateSalesProductDto,
+  CreateInventorySalesProductDto,
   SaleDto,
   ProductSearchResultDto,
   ProductStockBalanceDto,
   SalesServiceProxy,
-  SalesProductDto,
+  InventorySalesProductDto,
   NonInventoryProductDto,
   CreateNonInventoryProductDto,
   CustomerSearchResultDto,
@@ -111,8 +111,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
         this.getNonInventoryProductsBySaleId(id);
         this.populateSalesDetails(false, result);
-
-        result.salesProducts.forEach((value, i) => {
+        console.log(result);
+        result.inventorySalesProducts.forEach((value, i) => {
           this.populateSalesProductDetails(
             false,
             value,
@@ -177,7 +177,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         Validators.maxLength(100),
       ],
       isActive: [true],
-      salesProducts: this.fb.array([]),
+      inventorySalesProducts: this.fb.array([]),
     });
 
     this.salePanelForm.valueChanges.subscribe((data) => {
@@ -187,7 +187,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
   private populateSalesProductDetails(
     isNewSale: boolean,
-    _salesProduct: SalesProductDto,   // !isNewSale
+    _salesProduct: InventorySalesProductDto,   // !isNewSale
     _product: ProductSearchResultDto, // isNewSale
     _groupBySellingPrice: GroupBySellingPriceDto  // isNewSale
   ) {
@@ -264,7 +264,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       remarks: [null],
       isNonInventoryProductInvolved: [false],
     });
-    this.salesProducts.push(item);
+    this.inventorySalesProducts.push(item);
     this.dataSource.data.push(item);
     return (this.dataSource.filter = "");
   }
@@ -335,7 +335,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
       remarks: [null],
       isNonInventoryProductInvolved: [true],
     });
-    this.salesProducts.push(item);
+    this.inventorySalesProducts.push(item);
     this.dataSource.data.push(item);
     return (this.dataSource.filter = "");
   }
@@ -389,7 +389,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
   // GroupBy Selling Price
   isProductExistInTable(productId, sellingPrice): boolean {
-    let product = this.salesProducts.controls.find(
+    let product = this.inventorySalesProducts.controls.find(
       (p) => p.get("productId").value == productId && p.get("sellingPrice").value == sellingPrice
     );
     if (!product) {
@@ -434,7 +434,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
   }
 
   removeProduct(itemIndex: number, item: FormGroup) {
-    this.salesProducts.removeAt(itemIndex);
+    this.inventorySalesProducts.removeAt(itemIndex);
     this.dataSource.data.splice(itemIndex, 1);
     this.dataSource._updateChangeSubscription();
   }
@@ -466,7 +466,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
 
   calculateLineLevelTotal() {
     let total = 0;
-    this.salesProducts.controls.forEach(function (item) {
+    this.inventorySalesProducts.controls.forEach(function (item) {
       total += item.get("lineTotal").value;
     });
     this.grossAmount.setValue(parseFloat(total.toFixed(2)));
@@ -510,7 +510,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     // 1. Create a Temp Sales Header & Product
     // 2. Get the Id when creating it
     // 3. From the returned Id navigate to payment page
-    if (this.salePanelForm.value.salesProducts.length <= 0) {
+    if (this.salePanelForm.value.inventorySalesProducts.length <= 0) {
       this.notify.info(this.l("SelectAtleasetOneProduct"));
       return;
     }
@@ -530,14 +530,14 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     _header.netAmount = this.netAmount.value;
     _header.remarks = this.comments != null ? this.comments.value : null;
     _header.isActive = true;
-    _header.salesProducts = [];
+    _header.inventorySalesProducts = [];
     _header.nonInventoryProducts = [];
 
     let sequenceNumber = 1;
 
-    this.salePanelForm.value.salesProducts.forEach((item, index) => {
+    this.salePanelForm.value.inventorySalesProducts.forEach((item, index) => {
 
-      let _a = new CreateSalesProductDto();
+      let _a = new CreateInventorySalesProductDto();
       if (!item.isNonInventoryProductInvolved) {
         _a.id = item.id;
         _a.sequenceNumber = sequenceNumber++;
@@ -557,7 +557,7 @@ export class SalesComponent extends AppComponentBase implements OnInit {
         _a.lineTotal = item.lineTotal;
         _a.remarks = item.remarks;
         _a.isActive = true;
-        _header.salesProducts.push(_a);
+        _header.inventorySalesProducts.push(_a);
       }
 
       let _b = new CreateNonInventoryProductDto();
@@ -650,8 +650,8 @@ export class SalesComponent extends AppComponentBase implements OnInit {
     return this.salePanelForm.get("netAmount") as FormControl;
   }
 
-  get salesProducts(): FormArray {
-    return this.salePanelForm.controls["salesProducts"] as FormArray;
+  get inventorySalesProducts(): FormArray {
+    return this.salePanelForm.controls["inventorySalesProducts"] as FormArray;
   }
   //#endregion
 }

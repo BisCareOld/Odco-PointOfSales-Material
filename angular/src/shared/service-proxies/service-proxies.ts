@@ -8608,7 +8608,7 @@ export enum PaymentStatus {
     _3 = 3,
 }
 
-export class CreateSalesProductDto implements ICreateSalesProductDto {
+export class CreateInventorySalesProductDto implements ICreateInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -8629,7 +8629,7 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
     remarks: string | undefined;
     isActive: boolean;
 
-    constructor(data?: ICreateSalesProductDto) {
+    constructor(data?: ICreateInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -8662,9 +8662,9 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
         }
     }
 
-    static fromJS(data: any): CreateSalesProductDto {
+    static fromJS(data: any): CreateInventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateSalesProductDto();
+        let result = new CreateInventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -8693,15 +8693,15 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
         return data; 
     }
 
-    clone(): CreateSalesProductDto {
+    clone(): CreateInventorySalesProductDto {
         const json = this.toJSON();
-        let result = new CreateSalesProductDto();
+        let result = new CreateInventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICreateSalesProductDto {
+export interface ICreateInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -9089,7 +9089,7 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: CreateSalesProductDto[] | undefined;
+    inventorySalesProducts: CreateInventorySalesProductDto[] | undefined;
     nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
     cashes: CashDto[] | undefined;
     cheques: ChequeDto[] | undefined;
@@ -9125,10 +9125,10 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
             this.remarks = _data["remarks"];
             this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
-            if (Array.isArray(_data["salesProducts"])) {
-                this.salesProducts = [] as any;
-                for (let item of _data["salesProducts"])
-                    this.salesProducts.push(CreateSalesProductDto.fromJS(item));
+            if (Array.isArray(_data["inventorySalesProducts"])) {
+                this.inventorySalesProducts = [] as any;
+                for (let item of _data["inventorySalesProducts"])
+                    this.inventorySalesProducts.push(CreateInventorySalesProductDto.fromJS(item));
             }
             if (Array.isArray(_data["nonInventoryProducts"])) {
                 this.nonInventoryProducts = [] as any;
@@ -9189,10 +9189,10 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
         data["remarks"] = this.remarks;
         data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
-        if (Array.isArray(this.salesProducts)) {
-            data["salesProducts"] = [];
-            for (let item of this.salesProducts)
-                data["salesProducts"].push(item.toJSON());
+        if (Array.isArray(this.inventorySalesProducts)) {
+            data["inventorySalesProducts"] = [];
+            for (let item of this.inventorySalesProducts)
+                data["inventorySalesProducts"].push(item.toJSON());
         }
         if (Array.isArray(this.nonInventoryProducts)) {
             data["nonInventoryProducts"] = [];
@@ -9253,7 +9253,7 @@ export interface ICreateOrUpdateSaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: CreateSalesProductDto[] | undefined;
+    inventorySalesProducts: CreateInventorySalesProductDto[] | undefined;
     nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
     cashes: CashDto[] | undefined;
     cheques: ChequeDto[] | undefined;
@@ -9262,7 +9262,7 @@ export interface ICreateOrUpdateSaleDto {
     giftCards: GiftCardDto[] | undefined;
 }
 
-export class SalesProductDto implements ISalesProductDto {
+export class InventorySalesProductDto implements IInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
@@ -9285,7 +9285,7 @@ export class SalesProductDto implements ISalesProductDto {
     isActive: boolean;
     id: string;
 
-    constructor(data?: ISalesProductDto) {
+    constructor(data?: IInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -9320,9 +9320,9 @@ export class SalesProductDto implements ISalesProductDto {
         }
     }
 
-    static fromJS(data: any): SalesProductDto {
+    static fromJS(data: any): InventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesProductDto();
+        let result = new InventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -9353,15 +9353,15 @@ export class SalesProductDto implements ISalesProductDto {
         return data; 
     }
 
-    clone(): SalesProductDto {
+    clone(): InventorySalesProductDto {
         const json = this.toJSON();
-        let result = new SalesProductDto();
+        let result = new InventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ISalesProductDto {
+export interface IInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
@@ -9515,7 +9515,7 @@ export class SaleDto implements ISaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: SalesProductDto[] | undefined;
+    inventorySalesProducts: InventorySalesProductDto[] | undefined;
     nonInventoryProducts: NonInventoryProductDto[] | undefined;
     id: string;
 
@@ -9544,10 +9544,10 @@ export class SaleDto implements ISaleDto {
             this.remarks = _data["remarks"];
             this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
-            if (Array.isArray(_data["salesProducts"])) {
-                this.salesProducts = [] as any;
-                for (let item of _data["salesProducts"])
-                    this.salesProducts.push(SalesProductDto.fromJS(item));
+            if (Array.isArray(_data["inventorySalesProducts"])) {
+                this.inventorySalesProducts = [] as any;
+                for (let item of _data["inventorySalesProducts"])
+                    this.inventorySalesProducts.push(InventorySalesProductDto.fromJS(item));
             }
             if (Array.isArray(_data["nonInventoryProducts"])) {
                 this.nonInventoryProducts = [] as any;
@@ -9581,10 +9581,10 @@ export class SaleDto implements ISaleDto {
         data["remarks"] = this.remarks;
         data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
-        if (Array.isArray(this.salesProducts)) {
-            data["salesProducts"] = [];
-            for (let item of this.salesProducts)
-                data["salesProducts"].push(item.toJSON());
+        if (Array.isArray(this.inventorySalesProducts)) {
+            data["inventorySalesProducts"] = [];
+            for (let item of this.inventorySalesProducts)
+                data["inventorySalesProducts"].push(item.toJSON());
         }
         if (Array.isArray(this.nonInventoryProducts)) {
             data["nonInventoryProducts"] = [];
@@ -9618,7 +9618,7 @@ export interface ISaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: SalesProductDto[] | undefined;
+    inventorySalesProducts: InventorySalesProductDto[] | undefined;
     nonInventoryProducts: NonInventoryProductDto[] | undefined;
     id: string;
 }

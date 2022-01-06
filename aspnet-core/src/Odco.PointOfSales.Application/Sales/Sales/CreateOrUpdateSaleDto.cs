@@ -1,7 +1,7 @@
 ﻿using Abp.AutoMapper;
 using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
 using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
-using Odco.PointOfSales.Application.Sales.SalesProducts;
+using Odco.PointOfSales.Application.Sales.InventorySalesProducts;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Sales;
 using System;
@@ -15,7 +15,7 @@ namespace Odco.PointOfSales.Application.Sales.Sales
     {
         public CreateOrUpdateSaleDto()
         {
-            SalesProducts = new HashSet<CreateSalesProductDto>();
+            InventorySalesProducts = new HashSet<CreateInventorySalesProductDto>();
             NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
             //PaymentDtos
             Cashes = new HashSet<CashDto>();
@@ -76,7 +76,7 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public bool IsActive { get; set; }
 
-        public ICollection<CreateSalesProductDto> SalesProducts { get; set; }
+        public ICollection<CreateInventorySalesProductDto> InventorySalesProducts { get; set; }
 
         public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
 

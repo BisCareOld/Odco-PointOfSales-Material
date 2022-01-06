@@ -75,7 +75,7 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
   }
 
   InitateForm() {
-
+    console.log(this.saleDto);
     this.formPayment = this.fb.group({
       id: [this.saleDto.id],
       salesNumber: [this.saleDto.salesNumber],
@@ -105,7 +105,7 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
       balanceAmount: [0],
       remarks: [this.saleDto.remarks],
       isActive: [this.saleDto.isActive],
-      salesProducts: [this.saleDto.salesProducts],
+      inventorySalesProducts: [this.saleDto.inventorySalesProducts],
       nonInventoryProducts: [this.saleDto.nonInventoryProducts],
       cashes: this.fb.array([]),
       cheques: this.fb.array([]),
@@ -225,8 +225,8 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
 
   calculateLineLevelTotal() {
     let total = 0;
-    console.log(this.salesProducts);
-    this.salesProducts.value.forEach(function (item) {
+    console.log(this.inventorySalesProducts);
+    this.inventorySalesProducts.value.forEach(function (item) {
       total += item.lineTotal;
     });
     this.nonInventoryProducts.value.forEach(function (item) {
@@ -383,8 +383,8 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
     return this.formPayment.get("IsActive") as FormControl;
   }
 
-  get salesProducts(): FormArray {
-    return this.formPayment.controls["salesProducts"] as FormArray;
+  get inventorySalesProducts(): FormArray {
+    return this.formPayment.controls["inventorySalesProducts"] as FormArray;
   }
 
   get nonInventoryProducts(): FormArray {

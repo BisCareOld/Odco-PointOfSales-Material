@@ -51,13 +51,13 @@ namespace Odco.PointOfSales.Core.Sales
 
         public bool IsActive { get; set; }
 
-        public ICollection<SalesProduct> SalesProducts { get; set; }
+        public ICollection<InventorySalesProduct> InventorySalesProducts { get; set; }
 
         public ICollection<Payment> Payments { get; set; }
 
         public Sale()
         {
-            SalesProducts = new HashSet<SalesProduct>();
+            InventorySalesProducts = new HashSet<InventorySalesProduct>();
 
             Payments = new HashSet<Payment>();
         }

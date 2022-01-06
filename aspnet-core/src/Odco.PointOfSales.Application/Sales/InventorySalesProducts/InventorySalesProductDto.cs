@@ -1,19 +1,18 @@
-﻿using Abp.AutoMapper;
+﻿using Abp.Application.Services.Dto;
+using Abp.AutoMapper;
 using Odco.PointOfSales.Sales.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Sales.SalesProducts
+namespace Odco.PointOfSales.Application.Sales.InventorySalesProducts
 {
-    [AutoMapTo(typeof(SalesProduct))]
-    public class CreateSalesProductDto
+    [AutoMapTo(typeof(InventorySalesProductDto)), AutoMapFrom(typeof(InventorySalesProduct))]
+    public class InventorySalesProductDto : EntityDto<Guid>
     {
-        public Guid? Id { get; set; }
-
         public int SequenceNumber { get; set; }
 
         #region SalesHeader
-        public Guid? SaleId { get; set; }
+        public Guid SaleId { get; set; }
 
         [StringLength(15)]
         public string SalesNumber { get; set; }
@@ -23,7 +22,7 @@ namespace Odco.PointOfSales.Application.Sales.SalesProducts
         public Guid ProductId { get; set; }
 
         [StringLength(15)]
-        public string BarCode { get; set; } // remove no need
+        public string BarCode { get; set; }
 
         [Required]
         [StringLength(15)]
@@ -37,7 +36,7 @@ namespace Odco.PointOfSales.Application.Sales.SalesProducts
         #region StockBalance
         // public Guid[] StockBalanceIds { get; set; }
 
-        //public Guid StockBalanceId { get; set; }
+        // public Guid StockBalanceId { get; set; }
 
         //public DateTime? ExpiryDate { get; set; }
 
@@ -53,6 +52,13 @@ namespace Odco.PointOfSales.Application.Sales.SalesProducts
         public string WarehouseName { get; set; }
 
         /// <summary>
+        /// ADDITIONAL COLOUMN
+        /// Group Bu Selling 
+        /// Sum of Total BBQ count
+        /// </summary>
+        public decimal TotalBookBalanceQuantity { get; set; }
+
+        /// <summary>
         /// Store when the time being
         /// </summary>
         //public decimal BookBalanceQuantity { get; set; }
@@ -64,16 +70,22 @@ namespace Odco.PointOfSales.Application.Sales.SalesProducts
 
         public decimal SellingPrice { get; set; }
 
-        //public decimal MaximumRetailPrice { get; set; }
+        /// <summary>
+        /// ADDITIONAL COLOUMN
+        /// Previously Received Qty
+        /// </summary>
+        public decimal ReceivedQuantity { get; set; }
 
-        //public bool IsSelected { get; set; }
+        // public decimal MaximumRetailPrice { get; set; }
+
+        // public bool IsSelected { get; set; }
         #endregion
 
         public decimal Price { get; set; }
 
         #region Sales
         public decimal DiscountRate { get; set; }
-        
+
         public decimal DiscountAmount { get; set; }
 
         /// <summary>

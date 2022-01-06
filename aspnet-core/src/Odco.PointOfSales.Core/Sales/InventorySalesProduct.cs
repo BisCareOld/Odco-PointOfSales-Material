@@ -6,8 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Odco.PointOfSales.Sales.Common
 {
-    [Table("Sales.SalesProduct")]
-    public class SalesProduct : FullAuditedEntity<Guid>
+    [Table("Sales.InventorySalesProduct")]
+    public class InventorySalesProduct : FullAuditedEntity<Guid>
     {
         public int SequenceNumber { get; set; }
 

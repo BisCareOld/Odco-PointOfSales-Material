@@ -7,12 +7,10 @@ using Abp.Linq;
 using Abp.Linq.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.Common.SequenceNumbers;
-using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
 using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
-using Odco.PointOfSales.Application.Productions.Warehouses;
 using Odco.PointOfSales.Application.Sales.Customers;
+using Odco.PointOfSales.Application.Sales.InventorySalesProducts;
 using Odco.PointOfSales.Application.Sales.Sales;
-using Odco.PointOfSales.Application.Sales.SalesProducts;
 using Odco.PointOfSales.Application.StockBalances;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Finance;
@@ -33,13 +31,13 @@ namespace Odco.PointOfSales.Application.Sales
         private readonly IAsyncQueryableExecuter _asyncQueryableExecuter;
         private readonly IRepository<Customer, Guid> _customerRepository;
         private readonly IRepository<Sale, Guid> _saleRepository;
-        private readonly IRepository<SalesProduct, Guid> _saleProductRepository;
+        private readonly IRepository<InventorySalesProduct, Guid> _saleProductRepository;
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
         private readonly IRepository<NonInventoryProduct, Guid> _nonInventoryProductRepository;
         private readonly IDocumentSequenceNumberManager _documentSequenceNumberManager;
         private readonly IRepository<Payment, Guid> _paymentRepository;
-        private readonly IRepository<StockBalancesOfSalesProduct, long> _stockBalancesOfSalesProductRepository;
+        private readonly IRepository<StockBalancesOfInventorySalesProduct, long> _stockBalancesOfSalesProductRepository;
         private readonly IStoredProcedureAppService _storedProcedureAppService;
         private readonly IStockBalanceAppService _stockBalanceAppService;
         private readonly IRepository<CustomerOutstanding, Guid> _customerOutstandingRepository;
@@ -47,13 +45,13 @@ namespace Odco.PointOfSales.Application.Sales
 
         public SalesAppService(IRepository<Customer, Guid> customerRepository,
             IRepository<Sale, Guid> saleRepository,
-            IRepository<SalesProduct, Guid> saleProductRepository,
+            IRepository<InventorySalesProduct, Guid> saleProductRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
             IRepository<Warehouse, Guid> warehouseRepository,
             IRepository<NonInventoryProduct, Guid> nonInventoryProductRepository,
             IDocumentSequenceNumberManager documentSequenceNumberManager,
             IRepository<Payment, Guid> paymentRepository,
-            IRepository<StockBalancesOfSalesProduct, long> stockBalancesOfSalesProductRepository,
+            IRepository<StockBalancesOfInventorySalesProduct, long> stockBalancesOfSalesProductRepository,
             IStoredProcedureAppService storedProcedureAppService,
             IStockBalanceAppService stockBalanceAppService,
             IRepository<CustomerOutstanding, Guid> customerOutstandingRepository,
@@ -234,19 +232,19 @@ namespace Odco.PointOfSales.Application.Sales
 
                 #region Sale
                 var sale = ObjectMapper.Map<Sale>(input);
-                sale.SalesProducts.Clear();
+                sale.InventorySalesProducts.Clear();
                 _saleHeader.Id = await _saleRepository.InsertOrUpdateAndGetIdAsync(sale);
                 #endregion
 
                 #region SalesProduct = InventoryProduct
                 // Create / Update / Delete SalesProduct
-                input.SalesProducts.ToList().ForEach(isp =>
+                input.InventorySalesProducts.ToList().ForEach(isp =>
                 {
                     isp.SaleId = _saleHeader.Id;
                     isp.SalesNumber = input.SalesNumber;
                 });
 
-                await CreateOrUpdateSalesProductsAsync(_saleHeader.Id, input.SalesNumber, input.SalesProducts.ToList(), isPaymentConducted);
+                await CreateOrUpdateSalesProductsAsync(_saleHeader.Id, input.SalesNumber, input.InventorySalesProducts.ToList(), isPaymentConducted);
                 #endregion
 
                 #region NonInventoryProduct
@@ -293,7 +291,7 @@ namespace Odco.PointOfSales.Application.Sales
             try
             {
                 var temp = await _saleRepository
-                    .GetAllIncluding(t => t.SalesProducts)
+                    .GetAllIncluding(t => t.InventorySalesProducts)
                     .FirstOrDefaultAsync(t => t.Id == saleId);
                 var tempDto = ObjectMapper.Map<SaleDto>(temp);
 
@@ -302,7 +300,7 @@ namespace Odco.PointOfSales.Application.Sales
                     .Where(sbsp => sbsp.SaleId == saleId)
                     .ToListAsync();
 
-                foreach (var sp in tempDto.SalesProducts)
+                foreach (var sp in tempDto.InventorySalesProducts)
                 {
                     sp.ReceivedQuantity = stockBalancesOfSalesProducts
                         .Where(sbsp => sbsp.ProductId == sp.ProductId && sbsp.SellingPrice == sp.SellingPrice)?
@@ -338,7 +336,7 @@ namespace Odco.PointOfSales.Application.Sales
         ///     Definetly all the "inputSalesProducts" will contain an Id which means all "inputSalesProducts" is already stored, So check the Update area
         /// </param>
         /// <returns></returns>
-        private async Task CreateOrUpdateSalesProductsAsync(Guid saleId, string salesNumber, List<CreateSalesProductDto> inputSalesProducts, bool isPaymentConducted)
+        private async Task CreateOrUpdateSalesProductsAsync(Guid saleId, string salesNumber, List<CreateInventorySalesProductDto> inputSalesProducts, bool isPaymentConducted)
         {
             try
             {
@@ -380,7 +378,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                     if (!inputSalesProducts.Any(isp => isp.Id == esp.Id))
                     {
-                        var eSBSPs = existingSBSPs.Where(sbsp => sbsp.SalesProductId == esp.Id);
+                        var eSBSPs = existingSBSPs.Where(sbsp => sbsp.InventorySalesProductId == esp.Id);
 
                         // UPDATE GRN Row
                         foreach (var eSBSP in eSBSPs)
@@ -458,7 +456,7 @@ namespace Odco.PointOfSales.Application.Sales
                         }
 
                         // ----- CREATE -----
-                        var createDto = ObjectMapper.Map<SalesProduct>(isp);
+                        var createDto = ObjectMapper.Map<InventorySalesProduct>(isp);
                         await _saleProductRepository.InsertAsync(createDto);
                     }
                     else
@@ -467,7 +465,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                         var eSP = existingSPs.FirstOrDefault(sp => sp.Id == isp.Id.Value);
 
-                        var eSBSPs = existingSBSPs.Where(sbsp => sbsp.SalesProductId == isp.Id.Value).ToList();
+                        var eSBSPs = existingSBSPs.Where(sbsp => sbsp.InventorySalesProductId == isp.Id.Value).ToList();
 
                         var existingConsumedStockBalanceIds = eSBSPs.Select(sbsp => sbsp.StockBalanceId);
 
@@ -998,10 +996,10 @@ namespace Odco.PointOfSales.Application.Sales
         #region StockBalanceOfSalesProduct
         private async Task CreateStockBalancesOfSalesProductAsync(Guid saleId, Guid salesProductId, StockBalance stockBalance, decimal quantity, decimal soldPrice)
         {
-            await _stockBalancesOfSalesProductRepository.InsertAsync(new StockBalancesOfSalesProduct
+            await _stockBalancesOfSalesProductRepository.InsertAsync(new StockBalancesOfInventorySalesProduct
             {
                 SaleId = saleId,
-                SalesProductId = salesProductId,
+                InventorySalesProductId = salesProductId,
                 StockBalanceId = stockBalance.Id,
                 SequenceNumber = stockBalance.SequenceNumber,
                 ProductId = stockBalance.ProductId,
@@ -1018,7 +1016,7 @@ namespace Odco.PointOfSales.Application.Sales
             });
         }
 
-        private async Task<List<StockBalancesOfSalesProduct>> GetStockBalancesOfSalesProductsBySaleIdAsync(Guid saleId)
+        private async Task<List<StockBalancesOfInventorySalesProduct>> GetStockBalancesOfSalesProductsBySaleIdAsync(Guid saleId)
         {
             return await _stockBalancesOfSalesProductRepository.GetAll().Where(sbsp => sbsp.SaleId == saleId).ToListAsync();
         }
