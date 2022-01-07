@@ -200,6 +200,9 @@
     </div>
 
     <div class="calculation-summary" style="margin-top: 60px;">
+      <div *ngIf="salesNumber.value">Sales Number
+        <span style="float: right;">{{ salesNumber.value }}</span>
+      </div>
       <div>No of Items
         <span style="float: right;">{{ salesProducts.value.length }}</span>
       </div>
