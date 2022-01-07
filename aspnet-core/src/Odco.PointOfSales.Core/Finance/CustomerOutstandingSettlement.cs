@@ -20,7 +20,7 @@ namespace Odco.PointOfSales.Core.Finance
 
         [Required]
         [StringLength(10)]
-        public string Code { get; set; }
+        public string CustomerCode { get; set; }
 
         [Required]
         [StringLength(200)]

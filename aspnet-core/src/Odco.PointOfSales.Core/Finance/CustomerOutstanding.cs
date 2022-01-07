@@ -6,9 +6,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Odco.PointOfSales.Core.Finance
 {
     /// <summary>
+    /// This class act/like a summary of customer outstandings
     /// Sale : CustomerOutstanding = 1 : 1/0
     /// Payment : CustomerOutstanding = 1 : 1/0
     /// CustomerOutstanding : CustomerOutstandingSettlements = 1 : M
+    /// CREATE: when Payment is done in Payment screen
     /// </summary>
     [Table("Finance.CustomerOutstanding")]
     public class CustomerOutstanding : FullAuditedEntity<Guid>
@@ -18,7 +20,7 @@ namespace Odco.PointOfSales.Core.Finance
 
         [Required]
         [StringLength(10)]
-        public string Code { get; set; }
+        public string CustomerCode { get; set; }
 
         [Required]
         [StringLength(200)]

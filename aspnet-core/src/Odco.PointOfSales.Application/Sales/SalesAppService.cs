@@ -931,7 +931,7 @@ namespace Odco.PointOfSales.Application.Sales
                     p.CustomerId = input.CustomerId;
                     p.CustomerCode = input.CustomerCode;
                     p.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
-                    p.SaleNumber = input.SalesNumber;
+                    p.SalesNumber = input.SalesNumber;
                     p.InvoiceNumber = invoiceNumber;
                     p.TotalReceivedAmount = input.ReceivedAmount;
                     p.TotalBalanceAmount = input.BalanceAmount;
@@ -945,7 +945,7 @@ namespace Odco.PointOfSales.Application.Sales
                     await CreateCustomerOutstandingAsync(new CustomerOutstanding
                     {
                         CustomerId = input.CustomerId.Value,
-                        Code = input.CustomerCode,
+                        CustomerCode = input.CustomerCode,
                         CustomerName = input.CustomerName,
                         SaleId = input.Id.Value,
                         SalesNumber = input.SalesNumber,

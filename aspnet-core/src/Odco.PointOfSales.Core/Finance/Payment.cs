@@ -20,7 +20,7 @@ namespace Odco.PointOfSales.Core.Finance
 
         [Required]
         [StringLength(15)]
-        public string SaleNumber { get; set; }
+        public string SalesNumber { get; set; }
 
         /// <summary>
         /// Similar to PaymentNumber = InvoiceNumber
