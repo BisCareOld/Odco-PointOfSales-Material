@@ -1,7 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
-using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
-using Odco.PointOfSales.Application.Sales.SalesProducts;
+using Odco.PointOfSales.Application.Inventory.NonInventorySalesProducts;
+using Odco.PointOfSales.Application.Sales.InventorySalesProducts;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Sales;
 using System;
@@ -38,7 +38,7 @@ namespace Odco.PointOfSales.Application.Sales.Sales
         public decimal GrossAmount { get; set; }
 
         public decimal NetAmount { get; set; }
-
+        
         [StringLength(100)]
         public string Remarks { get; set; }
 
@@ -46,15 +46,15 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public bool IsActive { get; set; }
 
-        public ICollection<SalesProductDto> SalesProducts { get; set; }
+        public ICollection<InventorySalesProductDto> InventorySalesProducts { get; set; }
         
-        public ICollection<NonInventoryProductDto> NonInventoryProducts { get; set; }
+        public ICollection<NonInventorySalesProductDto> NonInventorySalesProducts { get; set; }
 
         public SaleDto()
         {
-            SalesProducts = new HashSet<SalesProductDto>();
+            InventorySalesProducts = new HashSet<InventorySalesProductDto>();
 
-            NonInventoryProducts = new HashSet<NonInventoryProductDto>();
+            NonInventorySalesProducts = new HashSet<NonInventorySalesProductDto>();
 
         }
     }

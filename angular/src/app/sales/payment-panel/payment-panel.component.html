@@ -25,10 +25,10 @@
     <div class="col-sm-12 col-md-3 child-grid">
       <ng-container *ngIf="
       saleDto &&
-      saleDto.salesProducts &&
-      saleDto.salesProducts.length > 0
+      saleDto.inventorySalesProducts &&
+      saleDto.inventorySalesProducts.length > 0
     ">
-        <table *ngFor="let item of saleDto.salesProducts">
+        <table *ngFor="let item of saleDto.inventorySalesProducts">
           <tr>
             <td style="font-weight: 500;">{{ item.name }}
               <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>
@@ -45,10 +45,10 @@
       <!-- Non Inventory Products (Doesnt have Stocks) -->
       <ng-container *ngIf="
       saleDto &&
-      saleDto.nonInventoryProducts &&
-      saleDto.nonInventoryProducts.length > 0
+      saleDto.nonInventorySalesProducts &&
+      saleDto.nonInventorySalesProducts.length > 0
     ">
-        <table *ngFor="let item of saleDto.nonInventoryProducts">
+        <table *ngFor="let item of saleDto.nonInventorySalesProducts">
           <tr>
             <td style="font-weight: 500;"><span class="dot"></span> {{ item.productName }}
               <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>
@@ -288,13 +288,15 @@
                 <hr>
                 <div class="d-flex justify-content-between mt-2 big-size">
                   <mat-label>{{ "Balance" | localize }}</mat-label>
-                  <span class="text-success">{{ balanceAmount() }}</span>
+                  <span [class]='calculateBalanceAmount() >= 0 ? "text-success" : "text-danger"'>
+                    {{ calculateBalanceAmount() }}
+                  </span>
                 </div>
               </div>
 
               <div style="float: right; margin-right: 10px;">
                 <button type="submit" mat-raised-button color="primary" style="margin-right: 0.5rem;"
-                  (click)="save()">Submit</button>
+                  [disabled]="formPayment.invalid" (click)="save()">Submit</button>
                 <button type="button" mat-raised-button color="warn">Cancel</button>
               </div>
 

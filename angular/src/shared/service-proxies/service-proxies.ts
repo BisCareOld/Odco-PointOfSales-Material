@@ -3568,7 +3568,7 @@ export class SalesServiceProxy {
      * @param saleId (optional) 
      * @return Success
      */
-    getNonInventoryProductBySaleId(saleId: string | undefined): Observable<NonInventoryProductDto[]> {
+    getNonInventoryProductBySaleId(saleId: string | undefined): Observable<NonInventorySalesProductDto[]> {
         let url_ = this.baseUrl + "/api/services/app/Sales/GetNonInventoryProductBySaleId?";
         if (saleId === null)
             throw new Error("The parameter 'saleId' cannot be null.");
@@ -3591,14 +3591,14 @@ export class SalesServiceProxy {
                 try {
                     return this.processGetNonInventoryProductBySaleId(<any>response_);
                 } catch (e) {
-                    return <Observable<NonInventoryProductDto[]>><any>_observableThrow(e);
+                    return <Observable<NonInventorySalesProductDto[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<NonInventoryProductDto[]>><any>_observableThrow(response_);
+                return <Observable<NonInventorySalesProductDto[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetNonInventoryProductBySaleId(response: HttpResponseBase): Observable<NonInventoryProductDto[]> {
+    protected processGetNonInventoryProductBySaleId(response: HttpResponseBase): Observable<NonInventorySalesProductDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3612,7 +3612,7 @@ export class SalesServiceProxy {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200.push(NonInventoryProductDto.fromJS(item));
+                    result200.push(NonInventorySalesProductDto.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -3624,7 +3624,7 @@ export class SalesServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<NonInventoryProductDto[]>(<any>null);
+        return _observableOf<NonInventorySalesProductDto[]>(<any>null);
     }
 }
 
@@ -5561,6 +5561,7 @@ export enum DocumentType {
     _8 = 8,
     _9 = 9,
     _10 = 10,
+    _11 = 11,
 }
 
 export enum TransactionStatus {
@@ -8607,7 +8608,7 @@ export enum PaymentStatus {
     _3 = 3,
 }
 
-export class CreateSalesProductDto implements ICreateSalesProductDto {
+export class CreateInventorySalesProductDto implements ICreateInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -8628,7 +8629,7 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
     remarks: string | undefined;
     isActive: boolean;
 
-    constructor(data?: ICreateSalesProductDto) {
+    constructor(data?: ICreateInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -8661,9 +8662,9 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
         }
     }
 
-    static fromJS(data: any): CreateSalesProductDto {
+    static fromJS(data: any): CreateInventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateSalesProductDto();
+        let result = new CreateInventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -8692,15 +8693,15 @@ export class CreateSalesProductDto implements ICreateSalesProductDto {
         return data; 
     }
 
-    clone(): CreateSalesProductDto {
+    clone(): CreateInventorySalesProductDto {
         const json = this.toJSON();
-        let result = new CreateSalesProductDto();
+        let result = new CreateInventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICreateSalesProductDto {
+export interface ICreateInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -8722,7 +8723,7 @@ export interface ICreateSalesProductDto {
     isActive: boolean;
 }
 
-export class CreateNonInventoryProductDto implements ICreateNonInventoryProductDto {
+export class CreateNonInventorySalesProductDto implements ICreateNonInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -8743,7 +8744,7 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
     maximumRetailPrice: number;
     price: number;
 
-    constructor(data?: ICreateNonInventoryProductDto) {
+    constructor(data?: ICreateNonInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -8776,9 +8777,9 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
         }
     }
 
-    static fromJS(data: any): CreateNonInventoryProductDto {
+    static fromJS(data: any): CreateNonInventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateNonInventoryProductDto();
+        let result = new CreateNonInventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -8807,15 +8808,15 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
         return data; 
     }
 
-    clone(): CreateNonInventoryProductDto {
+    clone(): CreateNonInventorySalesProductDto {
         const json = this.toJSON();
-        let result = new CreateNonInventoryProductDto();
+        let result = new CreateNonInventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICreateNonInventoryProductDto {
+export interface ICreateNonInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -9083,11 +9084,13 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
     taxAmount: number;
     grossAmount: number;
     netAmount: number;
+    receivedAmount: number;
+    balanceAmount: number;
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: CreateSalesProductDto[] | undefined;
-    nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
+    inventorySalesProducts: CreateInventorySalesProductDto[] | undefined;
+    nonInventorySalesProducts: CreateNonInventorySalesProductDto[] | undefined;
     cashes: CashDto[] | undefined;
     cheques: ChequeDto[] | undefined;
     outstandings: CustomerCreditOutstandingDto[] | undefined;
@@ -9117,18 +9120,20 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
             this.taxAmount = _data["taxAmount"];
             this.grossAmount = _data["grossAmount"];
             this.netAmount = _data["netAmount"];
+            this.receivedAmount = _data["receivedAmount"];
+            this.balanceAmount = _data["balanceAmount"];
             this.remarks = _data["remarks"];
             this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
-            if (Array.isArray(_data["salesProducts"])) {
-                this.salesProducts = [] as any;
-                for (let item of _data["salesProducts"])
-                    this.salesProducts.push(CreateSalesProductDto.fromJS(item));
+            if (Array.isArray(_data["inventorySalesProducts"])) {
+                this.inventorySalesProducts = [] as any;
+                for (let item of _data["inventorySalesProducts"])
+                    this.inventorySalesProducts.push(CreateInventorySalesProductDto.fromJS(item));
             }
-            if (Array.isArray(_data["nonInventoryProducts"])) {
-                this.nonInventoryProducts = [] as any;
-                for (let item of _data["nonInventoryProducts"])
-                    this.nonInventoryProducts.push(CreateNonInventoryProductDto.fromJS(item));
+            if (Array.isArray(_data["nonInventorySalesProducts"])) {
+                this.nonInventorySalesProducts = [] as any;
+                for (let item of _data["nonInventorySalesProducts"])
+                    this.nonInventorySalesProducts.push(CreateNonInventorySalesProductDto.fromJS(item));
             }
             if (Array.isArray(_data["cashes"])) {
                 this.cashes = [] as any;
@@ -9179,18 +9184,20 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
         data["taxAmount"] = this.taxAmount;
         data["grossAmount"] = this.grossAmount;
         data["netAmount"] = this.netAmount;
+        data["receivedAmount"] = this.receivedAmount;
+        data["balanceAmount"] = this.balanceAmount;
         data["remarks"] = this.remarks;
         data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
-        if (Array.isArray(this.salesProducts)) {
-            data["salesProducts"] = [];
-            for (let item of this.salesProducts)
-                data["salesProducts"].push(item.toJSON());
+        if (Array.isArray(this.inventorySalesProducts)) {
+            data["inventorySalesProducts"] = [];
+            for (let item of this.inventorySalesProducts)
+                data["inventorySalesProducts"].push(item.toJSON());
         }
-        if (Array.isArray(this.nonInventoryProducts)) {
-            data["nonInventoryProducts"] = [];
-            for (let item of this.nonInventoryProducts)
-                data["nonInventoryProducts"].push(item.toJSON());
+        if (Array.isArray(this.nonInventorySalesProducts)) {
+            data["nonInventorySalesProducts"] = [];
+            for (let item of this.nonInventorySalesProducts)
+                data["nonInventorySalesProducts"].push(item.toJSON());
         }
         if (Array.isArray(this.cashes)) {
             data["cashes"] = [];
@@ -9241,11 +9248,13 @@ export interface ICreateOrUpdateSaleDto {
     taxAmount: number;
     grossAmount: number;
     netAmount: number;
+    receivedAmount: number;
+    balanceAmount: number;
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: CreateSalesProductDto[] | undefined;
-    nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
+    inventorySalesProducts: CreateInventorySalesProductDto[] | undefined;
+    nonInventorySalesProducts: CreateNonInventorySalesProductDto[] | undefined;
     cashes: CashDto[] | undefined;
     cheques: ChequeDto[] | undefined;
     outstandings: CustomerCreditOutstandingDto[] | undefined;
@@ -9253,7 +9262,7 @@ export interface ICreateOrUpdateSaleDto {
     giftCards: GiftCardDto[] | undefined;
 }
 
-export class SalesProductDto implements ISalesProductDto {
+export class InventorySalesProductDto implements IInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
@@ -9276,7 +9285,7 @@ export class SalesProductDto implements ISalesProductDto {
     isActive: boolean;
     id: string;
 
-    constructor(data?: ISalesProductDto) {
+    constructor(data?: IInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -9311,9 +9320,9 @@ export class SalesProductDto implements ISalesProductDto {
         }
     }
 
-    static fromJS(data: any): SalesProductDto {
+    static fromJS(data: any): InventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesProductDto();
+        let result = new InventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -9344,15 +9353,15 @@ export class SalesProductDto implements ISalesProductDto {
         return data; 
     }
 
-    clone(): SalesProductDto {
+    clone(): InventorySalesProductDto {
         const json = this.toJSON();
-        let result = new SalesProductDto();
+        let result = new InventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ISalesProductDto {
+export interface IInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string;
     salesNumber: string | undefined;
@@ -9376,7 +9385,7 @@ export interface ISalesProductDto {
     id: string;
 }
 
-export class NonInventoryProductDto implements INonInventoryProductDto {
+export class NonInventorySalesProductDto implements INonInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
@@ -9397,7 +9406,7 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
     price: number;
     id: string;
 
-    constructor(data?: INonInventoryProductDto) {
+    constructor(data?: INonInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -9430,9 +9439,9 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
         }
     }
 
-    static fromJS(data: any): NonInventoryProductDto {
+    static fromJS(data: any): NonInventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new NonInventoryProductDto();
+        let result = new NonInventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -9461,15 +9470,15 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
         return data; 
     }
 
-    clone(): NonInventoryProductDto {
+    clone(): NonInventorySalesProductDto {
         const json = this.toJSON();
-        let result = new NonInventoryProductDto();
+        let result = new NonInventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface INonInventoryProductDto {
+export interface INonInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
@@ -9506,8 +9515,8 @@ export class SaleDto implements ISaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: SalesProductDto[] | undefined;
-    nonInventoryProducts: NonInventoryProductDto[] | undefined;
+    inventorySalesProducts: InventorySalesProductDto[] | undefined;
+    nonInventorySalesProducts: NonInventorySalesProductDto[] | undefined;
     id: string;
 
     constructor(data?: ISaleDto) {
@@ -9535,15 +9544,15 @@ export class SaleDto implements ISaleDto {
             this.remarks = _data["remarks"];
             this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
-            if (Array.isArray(_data["salesProducts"])) {
-                this.salesProducts = [] as any;
-                for (let item of _data["salesProducts"])
-                    this.salesProducts.push(SalesProductDto.fromJS(item));
+            if (Array.isArray(_data["inventorySalesProducts"])) {
+                this.inventorySalesProducts = [] as any;
+                for (let item of _data["inventorySalesProducts"])
+                    this.inventorySalesProducts.push(InventorySalesProductDto.fromJS(item));
             }
-            if (Array.isArray(_data["nonInventoryProducts"])) {
-                this.nonInventoryProducts = [] as any;
-                for (let item of _data["nonInventoryProducts"])
-                    this.nonInventoryProducts.push(NonInventoryProductDto.fromJS(item));
+            if (Array.isArray(_data["nonInventorySalesProducts"])) {
+                this.nonInventorySalesProducts = [] as any;
+                for (let item of _data["nonInventorySalesProducts"])
+                    this.nonInventorySalesProducts.push(NonInventorySalesProductDto.fromJS(item));
             }
             this.id = _data["id"];
         }
@@ -9572,15 +9581,15 @@ export class SaleDto implements ISaleDto {
         data["remarks"] = this.remarks;
         data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
-        if (Array.isArray(this.salesProducts)) {
-            data["salesProducts"] = [];
-            for (let item of this.salesProducts)
-                data["salesProducts"].push(item.toJSON());
+        if (Array.isArray(this.inventorySalesProducts)) {
+            data["inventorySalesProducts"] = [];
+            for (let item of this.inventorySalesProducts)
+                data["inventorySalesProducts"].push(item.toJSON());
         }
-        if (Array.isArray(this.nonInventoryProducts)) {
-            data["nonInventoryProducts"] = [];
-            for (let item of this.nonInventoryProducts)
-                data["nonInventoryProducts"].push(item.toJSON());
+        if (Array.isArray(this.nonInventorySalesProducts)) {
+            data["nonInventorySalesProducts"] = [];
+            for (let item of this.nonInventorySalesProducts)
+                data["nonInventorySalesProducts"].push(item.toJSON());
         }
         data["id"] = this.id;
         return data; 
@@ -9609,8 +9618,8 @@ export interface ISaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
-    salesProducts: SalesProductDto[] | undefined;
-    nonInventoryProducts: NonInventoryProductDto[] | undefined;
+    inventorySalesProducts: InventorySalesProductDto[] | undefined;
+    nonInventorySalesProducts: NonInventorySalesProductDto[] | undefined;
     id: string;
 }
 
@@ -9970,14 +9979,16 @@ export class StockBalance implements IStockBalance {
     warehouseName: string | undefined;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
+    onOrderQuantity: number;
+    onOrderQuantityUnitOfMeasureUnit: string | undefined;
     receivedQuantity: number;
     receivedQuantityUnitOfMeasureUnit: string | undefined;
     bookBalanceQuantity: number;
     bookBalanceUnitOfMeasureUnit: string | undefined;
-    onOrderQuantity: number;
-    onOrderQuantityUnitOfMeasureUnit: string | undefined;
     allocatedQuantity: number;
     allocatedQuantityUnitOfMeasureUnit: string | undefined;
+    soldQuantity: number;
+    soldQuantityUnitOfMeasureUnit: string | undefined;
     costPrice: number;
     sellingPrice: number;
     maximumRetailPrice: number;
@@ -10012,14 +10023,16 @@ export class StockBalance implements IStockBalance {
             this.warehouseName = _data["warehouseName"];
             this.expiryDate = _data["expiryDate"] ? moment(_data["expiryDate"].toString()) : <any>undefined;
             this.batchNumber = _data["batchNumber"];
+            this.onOrderQuantity = _data["onOrderQuantity"];
+            this.onOrderQuantityUnitOfMeasureUnit = _data["onOrderQuantityUnitOfMeasureUnit"];
             this.receivedQuantity = _data["receivedQuantity"];
             this.receivedQuantityUnitOfMeasureUnit = _data["receivedQuantityUnitOfMeasureUnit"];
             this.bookBalanceQuantity = _data["bookBalanceQuantity"];
             this.bookBalanceUnitOfMeasureUnit = _data["bookBalanceUnitOfMeasureUnit"];
-            this.onOrderQuantity = _data["onOrderQuantity"];
-            this.onOrderQuantityUnitOfMeasureUnit = _data["onOrderQuantityUnitOfMeasureUnit"];
             this.allocatedQuantity = _data["allocatedQuantity"];
             this.allocatedQuantityUnitOfMeasureUnit = _data["allocatedQuantityUnitOfMeasureUnit"];
+            this.soldQuantity = _data["soldQuantity"];
+            this.soldQuantityUnitOfMeasureUnit = _data["soldQuantityUnitOfMeasureUnit"];
             this.costPrice = _data["costPrice"];
             this.sellingPrice = _data["sellingPrice"];
             this.maximumRetailPrice = _data["maximumRetailPrice"];
@@ -10054,14 +10067,16 @@ export class StockBalance implements IStockBalance {
         data["warehouseName"] = this.warehouseName;
         data["expiryDate"] = this.expiryDate ? this.expiryDate.toISOString() : <any>undefined;
         data["batchNumber"] = this.batchNumber;
+        data["onOrderQuantity"] = this.onOrderQuantity;
+        data["onOrderQuantityUnitOfMeasureUnit"] = this.onOrderQuantityUnitOfMeasureUnit;
         data["receivedQuantity"] = this.receivedQuantity;
         data["receivedQuantityUnitOfMeasureUnit"] = this.receivedQuantityUnitOfMeasureUnit;
         data["bookBalanceQuantity"] = this.bookBalanceQuantity;
         data["bookBalanceUnitOfMeasureUnit"] = this.bookBalanceUnitOfMeasureUnit;
-        data["onOrderQuantity"] = this.onOrderQuantity;
-        data["onOrderQuantityUnitOfMeasureUnit"] = this.onOrderQuantityUnitOfMeasureUnit;
         data["allocatedQuantity"] = this.allocatedQuantity;
         data["allocatedQuantityUnitOfMeasureUnit"] = this.allocatedQuantityUnitOfMeasureUnit;
+        data["soldQuantity"] = this.soldQuantity;
+        data["soldQuantityUnitOfMeasureUnit"] = this.soldQuantityUnitOfMeasureUnit;
         data["costPrice"] = this.costPrice;
         data["sellingPrice"] = this.sellingPrice;
         data["maximumRetailPrice"] = this.maximumRetailPrice;
@@ -10096,14 +10111,16 @@ export interface IStockBalance {
     warehouseName: string | undefined;
     expiryDate: moment.Moment | undefined;
     batchNumber: string | undefined;
+    onOrderQuantity: number;
+    onOrderQuantityUnitOfMeasureUnit: string | undefined;
     receivedQuantity: number;
     receivedQuantityUnitOfMeasureUnit: string | undefined;
     bookBalanceQuantity: number;
     bookBalanceUnitOfMeasureUnit: string | undefined;
-    onOrderQuantity: number;
-    onOrderQuantityUnitOfMeasureUnit: string | undefined;
     allocatedQuantity: number;
     allocatedQuantityUnitOfMeasureUnit: string | undefined;
+    soldQuantity: number;
+    soldQuantityUnitOfMeasureUnit: string | undefined;
     costPrice: number;
     sellingPrice: number;
     maximumRetailPrice: number;

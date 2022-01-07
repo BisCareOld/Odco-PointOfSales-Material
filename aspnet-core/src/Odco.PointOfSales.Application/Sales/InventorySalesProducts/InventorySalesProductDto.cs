@@ -4,10 +4,10 @@ using Odco.PointOfSales.Sales.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Sales.SalesProducts
+namespace Odco.PointOfSales.Application.Sales.InventorySalesProducts
 {
-    [AutoMapTo(typeof(SalesProductDto)), AutoMapFrom(typeof(SalesProduct))]
-    public class SalesProductDto : EntityDto<Guid>
+    [AutoMapTo(typeof(InventorySalesProductDto)), AutoMapFrom(typeof(InventorySalesProduct))]
+    public class InventorySalesProductDto : EntityDto<Guid>
     {
         public int SequenceNumber { get; set; }
 

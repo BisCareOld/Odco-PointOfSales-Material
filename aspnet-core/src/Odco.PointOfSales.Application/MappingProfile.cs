@@ -3,8 +3,8 @@ using Odco.PointOfSales.Application.Inventory.GoodsReceiveNotes;
 using Odco.PointOfSales.Application.Productions.Brands;
 using Odco.PointOfSales.Application.Productions.Categories;
 using Odco.PointOfSales.Application.Purchasings.Suppliers;
+using Odco.PointOfSales.Application.Sales.InventorySalesProducts;
 using Odco.PointOfSales.Application.Sales.Sales;
-using Odco.PointOfSales.Application.Sales.SalesProducts;
 using Odco.PointOfSales.Core.Common;
 using Odco.PointOfSales.Core.Inventory;
 using Odco.PointOfSales.Core.Productions;
@@ -32,8 +32,8 @@ namespace Odco.PointOfSales.Application
             CreateMap<SaleDto, Sale>();
             CreateMap<Sale, SaleDto>();
 
-            CreateMap<SalesProductDto, SalesProduct>();
-            CreateMap<SalesProduct, SalesProductDto>();
+            CreateMap<InventorySalesProductDto, InventorySalesProduct>();
+            CreateMap<InventorySalesProduct, InventorySalesProductDto>();
         }
     }
 }

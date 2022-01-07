@@ -156,6 +156,59 @@ namespace Odco.PointOfSales.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Finance.CustomerOutstanding",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    CustomerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    SaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SalesNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    CreatedInvoiceNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    OutstandingAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DueOutstandingAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Finance.CustomerOutstanding", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Finance.CustomerOutstandingSettlements",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerOutstandingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    CustomerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    SaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SalesNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    PaymentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InvoiceNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    PaidAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Finance.CustomerOutstandingSettlements", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Inventory.GoodsRecieved",
                 columns: table => new
                 {
@@ -187,7 +240,7 @@ namespace Odco.PointOfSales.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Inventory.NonInventoryProduct",
+                name: "Inventory.NonInventorySalesProduct",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -219,7 +272,7 @@ namespace Odco.PointOfSales.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Inventory.NonInventoryProduct", x => x.Id);
+                    table.PrimaryKey("PK_Inventory.NonInventorySalesProduct", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,14 +289,16 @@ namespace Odco.PointOfSales.Migrations
                     WarehouseName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     BatchNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    OnOrderQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OnOrderQuantityUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     ReceivedQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ReceivedQuantityUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     BookBalanceQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     BookBalanceUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    OnOrderQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OnOrderQuantityUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     AllocatedQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AllocatedQuantityUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    SoldQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SoldQuantityUnitOfMeasureUnit = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     SellingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     MaximumRetailPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -412,13 +467,14 @@ namespace Odco.PointOfSales.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sales.StockBalancesOfSalesProduct",
+                name: "Sales.StockBalancesOfInventorySalesProduct",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SalesProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SalesNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    InventorySalesProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StockBalanceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SequenceNumber = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -442,7 +498,7 @@ namespace Odco.PointOfSales.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sales.StockBalancesOfSalesProduct", x => x.Id);
+                    table.PrimaryKey("PK_Sales.StockBalancesOfInventorySalesProduct", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -744,6 +800,7 @@ namespace Odco.PointOfSales.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SaleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SaleNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    InvoiceNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CustomerCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     CustomerName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
@@ -754,11 +811,13 @@ namespace Odco.PointOfSales.Migrations
                     BranchId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Branch = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ChequeReturnDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    OutstandingAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    TotalReceivedAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalBalanceAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SpecificReceivedAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SpecificBalanceAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaidAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsCash = table.Column<bool>(type: "bit", nullable: false),
                     IsCheque = table.Column<bool>(type: "bit", nullable: false),
-                    IsCreditOutstanding = table.Column<bool>(type: "bit", nullable: false),
                     IsDebitCard = table.Column<bool>(type: "bit", nullable: false),
                     IsGiftCard = table.Column<bool>(type: "bit", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -781,7 +840,7 @@ namespace Odco.PointOfSales.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sales.SalesProduct",
+                name: "Sales.InventorySalesProduct",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -813,9 +872,9 @@ namespace Odco.PointOfSales.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sales.SalesProduct", x => x.Id);
+                    table.PrimaryKey("PK_Sales.InventorySalesProduct", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sales.SalesProduct_Sales.Sale_SaleId",
+                        name: "FK_Sales.InventorySalesProduct_Sales.Sale_SaleId",
                         column: x => x.SaleId,
                         principalTable: "Sales.Sale",
                         principalColumn: "Id",
@@ -1023,6 +1082,11 @@ namespace Odco.PointOfSales.Migrations
                 column: "PriceGroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Sales.InventorySalesProduct_SaleId",
+                table: "Sales.InventorySalesProduct",
+                column: "SaleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Sales.ProductPriceGroup_PriceGroupId",
                 table: "Sales.ProductPriceGroup",
                 column: "PriceGroupId");
@@ -1031,11 +1095,6 @@ namespace Odco.PointOfSales.Migrations
                 name: "IX_Sales.ProductPriceGroup_ProductId",
                 table: "Sales.ProductPriceGroup",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sales.SalesProduct_SaleId",
-                table: "Sales.SalesProduct",
-                column: "SaleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sales.SupplierProduct_ProductId",
@@ -1066,13 +1125,19 @@ namespace Odco.PointOfSales.Migrations
                 name: "Common.UnitOfMeasure");
 
             migrationBuilder.DropTable(
+                name: "Finance.CustomerOutstanding");
+
+            migrationBuilder.DropTable(
+                name: "Finance.CustomerOutstandingSettlements");
+
+            migrationBuilder.DropTable(
                 name: "Finance.Payment");
 
             migrationBuilder.DropTable(
                 name: "Inventory.GoodsRecievedProduct");
 
             migrationBuilder.DropTable(
-                name: "Inventory.NonInventoryProduct");
+                name: "Inventory.NonInventorySalesProduct");
 
             migrationBuilder.DropTable(
                 name: "Inventory.StockBalance");
@@ -1081,13 +1146,13 @@ namespace Odco.PointOfSales.Migrations
                 name: "Purchasing.PurchaseOrderProduct");
 
             migrationBuilder.DropTable(
+                name: "Sales.InventorySalesProduct");
+
+            migrationBuilder.DropTable(
                 name: "Sales.ProductPriceGroup");
 
             migrationBuilder.DropTable(
-                name: "Sales.SalesProduct");
-
-            migrationBuilder.DropTable(
-                name: "Sales.StockBalancesOfSalesProduct");
+                name: "Sales.StockBalancesOfInventorySalesProduct");
 
             migrationBuilder.DropTable(
                 name: "Sales.SupplierProduct");

@@ -1,24 +1,20 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Odco.PointOfSales.Core.Sales;
+﻿using Abp.AutoMapper;
+using Odco.PointOfSales.Sales.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Odco.PointOfSales.Sales.Common
+namespace Odco.PointOfSales.Application.Sales.InventorySalesProducts
 {
-    [Table("Sales.SalesProduct")]
-    public class SalesProduct : FullAuditedEntity<Guid>
+    [AutoMapTo(typeof(InventorySalesProduct))]
+    public class CreateInventorySalesProductDto
     {
+        public Guid? Id { get; set; }
+
         public int SequenceNumber { get; set; }
 
         #region SalesHeader
-        public Guid SaleId { get; set; }
+        public Guid? SaleId { get; set; }
 
-        public Sale Sale { get; set; }
-
-        /// <summary>
-        /// Exist: When Payment is carried out
-        /// </summary>
         [StringLength(15)]
         public string SalesNumber { get; set; }
         #endregion
@@ -27,7 +23,7 @@ namespace Odco.PointOfSales.Sales.Common
         public Guid ProductId { get; set; }
 
         [StringLength(15)]
-        public string BarCode { get; set; }
+        public string BarCode { get; set; } // remove no need
 
         [Required]
         [StringLength(15)]
@@ -39,6 +35,8 @@ namespace Odco.PointOfSales.Sales.Common
         #endregion
 
         #region StockBalance
+        // public Guid[] StockBalanceIds { get; set; }
+
         //public Guid StockBalanceId { get; set; }
 
         //public DateTime? ExpiryDate { get; set; }
@@ -68,17 +66,14 @@ namespace Odco.PointOfSales.Sales.Common
 
         //public decimal MaximumRetailPrice { get; set; }
 
-        /// <summary>
-        /// Actual Price given for the Customer
-        /// </summary>
-        public decimal Price { get; set; }
-
         //public bool IsSelected { get; set; }
         #endregion
 
+        public decimal Price { get; set; }
+
         #region Sales
         public decimal DiscountRate { get; set; }
-
+        
         public decimal DiscountAmount { get; set; }
 
         /// <summary>

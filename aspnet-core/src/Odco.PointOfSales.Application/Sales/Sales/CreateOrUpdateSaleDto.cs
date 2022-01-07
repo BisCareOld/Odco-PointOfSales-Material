@@ -1,7 +1,7 @@
 ﻿using Abp.AutoMapper;
 using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
-using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
-using Odco.PointOfSales.Application.Sales.SalesProducts;
+using Odco.PointOfSales.Application.Inventory.NonInventorySalesProducts;
+using Odco.PointOfSales.Application.Sales.InventorySalesProducts;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Sales;
 using System;
@@ -15,8 +15,8 @@ namespace Odco.PointOfSales.Application.Sales.Sales
     {
         public CreateOrUpdateSaleDto()
         {
-            SalesProducts = new HashSet<CreateSalesProductDto>();
-            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
+            InventorySalesProducts = new HashSet<CreateInventorySalesProductDto>();
+            NonInventorySalesProducts = new HashSet<CreateNonInventorySalesProductDto>();
             //PaymentDtos
             Cashes = new HashSet<CashDto>();
             Cheques = new HashSet<ChequeDto>();
@@ -57,6 +57,18 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public decimal NetAmount { get; set; }
 
+        #region Used for storing Received & Balance Amounts of Customer in "Payment" Model
+        /// <summary>
+        /// Total Received amount, Includes (Cash, Cheque)
+        /// </summary>
+        public decimal ReceivedAmount { get; set; } = 0;
+
+        /// <summary>
+        /// Balance amount against the NetAmount - ReceivedAmount
+        /// </summary>
+        public decimal BalanceAmount { get; set; } = 0;
+        #endregion
+
         [StringLength(100)]
         public string Remarks { get; set; }
 
@@ -64,9 +76,9 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public bool IsActive { get; set; }
 
-        public ICollection<CreateSalesProductDto> SalesProducts { get; set; }
+        public ICollection<CreateInventorySalesProductDto> InventorySalesProducts { get; set; }
 
-        public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
+        public ICollection<CreateNonInventorySalesProductDto> NonInventorySalesProducts { get; set; }
 
         #region Payment Types
         public ICollection<CashDto> Cashes { get; set; }

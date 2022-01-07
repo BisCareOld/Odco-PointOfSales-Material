@@ -6,7 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Odco.PointOfSales.Core.Finance
 {
-    // Sale : Payment = 1 : M
+    /// <summary>
+    /// Sale : Payment = 1 : M
+    /// Payment will generate the "InvoiceNumber"
+    /// </summary>
     [Table("Finance.Payment")]
     public class Payment : FullAuditedEntity<Guid>
     {
@@ -18,6 +21,15 @@ namespace Odco.PointOfSales.Core.Finance
         [Required]
         [StringLength(15)]
         public string SaleNumber { get; set; }
+
+        /// <summary>
+        /// Similar to PaymentNumber = InvoiceNumber
+        /// Exist: When creating a Payment
+        /// Sale : InvoiceNumber = 1 : M
+        /// </summary>
+        [Required]
+        [StringLength(15)]
+        public string InvoiceNumber { get; set; }
         #endregion
 
         public Guid? CustomerId { get; set; }
@@ -52,10 +64,6 @@ namespace Odco.PointOfSales.Core.Finance
         public DateTime? ChequeReturnDate { get; set; }
         #endregion
 
-        #region Credit Outstanding
-        public decimal? OutstandingAmount { get; set; }
-        #endregion
-
         #region Debit Card
 
         #endregion
@@ -64,13 +72,23 @@ namespace Odco.PointOfSales.Core.Finance
 
         #endregion
 
+        #region Based on Customer Payment, Getting Summery of Payment
+        public decimal TotalReceivedAmount { get; set; }
+
+        public decimal TotalBalanceAmount { get; set; }
+        #endregion
+
+        #region Based on Customer Payment
+        public decimal SpecificReceivedAmount { get; set; }
+
+        public decimal SpecificBalanceAmount { get; set; }
+        #endregion
+
         public decimal PaidAmount { get; set; }
 
         public bool IsCash { get; set; }
         
         public bool IsCheque { get; set; }
-        
-        public bool IsCreditOutstanding { get; set; }
         
         public bool IsDebitCard { get; set; }
         

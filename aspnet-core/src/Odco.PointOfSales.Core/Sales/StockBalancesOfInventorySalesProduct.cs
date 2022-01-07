@@ -7,16 +7,20 @@ namespace Odco.PointOfSales.Core.Sales
 {
     /// <summary>
     /// Sale : SBSP = 1 : M
-    /// SalesProduct : SBSP = 1 : M
-    /// StockBalance : SBSP = 1 : M
-    /// SBSP react as an intermediate class for SalesProduct & StockBalance
+    /// InventorySalesProduct : SBSP = 1 : M
+    /// InventoryStockBalance : SBSP = 1 : M
+    /// SBSP react as an intermediate class for InventorySalesProduct & StockBalance
     /// </summary>
-    [Table("Sales.StockBalancesOfSalesProduct")]
-    public class StockBalancesOfSalesProduct : FullAuditedEntity<long>
+    [Table("Sales.StockBalancesOfInventorySalesProduct")]
+    public class StockBalancesOfInventorySalesProduct : FullAuditedEntity<long>
     {
         public Guid SaleId { get; set; }
 
-        public Guid SalesProductId { get; set; }
+        [Required]
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
+
+        public Guid InventorySalesProductId { get; set; }
 
         #region StockBalance
         public Guid StockBalanceId { get; set; }
