@@ -2792,7 +2792,7 @@ namespace Odco.PointOfSales.Migrations
                     b.ToTable("Inventory.GoodsRecievedProduct");
                 });
 
-            modelBuilder.Entity("Odco.PointOfSales.Core.Inventory.NonInventoryProduct", b =>
+            modelBuilder.Entity("Odco.PointOfSales.Core.Inventory.NonInventorySalesProduct", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2883,7 +2883,7 @@ namespace Odco.PointOfSales.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Inventory.NonInventoryProduct");
+                    b.ToTable("Inventory.NonInventorySalesProduct");
                 });
 
             modelBuilder.Entity("Odco.PointOfSales.Core.Inventory.StockBalance", b =>
@@ -3365,6 +3365,11 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<Guid>("SaleId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SalesNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<decimal>("SellingPrice")
                         .HasColumnType("decimal(18,2)");
@@ -4115,7 +4120,7 @@ namespace Odco.PointOfSales.Migrations
             modelBuilder.Entity("Odco.PointOfSales.Sales.Common.InventorySalesProduct", b =>
                 {
                     b.HasOne("Odco.PointOfSales.Core.Sales.Sale", "Sale")
-                        .WithMany("SalesProducts")
+                        .WithMany("InventorySalesProducts")
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4245,9 +4250,9 @@ namespace Odco.PointOfSales.Migrations
 
             modelBuilder.Entity("Odco.PointOfSales.Core.Sales.Sale", b =>
                 {
-                    b.Navigation("Payments");
+                    b.Navigation("InventorySalesProducts");
 
-                    b.Navigation("SalesProducts");
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Odco.PointOfSales.Sales.Common.Customer", b =>

@@ -10,8 +10,8 @@ using Odco.PointOfSales.EntityFrameworkCore;
 namespace Odco.PointOfSales.Migrations
 {
     [DbContext(typeof(PointOfSalesDbContext))]
-    [Migration("20220105063619_testing1")]
-    partial class testing1
+    [Migration("20220107020909_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2794,7 +2794,7 @@ namespace Odco.PointOfSales.Migrations
                     b.ToTable("Inventory.GoodsRecievedProduct");
                 });
 
-            modelBuilder.Entity("Odco.PointOfSales.Core.Inventory.NonInventoryProduct", b =>
+            modelBuilder.Entity("Odco.PointOfSales.Core.Inventory.NonInventorySalesProduct", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2885,7 +2885,7 @@ namespace Odco.PointOfSales.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Inventory.NonInventoryProduct");
+                    b.ToTable("Inventory.NonInventorySalesProduct");
                 });
 
             modelBuilder.Entity("Odco.PointOfSales.Core.Inventory.StockBalance", b =>
@@ -2982,6 +2982,13 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<int>("SequenceNumber")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("SoldQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SoldQuantityUnitOfMeasureUnit")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("WarehouseCode")
                         .HasMaxLength(10)
@@ -3302,7 +3309,7 @@ namespace Odco.PointOfSales.Migrations
                     b.ToTable("Sales.Sale");
                 });
 
-            modelBuilder.Entity("Odco.PointOfSales.Core.Sales.StockBalancesOfSalesProduct", b =>
+            modelBuilder.Entity("Odco.PointOfSales.Core.Sales.StockBalancesOfInventorySalesProduct", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -3323,6 +3330,9 @@ namespace Odco.PointOfSales.Migrations
 
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("InventorySalesProductId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -3358,8 +3368,10 @@ namespace Odco.PointOfSales.Migrations
                     b.Property<Guid>("SaleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("SalesProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("SalesNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<decimal>("SellingPrice")
                         .HasColumnType("decimal(18,2)");
@@ -3383,7 +3395,7 @@ namespace Odco.PointOfSales.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sales.StockBalancesOfSalesProduct");
+                    b.ToTable("Sales.StockBalancesOfInventorySalesProduct");
                 });
 
             modelBuilder.Entity("Odco.PointOfSales.MultiTenancy.Tenant", b =>
@@ -3546,47 +3558,7 @@ namespace Odco.PointOfSales.Migrations
                     b.ToTable("Sales.Customer");
                 });
 
-            modelBuilder.Entity("Odco.PointOfSales.Sales.Common.PriceGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<byte>("PriceGroupCategory")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Sales.PriceGroup");
-                });
-
-            modelBuilder.Entity("Odco.PointOfSales.Sales.Common.SalesProduct", b =>
+            modelBuilder.Entity("Odco.PointOfSales.Sales.Common.InventorySalesProduct", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -3680,7 +3652,47 @@ namespace Odco.PointOfSales.Migrations
 
                     b.HasIndex("SaleId");
 
-                    b.ToTable("Sales.SalesProduct");
+                    b.ToTable("Sales.InventorySalesProduct");
+                });
+
+            modelBuilder.Entity("Odco.PointOfSales.Sales.Common.PriceGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<byte>("PriceGroupCategory")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sales.PriceGroup");
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
@@ -4107,10 +4119,10 @@ namespace Odco.PointOfSales.Migrations
                     b.Navigation("PriceGroup");
                 });
 
-            modelBuilder.Entity("Odco.PointOfSales.Sales.Common.SalesProduct", b =>
+            modelBuilder.Entity("Odco.PointOfSales.Sales.Common.InventorySalesProduct", b =>
                 {
                     b.HasOne("Odco.PointOfSales.Core.Sales.Sale", "Sale")
-                        .WithMany("SalesProducts")
+                        .WithMany("InventorySalesProducts")
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4240,9 +4252,9 @@ namespace Odco.PointOfSales.Migrations
 
             modelBuilder.Entity("Odco.PointOfSales.Core.Sales.Sale", b =>
                 {
-                    b.Navigation("Payments");
+                    b.Navigation("InventorySalesProducts");
 
-                    b.Navigation("SalesProducts");
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Odco.PointOfSales.Sales.Common.Customer", b =>
