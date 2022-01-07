@@ -16,6 +16,10 @@ namespace Odco.PointOfSales.Core.Sales
     {
         public Guid SaleId { get; set; }
 
+        [Required]
+        [StringLength(15)]
+        public string SalesNumber { get; set; }
+
         public Guid InventorySalesProductId { get; set; }
 
         #region StockBalance

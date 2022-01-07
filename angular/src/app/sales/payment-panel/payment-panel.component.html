@@ -45,10 +45,10 @@
       <!-- Non Inventory Products (Doesnt have Stocks) -->
       <ng-container *ngIf="
       saleDto &&
-      saleDto.nonInventoryProducts &&
-      saleDto.nonInventoryProducts.length > 0
+      saleDto.nonInventorySalesProducts &&
+      saleDto.nonInventorySalesProducts.length > 0
     ">
-        <table *ngFor="let item of saleDto.nonInventoryProducts">
+        <table *ngFor="let item of saleDto.nonInventorySalesProducts">
           <tr>
             <td style="font-weight: 500;"><span class="dot"></span> {{ item.productName }}
               <span class="text-success" *ngIf="item.discountRate > 0">{{item.discountRate}}%</span>

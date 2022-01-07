@@ -3568,7 +3568,7 @@ export class SalesServiceProxy {
      * @param saleId (optional) 
      * @return Success
      */
-    getNonInventoryProductBySaleId(saleId: string | undefined): Observable<NonInventoryProductDto[]> {
+    getNonInventoryProductBySaleId(saleId: string | undefined): Observable<NonInventorySalesProductDto[]> {
         let url_ = this.baseUrl + "/api/services/app/Sales/GetNonInventoryProductBySaleId?";
         if (saleId === null)
             throw new Error("The parameter 'saleId' cannot be null.");
@@ -3591,14 +3591,14 @@ export class SalesServiceProxy {
                 try {
                     return this.processGetNonInventoryProductBySaleId(<any>response_);
                 } catch (e) {
-                    return <Observable<NonInventoryProductDto[]>><any>_observableThrow(e);
+                    return <Observable<NonInventorySalesProductDto[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<NonInventoryProductDto[]>><any>_observableThrow(response_);
+                return <Observable<NonInventorySalesProductDto[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetNonInventoryProductBySaleId(response: HttpResponseBase): Observable<NonInventoryProductDto[]> {
+    protected processGetNonInventoryProductBySaleId(response: HttpResponseBase): Observable<NonInventorySalesProductDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3612,7 +3612,7 @@ export class SalesServiceProxy {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200.push(NonInventoryProductDto.fromJS(item));
+                    result200.push(NonInventorySalesProductDto.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -3624,7 +3624,7 @@ export class SalesServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<NonInventoryProductDto[]>(<any>null);
+        return _observableOf<NonInventorySalesProductDto[]>(<any>null);
     }
 }
 
@@ -8723,7 +8723,7 @@ export interface ICreateInventorySalesProductDto {
     isActive: boolean;
 }
 
-export class CreateNonInventoryProductDto implements ICreateNonInventoryProductDto {
+export class CreateNonInventorySalesProductDto implements ICreateNonInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -8744,7 +8744,7 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
     maximumRetailPrice: number;
     price: number;
 
-    constructor(data?: ICreateNonInventoryProductDto) {
+    constructor(data?: ICreateNonInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -8777,9 +8777,9 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
         }
     }
 
-    static fromJS(data: any): CreateNonInventoryProductDto {
+    static fromJS(data: any): CreateNonInventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateNonInventoryProductDto();
+        let result = new CreateNonInventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -8808,15 +8808,15 @@ export class CreateNonInventoryProductDto implements ICreateNonInventoryProductD
         return data; 
     }
 
-    clone(): CreateNonInventoryProductDto {
+    clone(): CreateNonInventorySalesProductDto {
         const json = this.toJSON();
-        let result = new CreateNonInventoryProductDto();
+        let result = new CreateNonInventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICreateNonInventoryProductDto {
+export interface ICreateNonInventorySalesProductDto {
     id: string | undefined;
     sequenceNumber: number;
     saleId: string | undefined;
@@ -9090,7 +9090,7 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
     paymentStatus: PaymentStatus;
     isActive: boolean;
     inventorySalesProducts: CreateInventorySalesProductDto[] | undefined;
-    nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
+    nonInventorySalesProducts: CreateNonInventorySalesProductDto[] | undefined;
     cashes: CashDto[] | undefined;
     cheques: ChequeDto[] | undefined;
     outstandings: CustomerCreditOutstandingDto[] | undefined;
@@ -9130,10 +9130,10 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
                 for (let item of _data["inventorySalesProducts"])
                     this.inventorySalesProducts.push(CreateInventorySalesProductDto.fromJS(item));
             }
-            if (Array.isArray(_data["nonInventoryProducts"])) {
-                this.nonInventoryProducts = [] as any;
-                for (let item of _data["nonInventoryProducts"])
-                    this.nonInventoryProducts.push(CreateNonInventoryProductDto.fromJS(item));
+            if (Array.isArray(_data["nonInventorySalesProducts"])) {
+                this.nonInventorySalesProducts = [] as any;
+                for (let item of _data["nonInventorySalesProducts"])
+                    this.nonInventorySalesProducts.push(CreateNonInventorySalesProductDto.fromJS(item));
             }
             if (Array.isArray(_data["cashes"])) {
                 this.cashes = [] as any;
@@ -9194,10 +9194,10 @@ export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
             for (let item of this.inventorySalesProducts)
                 data["inventorySalesProducts"].push(item.toJSON());
         }
-        if (Array.isArray(this.nonInventoryProducts)) {
-            data["nonInventoryProducts"] = [];
-            for (let item of this.nonInventoryProducts)
-                data["nonInventoryProducts"].push(item.toJSON());
+        if (Array.isArray(this.nonInventorySalesProducts)) {
+            data["nonInventorySalesProducts"] = [];
+            for (let item of this.nonInventorySalesProducts)
+                data["nonInventorySalesProducts"].push(item.toJSON());
         }
         if (Array.isArray(this.cashes)) {
             data["cashes"] = [];
@@ -9254,7 +9254,7 @@ export interface ICreateOrUpdateSaleDto {
     paymentStatus: PaymentStatus;
     isActive: boolean;
     inventorySalesProducts: CreateInventorySalesProductDto[] | undefined;
-    nonInventoryProducts: CreateNonInventoryProductDto[] | undefined;
+    nonInventorySalesProducts: CreateNonInventorySalesProductDto[] | undefined;
     cashes: CashDto[] | undefined;
     cheques: ChequeDto[] | undefined;
     outstandings: CustomerCreditOutstandingDto[] | undefined;
@@ -9385,7 +9385,7 @@ export interface IInventorySalesProductDto {
     id: string;
 }
 
-export class NonInventoryProductDto implements INonInventoryProductDto {
+export class NonInventorySalesProductDto implements INonInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
@@ -9406,7 +9406,7 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
     price: number;
     id: string;
 
-    constructor(data?: INonInventoryProductDto) {
+    constructor(data?: INonInventorySalesProductDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -9439,9 +9439,9 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
         }
     }
 
-    static fromJS(data: any): NonInventoryProductDto {
+    static fromJS(data: any): NonInventorySalesProductDto {
         data = typeof data === 'object' ? data : {};
-        let result = new NonInventoryProductDto();
+        let result = new NonInventorySalesProductDto();
         result.init(data);
         return result;
     }
@@ -9470,15 +9470,15 @@ export class NonInventoryProductDto implements INonInventoryProductDto {
         return data; 
     }
 
-    clone(): NonInventoryProductDto {
+    clone(): NonInventorySalesProductDto {
         const json = this.toJSON();
-        let result = new NonInventoryProductDto();
+        let result = new NonInventorySalesProductDto();
         result.init(json);
         return result;
     }
 }
 
-export interface INonInventoryProductDto {
+export interface INonInventorySalesProductDto {
     sequenceNumber: number;
     saleId: string | undefined;
     salesNumber: string | undefined;
@@ -9516,7 +9516,7 @@ export class SaleDto implements ISaleDto {
     paymentStatus: PaymentStatus;
     isActive: boolean;
     inventorySalesProducts: InventorySalesProductDto[] | undefined;
-    nonInventoryProducts: NonInventoryProductDto[] | undefined;
+    nonInventorySalesProducts: NonInventorySalesProductDto[] | undefined;
     id: string;
 
     constructor(data?: ISaleDto) {
@@ -9549,10 +9549,10 @@ export class SaleDto implements ISaleDto {
                 for (let item of _data["inventorySalesProducts"])
                     this.inventorySalesProducts.push(InventorySalesProductDto.fromJS(item));
             }
-            if (Array.isArray(_data["nonInventoryProducts"])) {
-                this.nonInventoryProducts = [] as any;
-                for (let item of _data["nonInventoryProducts"])
-                    this.nonInventoryProducts.push(NonInventoryProductDto.fromJS(item));
+            if (Array.isArray(_data["nonInventorySalesProducts"])) {
+                this.nonInventorySalesProducts = [] as any;
+                for (let item of _data["nonInventorySalesProducts"])
+                    this.nonInventorySalesProducts.push(NonInventorySalesProductDto.fromJS(item));
             }
             this.id = _data["id"];
         }
@@ -9586,10 +9586,10 @@ export class SaleDto implements ISaleDto {
             for (let item of this.inventorySalesProducts)
                 data["inventorySalesProducts"].push(item.toJSON());
         }
-        if (Array.isArray(this.nonInventoryProducts)) {
-            data["nonInventoryProducts"] = [];
-            for (let item of this.nonInventoryProducts)
-                data["nonInventoryProducts"].push(item.toJSON());
+        if (Array.isArray(this.nonInventorySalesProducts)) {
+            data["nonInventorySalesProducts"] = [];
+            for (let item of this.nonInventorySalesProducts)
+                data["nonInventorySalesProducts"].push(item.toJSON());
         }
         data["id"] = this.id;
         return data; 
@@ -9619,7 +9619,7 @@ export interface ISaleDto {
     paymentStatus: PaymentStatus;
     isActive: boolean;
     inventorySalesProducts: InventorySalesProductDto[] | undefined;
-    nonInventoryProducts: NonInventoryProductDto[] | undefined;
+    nonInventorySalesProducts: NonInventorySalesProductDto[] | undefined;
     id: string;
 }
 

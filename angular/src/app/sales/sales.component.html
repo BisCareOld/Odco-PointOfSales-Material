@@ -22,7 +22,7 @@
   <!-- 2. SELECTED PRODUCT TABLE -->
   <form [formGroup]="salePanelForm" novalidate (ngSubmit)="save()">
     <div class="child product-display">
-      <ng-container formArrayName="inventorySalesProducts">
+      <ng-container formArrayName="salesProducts">
         <table class="full-width-table" mat-table [dataSource]="dataSource">
           <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
@@ -201,7 +201,7 @@
 
     <div class="calculation-summary" style="margin-top: 60px;">
       <div>No of Items
-        <span style="float: right;">{{ inventorySalesProducts.value.length }}</span>
+        <span style="float: right;">{{ salesProducts.value.length }}</span>
       </div>
       <div>Gross Amount
         <span style="float: right;">{{ grossAmount.value }}</span>

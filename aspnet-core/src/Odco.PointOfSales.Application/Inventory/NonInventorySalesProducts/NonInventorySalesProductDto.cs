@@ -4,10 +4,10 @@ using Odco.PointOfSales.Core.Inventory;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
+namespace Odco.PointOfSales.Application.Inventory.NonInventorySalesProducts
 {
-    [AutoMapTo(typeof(NonInventoryProductDto)), AutoMapFrom(typeof(NonInventoryProduct))]
-    public class NonInventoryProductDto : EntityDto<Guid>
+    [AutoMapTo(typeof(NonInventorySalesProductDto)), AutoMapFrom(typeof(NonInventorySalesProduct))]
+    public class NonInventorySalesProductDto : EntityDto<Guid>
     {
         public int SequenceNumber { get; set; }
 

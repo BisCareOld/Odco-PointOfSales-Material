@@ -1,6 +1,6 @@
 ﻿using Abp.AutoMapper;
 using Odco.PointOfSales.Application.Finance.Payments.PaymentTypes;
-using Odco.PointOfSales.Application.Inventory.NonInventoryProducts;
+using Odco.PointOfSales.Application.Inventory.NonInventorySalesProducts;
 using Odco.PointOfSales.Application.Sales.InventorySalesProducts;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Sales;
@@ -16,7 +16,7 @@ namespace Odco.PointOfSales.Application.Sales.Sales
         public CreateOrUpdateSaleDto()
         {
             InventorySalesProducts = new HashSet<CreateInventorySalesProductDto>();
-            NonInventoryProducts = new HashSet<CreateNonInventoryProductDto>();
+            NonInventorySalesProducts = new HashSet<CreateNonInventorySalesProductDto>();
             //PaymentDtos
             Cashes = new HashSet<CashDto>();
             Cheques = new HashSet<ChequeDto>();
@@ -78,7 +78,7 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public ICollection<CreateInventorySalesProductDto> InventorySalesProducts { get; set; }
 
-        public ICollection<CreateNonInventoryProductDto> NonInventoryProducts { get; set; }
+        public ICollection<CreateNonInventorySalesProductDto> NonInventorySalesProducts { get; set; }
 
         #region Payment Types
         public ICollection<CashDto> Cashes { get; set; }

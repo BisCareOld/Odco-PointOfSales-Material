@@ -1,12 +1,35 @@
-﻿using System;
+﻿using Abp.Domain.Entities.Auditing;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
+namespace Odco.PointOfSales.Core.Inventory
 {
-    public class CreateNonInventoryProductDto
+    /// <summary>
+    /// 
+    /// OPERATIONS
+    ///      SequenceNo  |   Warehouse
+    ///          0              NULL        =>      Company Summary
+    ///          0              Exist       =>      Warehouse Summart
+    ///          1 =<           Exist       =>      NonInventory / Sales
+    ///          
+    /// CRUD
+    ///     CREATE  =   Sales -> Payment
+    ///     UPDATE  =   Payment -> Sales    (Alter Qty)
+    ///     DELETE  =   Payment ->  Sales   (Remove Product)
+    /// 
+    /// RELATIONSHIPS
+    ///     NonInventorySalesProduct : TempSales = 1 : 1
+    ///     
+    /// </summary>
+    [Table("Inventory.NonInventorySalesProduct")]
+    public class NonInventorySalesProduct : FullAuditedEntity<Guid>
     {
-        public Guid? Id { get; set; }
-
+        /// <summary>
+        /// Company Summary: 0
+        /// Warehouse Summaries: 0
+        /// Sales: 1
+        /// </summary>
         public int SequenceNumber { get; set; }
 
         public Guid? SaleId { get; set; }
@@ -51,12 +74,13 @@ namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
         [StringLength(10)]
         public string QuantityUnitOfMeasureUnit { get; set; }
 
-        #region Sales
+        #region Calculation By Sales
         public decimal DiscountRate { get; set; }
 
         public decimal DiscountAmount { get; set; }
 
         public decimal LineTotal { get; set; }
+
         #endregion
 
         public decimal CostPrice { get; set; }
@@ -64,7 +88,11 @@ namespace Odco.PointOfSales.Application.Inventory.NonInventoryProducts
         public decimal SellingPrice { get; set; }
 
         public decimal MaximumRetailPrice { get; set; }
-        
+
+        /// <summary>
+        /// Actual Price given for the Customer
+        /// </summary>
         public decimal Price { get; set; }
     }
 }
+

@@ -30,14 +30,14 @@ namespace Odco.PointOfSales.Application.Productions
         private readonly IRepository<Brand, Guid> _brandRepository;
         private readonly IRepository<StockBalance, Guid> _stockBalanceRepository;
         private readonly IRepository<Warehouse, Guid> _warehouseRepository;
-        private readonly IRepository<NonInventoryProduct, Guid> _nonInventoryProductRepository;
+        private readonly IRepository<NonInventorySalesProduct, Guid> _nonInventorySalesProductRepository;
 
         public ProductionAppService(IRepository<Product, Guid> productRepository,
             IRepository<Category, Guid> categoryRepository,
             IRepository<Brand, Guid> brandRepository,
             IRepository<StockBalance, Guid> stockBalanceRepository,
             IRepository<Warehouse, Guid> warehouseRepository,
-            IRepository<NonInventoryProduct, Guid> nonInventoryProductRepository)
+            IRepository<NonInventorySalesProduct, Guid> nonInventoryProductRepository)
         {
             _asyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
             _productRepository = productRepository;
@@ -45,7 +45,7 @@ namespace Odco.PointOfSales.Application.Productions
             _brandRepository = brandRepository;
             _stockBalanceRepository = stockBalanceRepository;
             _warehouseRepository = warehouseRepository;
-            _nonInventoryProductRepository = nonInventoryProductRepository;
+            _nonInventorySalesProductRepository = nonInventoryProductRepository;
         }
 
         #region Product
@@ -56,7 +56,7 @@ namespace Odco.PointOfSales.Application.Productions
                 var product = ObjectMapper.Map<Product>(input);
                 var created = await _productRepository.InsertAsync(product);
                 await CreateOrUpdateStockBalance(created.Id, created.Code, created.Name);
-                await CreateOrUpdateNonInventoryProductSummaryAsync(created.Id, created.Code, created.Name);
+                await CreateOrUpdateNonInventorySalesProductSummaryAsync(created.Id, created.Code, created.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(created);
             }
@@ -126,7 +126,7 @@ namespace Odco.PointOfSales.Application.Productions
                 ObjectMapper.Map(input, product);
                 var updated = await _productRepository.UpdateAsync(product);
                 await CreateOrUpdateStockBalance(updated.Id, updated.Code, updated.Name);
-                await CreateOrUpdateNonInventoryProductSummaryAsync(updated.Id, updated.Code, updated.Name);
+                await CreateOrUpdateNonInventorySalesProductSummaryAsync(updated.Id, updated.Code, updated.Name);
                 await CurrentUnitOfWork.SaveChangesAsync();
                 return ObjectMapper.Map<ProductDto>(updated);
             }
@@ -619,18 +619,18 @@ namespace Odco.PointOfSales.Application.Productions
         #endregion
 
         #region NonInventoryProduct
-        private async Task CreateOrUpdateNonInventoryProductSummaryAsync(Guid productId, string productCode, string productName)
+        private async Task CreateOrUpdateNonInventorySalesProductSummaryAsync(Guid productId, string productCode, string productName)
         {
-            var existNonInventoryProducts = await _nonInventoryProductRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.ProductId == productId).ToListAsync();
+            var existNonInventorySalesProducts = await _nonInventorySalesProductRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.ProductId == productId).ToListAsync();
 
             var warehouses = await GetAllKeyValuePairWarehousesAsync();
 
             #region Company Summary
             // Creating or Updating Company Summaries
-            if (!existNonInventoryProducts.Any(n => !n.WarehouseId.HasValue))
+            if (!existNonInventorySalesProducts.Any(n => !n.WarehouseId.HasValue))
             {
                 // Create
-                await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
+                await _nonInventorySalesProductRepository.InsertAsync(new NonInventorySalesProduct
                 {
                     Id = Guid.NewGuid(),
                     SequenceNumber = 0,
@@ -654,10 +654,10 @@ namespace Odco.PointOfSales.Application.Productions
             else
             {
                 // Update
-                var update = existNonInventoryProducts.FirstOrDefault(n => !n.WarehouseId.HasValue);
+                var update = existNonInventorySalesProducts.FirstOrDefault(n => !n.WarehouseId.HasValue);
                 update.ProductName = productName;
                 update.ProductCode = productCode;
-                await _nonInventoryProductRepository.UpdateAsync(update);
+                await _nonInventorySalesProductRepository.UpdateAsync(update);
             }
             #endregion
 
@@ -665,10 +665,10 @@ namespace Odco.PointOfSales.Application.Productions
             foreach (var w in warehouses)
             {
                 // Creating or Updating Warehouse Summaries
-                if (!existNonInventoryProducts.Any(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id))
+                if (!existNonInventorySalesProducts.Any(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id))
                 {
                     // Create
-                    await _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
+                    await _nonInventorySalesProductRepository.InsertAsync(new NonInventorySalesProduct
                     {
                         Id = Guid.NewGuid(),
                         SequenceNumber = 0,
@@ -692,10 +692,10 @@ namespace Odco.PointOfSales.Application.Productions
                 else
                 {
                     // Update
-                    var update = existNonInventoryProducts.FirstOrDefault(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id);
+                    var update = existNonInventorySalesProducts.FirstOrDefault(n => n.WarehouseId.HasValue && n.WarehouseId == w.Id);
                     update.ProductName = productName;
                     update.ProductCode = productCode;
-                    await _nonInventoryProductRepository.UpdateAsync(update);
+                    await _nonInventorySalesProductRepository.UpdateAsync(update);
                 }
             }
             #endregion
@@ -707,7 +707,7 @@ namespace Odco.PointOfSales.Application.Productions
         {
             var products = await _productRepository.GetAll().ToListAsync();
 
-            var existNonInventoryProducts = await _nonInventoryProductRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.WarehouseId.HasValue).ToListAsync();
+            var existNonInventoryProducts = await _nonInventorySalesProductRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.WarehouseId.HasValue).ToListAsync();
 
             var existStockBalances = await _stockBalanceRepository.GetAll().Where(n => n.SequenceNumber == 0 && n.WarehouseId.HasValue).ToListAsync();
 
@@ -717,7 +717,7 @@ namespace Odco.PointOfSales.Application.Productions
                 if (!existNonInventoryProducts.Any(n => n.ProductId == p.Id && n.WarehouseId == warehouseId))
                 {
                     // Create
-                    _nonInventoryProductRepository.InsertAsync(new NonInventoryProduct
+                    _nonInventorySalesProductRepository.InsertAsync(new NonInventorySalesProduct
                     {
                         Id = Guid.NewGuid(),
                         SequenceNumber = 0,
@@ -745,7 +745,7 @@ namespace Odco.PointOfSales.Application.Productions
                     var update = existNonInventoryProducts.FirstOrDefault(n => n.ProductId == p.Id && n.WarehouseId == warehouseId);
                     update.WarehouseCode = warehouseCode;
                     update.WarehouseName = warehouseName;
-                    _nonInventoryProductRepository.UpdateAsync(update);
+                    _nonInventorySalesProductRepository.UpdateAsync(update);
                 }
                 #endregion
 

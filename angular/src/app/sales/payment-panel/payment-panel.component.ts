@@ -106,7 +106,7 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
       remarks: [this.saleDto.remarks],
       isActive: [this.saleDto.isActive],
       inventorySalesProducts: [this.saleDto.inventorySalesProducts],
-      nonInventoryProducts: [this.saleDto.nonInventoryProducts],
+      nonInventorySalesProducts: [this.saleDto.nonInventorySalesProducts],
       cashes: this.fb.array([]),
       cheques: this.fb.array([]),
       outstandings: this.fb.array([]),
@@ -229,7 +229,7 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
     this.inventorySalesProducts.value.forEach(function (item) {
       total += item.lineTotal;
     });
-    this.nonInventoryProducts.value.forEach(function (item) {
+    this.nonInventorySalesProducts.value.forEach(function (item) {
       total += item.lineTotal;
     });
     this.grossAmount.setValue(parseFloat(total.toFixed(2)));
@@ -387,8 +387,8 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
     return this.formPayment.controls["inventorySalesProducts"] as FormArray;
   }
 
-  get nonInventoryProducts(): FormArray {
-    return this.formPayment.controls["nonInventoryProducts"] as FormArray;
+  get nonInventorySalesProducts(): FormArray {
+    return this.formPayment.controls["nonInventorySalesProducts"] as FormArray;
   }
 
   //#region Payment
