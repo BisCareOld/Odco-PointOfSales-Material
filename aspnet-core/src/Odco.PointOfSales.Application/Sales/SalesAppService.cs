@@ -845,7 +845,18 @@ namespace Odco.PointOfSales.Application.Sales
                 if (input.Cashes.Any() || input.Cheques.Any() || input.DebitCards.Any() || input.GiftCards.Any())
                     invoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
 
-                var payments = new List<Payment>();
+                var payment = new Payment();
+
+                payment.SaleId = input.Id.Value;
+                payment.SalesNumber = input.SalesNumber;
+                payment.InvoiceNumber = invoiceNumber;
+                payment.CustomerId = input.CustomerId;
+                payment.CustomerCode = input.CustomerCode;
+                payment.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
+                payment.TotalReceivedAmount = input.ReceivedAmount;
+                payment.TotalBalanceAmount = input.BalanceAmount;
+                payment.TotalPaidAmount = input.ReceivedAmount - input.BalanceAmount;
+                payment.IsOutstandingPaymentInvolved = input.Outstandings.Any() ? true : false;
 
                 #region
                 decimal remainingReceivedAmount = 0;
@@ -873,7 +884,7 @@ namespace Odco.PointOfSales.Application.Sales
                         _amountPaid = totalCashAmount;
                         remainingReceivedAmount -= totalCashAmount;
                     }
-                    payments.Add(new Payment
+                    payment.PaymentLineLevels.Add(new PaymentLineLevel
                     {
                         PaidAmount = _amountPaid,
                         IsCash = true,
@@ -895,7 +906,7 @@ namespace Odco.PointOfSales.Application.Sales
                         _amountPaid = ip.ChequeAmount;
                         remainingReceivedAmount -= ip.ChequeAmount;
                     }
-                    payments.Add(new Payment
+                    payment.PaymentLineLevels.Add(new PaymentLineLevel
                     {
                         PaidAmount = _amountPaid,
                         ChequeNumber = ip.ChequeNumber,
@@ -911,33 +922,43 @@ namespace Odco.PointOfSales.Application.Sales
                 }
                 foreach (var ip in input.DebitCards)
                 {
-                    payments.Add(new Payment
+                    payment.PaymentLineLevels.Add(new PaymentLineLevel
                     {
                         IsDebitCard = true,
                     });
                 }
                 foreach (var ip in input.GiftCards)
                 {
-                    payments.Add(new Payment
+                    payment.PaymentLineLevels.Add(new PaymentLineLevel
                     {
                         PaidAmount = ip.GiftCardAmount,
                         IsGiftCard = true,
                     });
                 }
 
-                foreach (var p in payments)
+                foreach (var pll in payment.PaymentLineLevels)
                 {
-                    p.SaleId = input.Id.Value;
-                    p.CustomerId = input.CustomerId;
-                    p.CustomerCode = input.CustomerCode;
-                    p.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
-                    p.SalesNumber = input.SalesNumber;
-                    p.InvoiceNumber = invoiceNumber;
-                    p.TotalReceivedAmount = input.ReceivedAmount;
-                    p.TotalBalanceAmount = input.BalanceAmount;
+                    pll.InvoiceNumber = invoiceNumber;
 
-                    await _paymentRepository.InsertAsync(p);
+                    pll.SaleId = input.Id.Value;
+                    pll.SalesNumber = input.SalesNumber;
+
+                    pll.CustomerId = input.CustomerId;
+                    pll.CustomerCode = input.CustomerCode;
+                    pll.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
+
+                    pll.SpecificReceivedAmount = input.ReceivedAmount;
+                    pll.SpecificBalanceAmount = input.BalanceAmount;
+
+                    pll.PaidAmount = pll.PaidAmount;
+                    pll.IsCash = pll.IsCash;
+                    pll.IsCheque = pll.IsCheque;
+                    pll.IsDebitCard = pll.IsDebitCard;
+                    pll.IsGiftCard = pll.IsGiftCard;
+                    pll.IsOutstandingPaymentInvolved = pll.IsOutstandingPaymentInvolved;
                 }
+
+                await _paymentRepository.InsertAsync(payment);
 
                 if (input.Outstandings.Any())
                 {
@@ -967,7 +988,7 @@ namespace Odco.PointOfSales.Application.Sales
             // 1. Get the total of Previously Paid Amount
             decimal previouslyPaidAmount = 0;
             var prevPayments = _paymentRepository.GetAll().Where(p => p.SaleId == saleId);
-            if (prevPayments.Any()) previouslyPaidAmount = prevPayments.Select(p => p.PaidAmount).Sum();
+            if (prevPayments.Any()) previouslyPaidAmount = prevPayments.Select(p => p.TotalPaidAmount).Sum();
 
             var _totalPayingAmount = previouslyPaidAmount + totalPayingAmount;
 

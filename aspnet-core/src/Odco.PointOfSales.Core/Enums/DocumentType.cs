@@ -6,7 +6,7 @@
         GoodsReceivedNote = 2,
         SalesOrder = 3,
         Sales = 4,
-        Invoice = 5,
+        Invoice = 5,            // Payment
         Receipt = 6,
         Dispatch = 7,
         StockTransfer = 8,
