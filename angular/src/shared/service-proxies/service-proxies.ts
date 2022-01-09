@@ -446,6 +446,70 @@ export class DocumentSequenceNumberManagerImplementationServiceProxy {
 }
 
 @Injectable()
+export class FinanceServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createPaymentForCustomerOutstanding(body: CreatePaymentForOutstandingDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Finance/CreatePaymentForCustomerOutstanding";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreatePaymentForCustomerOutstanding(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreatePaymentForCustomerOutstanding(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreatePaymentForCustomerOutstanding(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+}
+
+@Injectable()
 export class InventoryServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -5564,6 +5628,382 @@ export enum DocumentType {
     _11 = 11,
 }
 
+export class OutstandingSaleDto implements IOutstandingSaleDto {
+    isSelected: boolean;
+    saleId: string;
+    salesNumber: string | undefined;
+    netAmount: number;
+    dueOutstandingAmount: number;
+    enteredAmount: number | undefined;
+
+    constructor(data?: IOutstandingSaleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSelected = _data["isSelected"];
+            this.saleId = _data["saleId"];
+            this.salesNumber = _data["salesNumber"];
+            this.netAmount = _data["netAmount"];
+            this.dueOutstandingAmount = _data["dueOutstandingAmount"];
+            this.enteredAmount = _data["enteredAmount"];
+        }
+    }
+
+    static fromJS(data: any): OutstandingSaleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new OutstandingSaleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSelected"] = this.isSelected;
+        data["saleId"] = this.saleId;
+        data["salesNumber"] = this.salesNumber;
+        data["netAmount"] = this.netAmount;
+        data["dueOutstandingAmount"] = this.dueOutstandingAmount;
+        data["enteredAmount"] = this.enteredAmount;
+        return data; 
+    }
+
+    clone(): OutstandingSaleDto {
+        const json = this.toJSON();
+        let result = new OutstandingSaleDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IOutstandingSaleDto {
+    isSelected: boolean;
+    saleId: string;
+    salesNumber: string | undefined;
+    netAmount: number;
+    dueOutstandingAmount: number;
+    enteredAmount: number | undefined;
+}
+
+export class CashDto implements ICashDto {
+    cashAmount: number;
+
+    constructor(data?: ICashDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.cashAmount = _data["cashAmount"];
+        }
+    }
+
+    static fromJS(data: any): CashDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CashDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["cashAmount"] = this.cashAmount;
+        return data; 
+    }
+
+    clone(): CashDto {
+        const json = this.toJSON();
+        let result = new CashDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICashDto {
+    cashAmount: number;
+}
+
+export class ChequeDto implements IChequeDto {
+    chequeNumber: string | undefined;
+    bankId: string;
+    bank: string | undefined;
+    branchId: string | undefined;
+    branch: string | undefined;
+    chequeReturnDate: moment.Moment;
+    chequeAmount: number;
+
+    constructor(data?: IChequeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.chequeNumber = _data["chequeNumber"];
+            this.bankId = _data["bankId"];
+            this.bank = _data["bank"];
+            this.branchId = _data["branchId"];
+            this.branch = _data["branch"];
+            this.chequeReturnDate = _data["chequeReturnDate"] ? moment(_data["chequeReturnDate"].toString()) : <any>undefined;
+            this.chequeAmount = _data["chequeAmount"];
+        }
+    }
+
+    static fromJS(data: any): ChequeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChequeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["chequeNumber"] = this.chequeNumber;
+        data["bankId"] = this.bankId;
+        data["bank"] = this.bank;
+        data["branchId"] = this.branchId;
+        data["branch"] = this.branch;
+        data["chequeReturnDate"] = this.chequeReturnDate ? this.chequeReturnDate.toISOString() : <any>undefined;
+        data["chequeAmount"] = this.chequeAmount;
+        return data; 
+    }
+
+    clone(): ChequeDto {
+        const json = this.toJSON();
+        let result = new ChequeDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IChequeDto {
+    chequeNumber: string | undefined;
+    bankId: string;
+    bank: string | undefined;
+    branchId: string | undefined;
+    branch: string | undefined;
+    chequeReturnDate: moment.Moment;
+    chequeAmount: number;
+}
+
+export class DebitCardDto implements IDebitCardDto {
+
+    constructor(data?: IDebitCardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): DebitCardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DebitCardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data; 
+    }
+
+    clone(): DebitCardDto {
+        const json = this.toJSON();
+        let result = new DebitCardDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IDebitCardDto {
+}
+
+export class GiftCardDto implements IGiftCardDto {
+    giftCardAmount: number;
+
+    constructor(data?: IGiftCardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.giftCardAmount = _data["giftCardAmount"];
+        }
+    }
+
+    static fromJS(data: any): GiftCardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GiftCardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["giftCardAmount"] = this.giftCardAmount;
+        return data; 
+    }
+
+    clone(): GiftCardDto {
+        const json = this.toJSON();
+        let result = new GiftCardDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IGiftCardDto {
+    giftCardAmount: number;
+}
+
+export class CreatePaymentForOutstandingDto implements ICreatePaymentForOutstandingDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    totalReceivedAmount: number;
+    totalBalanceAmount: number;
+    isOutstandingPaymentInvolved: boolean;
+    outstandingSales: OutstandingSaleDto[] | undefined;
+    cashes: CashDto[] | undefined;
+    cheques: ChequeDto[] | undefined;
+    debitCards: DebitCardDto[] | undefined;
+    giftCards: GiftCardDto[] | undefined;
+
+    constructor(data?: ICreatePaymentForOutstandingDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.totalReceivedAmount = _data["totalReceivedAmount"];
+            this.totalBalanceAmount = _data["totalBalanceAmount"];
+            this.isOutstandingPaymentInvolved = _data["isOutstandingPaymentInvolved"];
+            if (Array.isArray(_data["outstandingSales"])) {
+                this.outstandingSales = [] as any;
+                for (let item of _data["outstandingSales"])
+                    this.outstandingSales.push(OutstandingSaleDto.fromJS(item));
+            }
+            if (Array.isArray(_data["cashes"])) {
+                this.cashes = [] as any;
+                for (let item of _data["cashes"])
+                    this.cashes.push(CashDto.fromJS(item));
+            }
+            if (Array.isArray(_data["cheques"])) {
+                this.cheques = [] as any;
+                for (let item of _data["cheques"])
+                    this.cheques.push(ChequeDto.fromJS(item));
+            }
+            if (Array.isArray(_data["debitCards"])) {
+                this.debitCards = [] as any;
+                for (let item of _data["debitCards"])
+                    this.debitCards.push(DebitCardDto.fromJS(item));
+            }
+            if (Array.isArray(_data["giftCards"])) {
+                this.giftCards = [] as any;
+                for (let item of _data["giftCards"])
+                    this.giftCards.push(GiftCardDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreatePaymentForOutstandingDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePaymentForOutstandingDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["totalReceivedAmount"] = this.totalReceivedAmount;
+        data["totalBalanceAmount"] = this.totalBalanceAmount;
+        data["isOutstandingPaymentInvolved"] = this.isOutstandingPaymentInvolved;
+        if (Array.isArray(this.outstandingSales)) {
+            data["outstandingSales"] = [];
+            for (let item of this.outstandingSales)
+                data["outstandingSales"].push(item.toJSON());
+        }
+        if (Array.isArray(this.cashes)) {
+            data["cashes"] = [];
+            for (let item of this.cashes)
+                data["cashes"].push(item.toJSON());
+        }
+        if (Array.isArray(this.cheques)) {
+            data["cheques"] = [];
+            for (let item of this.cheques)
+                data["cheques"].push(item.toJSON());
+        }
+        if (Array.isArray(this.debitCards)) {
+            data["debitCards"] = [];
+            for (let item of this.debitCards)
+                data["debitCards"].push(item.toJSON());
+        }
+        if (Array.isArray(this.giftCards)) {
+            data["giftCards"] = [];
+            for (let item of this.giftCards)
+                data["giftCards"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): CreatePaymentForOutstandingDto {
+        const json = this.toJSON();
+        let result = new CreatePaymentForOutstandingDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreatePaymentForOutstandingDto {
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    totalReceivedAmount: number;
+    totalBalanceAmount: number;
+    isOutstandingPaymentInvolved: boolean;
+    outstandingSales: OutstandingSaleDto[] | undefined;
+    cashes: CashDto[] | undefined;
+    cheques: ChequeDto[] | undefined;
+    debitCards: DebitCardDto[] | undefined;
+    giftCards: GiftCardDto[] | undefined;
+}
+
 export enum TransactionStatus {
     _1 = 1,
     _2 = 2,
@@ -8838,116 +9278,6 @@ export interface ICreateNonInventorySalesProductDto {
     price: number;
 }
 
-export class CashDto implements ICashDto {
-    cashAmount: number;
-
-    constructor(data?: ICashDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.cashAmount = _data["cashAmount"];
-        }
-    }
-
-    static fromJS(data: any): CashDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CashDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["cashAmount"] = this.cashAmount;
-        return data; 
-    }
-
-    clone(): CashDto {
-        const json = this.toJSON();
-        let result = new CashDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ICashDto {
-    cashAmount: number;
-}
-
-export class ChequeDto implements IChequeDto {
-    chequeNumber: string | undefined;
-    bankId: string;
-    bank: string | undefined;
-    branchId: string | undefined;
-    branch: string | undefined;
-    chequeReturnDate: moment.Moment;
-    chequeAmount: number;
-
-    constructor(data?: IChequeDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.chequeNumber = _data["chequeNumber"];
-            this.bankId = _data["bankId"];
-            this.bank = _data["bank"];
-            this.branchId = _data["branchId"];
-            this.branch = _data["branch"];
-            this.chequeReturnDate = _data["chequeReturnDate"] ? moment(_data["chequeReturnDate"].toString()) : <any>undefined;
-            this.chequeAmount = _data["chequeAmount"];
-        }
-    }
-
-    static fromJS(data: any): ChequeDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ChequeDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["chequeNumber"] = this.chequeNumber;
-        data["bankId"] = this.bankId;
-        data["bank"] = this.bank;
-        data["branchId"] = this.branchId;
-        data["branch"] = this.branch;
-        data["chequeReturnDate"] = this.chequeReturnDate ? this.chequeReturnDate.toISOString() : <any>undefined;
-        data["chequeAmount"] = this.chequeAmount;
-        return data; 
-    }
-
-    clone(): ChequeDto {
-        const json = this.toJSON();
-        let result = new ChequeDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IChequeDto {
-    chequeNumber: string | undefined;
-    bankId: string;
-    bank: string | undefined;
-    branchId: string | undefined;
-    branch: string | undefined;
-    chequeReturnDate: moment.Moment;
-    chequeAmount: number;
-}
-
 export class CustomerCreditOutstandingDto implements ICustomerCreditOutstandingDto {
     outstandingAmount: number;
 
@@ -8989,86 +9319,6 @@ export class CustomerCreditOutstandingDto implements ICustomerCreditOutstandingD
 
 export interface ICustomerCreditOutstandingDto {
     outstandingAmount: number;
-}
-
-export class DebitCardDto implements IDebitCardDto {
-
-    constructor(data?: IDebitCardDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): DebitCardDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new DebitCardDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data; 
-    }
-
-    clone(): DebitCardDto {
-        const json = this.toJSON();
-        let result = new DebitCardDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IDebitCardDto {
-}
-
-export class GiftCardDto implements IGiftCardDto {
-    giftCardAmount: number;
-
-    constructor(data?: IGiftCardDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.giftCardAmount = _data["giftCardAmount"];
-        }
-    }
-
-    static fromJS(data: any): GiftCardDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new GiftCardDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["giftCardAmount"] = this.giftCardAmount;
-        return data; 
-    }
-
-    clone(): GiftCardDto {
-        const json = this.toJSON();
-        let result = new GiftCardDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IGiftCardDto {
-    giftCardAmount: number;
 }
 
 export class CreateOrUpdateSaleDto implements ICreateOrUpdateSaleDto {
