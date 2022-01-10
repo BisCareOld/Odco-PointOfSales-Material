@@ -18,6 +18,7 @@ import { CreatePurchaseOrderComponent } from "./purchasings/purchase-orders/crea
 import { SalesComponent } from "./sales/sales.component";
 import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.component";
 import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.component";
+import { CreateOutstandingPaymentComponent } from "./payments/create-payment-for-customer-outstanding/create-outstanding-payment.component";
 
 @NgModule({
   imports: [
@@ -111,6 +112,12 @@ import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.
           {
             path: "sales-list",
             component: TempSalesListComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "create-customer-outstanding-payment",
+            component: CreateOutstandingPaymentComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },

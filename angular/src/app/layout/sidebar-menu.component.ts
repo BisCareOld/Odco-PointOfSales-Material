@@ -117,6 +117,12 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
         "add_shopping_cart",
         "Pages.Users"
       ),
+      new MenuItem(
+        this.l("Payment"),
+        "/app/create-customer-outstanding-payment",
+        "add_shopping_cart",
+        "Pages.Users"
+      ),
       new MenuItem(this.l("MultiLevelMenu"), "", "fas fa-circle", "", [
         new MenuItem("ASP.NET Boilerplate", "", "fas fa-dot-circle", "", [
           new MenuItem(

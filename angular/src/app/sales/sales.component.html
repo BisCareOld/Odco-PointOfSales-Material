@@ -144,7 +144,7 @@
       </mat-accordion>
     </div>
     <div *ngIf="!customerId.value">
-      <app-partial-customers [isClearWhenSelected]="false" [fieldDisabled]="false" [fieldRequired]="false"
+      <app-partial-customers [isClearWhenSelected]="false" [isDisabledWhenSelected]="false" [fieldRequired]="false"
         (selectedEvent)="selectCustomer($event)">
       </app-partial-customers>
     </div>

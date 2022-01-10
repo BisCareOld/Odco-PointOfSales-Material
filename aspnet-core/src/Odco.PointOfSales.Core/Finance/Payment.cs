@@ -54,6 +54,9 @@ namespace Odco.PointOfSales.Core.Finance
         public decimal TotalPaidAmount { get; set; }
         #endregion
 
+        [StringLength(100)]
+        public string Remarks { get; set; }
+
         public bool IsOutstandingPaymentInvolved { get; set; }
 
         public ICollection<PaymentLineLevel> PaymentLineLevels { get; set; }

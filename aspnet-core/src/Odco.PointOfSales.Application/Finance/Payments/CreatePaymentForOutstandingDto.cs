@@ -36,6 +36,9 @@ namespace Odco.PointOfSales.Application.Finance.Payments
         // PaidAmount = TotalReceivedAmount - TotalBalanceAmount
         #endregion
 
+        [StringLength(100)]
+        public string Remarks { get; set; }
+
         public bool IsOutstandingPaymentInvolved { get; set; }
 
         public ICollection<OutstandingSaleDto> OutstandingSales { get; set; }

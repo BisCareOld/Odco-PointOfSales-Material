@@ -971,6 +971,7 @@ namespace Odco.PointOfSales.Application.Sales
                         SaleId = input.Id.Value,
                         SalesNumber = input.SalesNumber,
                         CreatedInvoiceNumber = invoiceNumber,
+                        NetAmount = input.NetAmount,
                         OutstandingAmount = outstandingAmount,
                         DueOutstandingAmount = outstandingAmount
                     });
@@ -999,6 +1000,25 @@ namespace Odco.PointOfSales.Application.Sales
         #endregion
 
         #region CustomerOutstanding & CustomerOutstandingSettlement
+        public async Task<List<OutstandingSaleDto>> GetOutstandingSalesByCustomerIdAsync(Guid customerId)
+        {
+            return await _customerOutstandingRepository.GetAll()
+                .Where(co => co.CustomerId == customerId && co.DueOutstandingAmount > 0)?
+                .Select(co => new OutstandingSaleDto
+                {
+                    IsSelected = false,
+                    SaleId = co.SaleId,
+                    SalesNumber = co.SalesNumber,
+                    NetAmount = co.NetAmount,
+                    DueOutstandingAmount = co.DueOutstandingAmount,
+                    EnteredAmount = 0
+                })
+                .OrderBy(os => os.SalesNumber)
+                .ToListAsync();
+
+            //// TODO: Return sale amount should be calculated for each sales in future
+        }
+
         private async Task CreateCustomerOutstandingAsync(CustomerOutstanding input)
         {
             await _customerOutstandingRepository.InsertAsync(input);

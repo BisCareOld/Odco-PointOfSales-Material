@@ -68,6 +68,7 @@ namespace Odco.PointOfSales.Application.Finance
             payment.TotalReceivedAmount = input.TotalReceivedAmount;
             payment.TotalBalanceAmount = input.TotalBalanceAmount;
             payment.TotalPaidAmount = input.TotalReceivedAmount - input.TotalBalanceAmount;
+            payment.Remarks = input.Remarks;
             payment.IsOutstandingPaymentInvolved = true;
             #endregion
 

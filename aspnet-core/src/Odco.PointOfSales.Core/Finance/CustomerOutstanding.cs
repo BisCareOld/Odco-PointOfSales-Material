@@ -36,6 +36,8 @@ namespace Odco.PointOfSales.Core.Finance
         [StringLength(15)]
         public string CreatedInvoiceNumber { get; set; }
 
+        public decimal NetAmount { get; set; }
+
         /// <summary>
         /// Once the value is SET, there is no edit FIXED value
         /// </summary>

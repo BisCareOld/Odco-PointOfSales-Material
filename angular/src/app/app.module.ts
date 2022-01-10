@@ -33,6 +33,8 @@ import { PurchaseOrderModule } from "./purchasings/purchase-orders/purchase-orde
 import { InventoryTransactionModule } from "./inventory/inventory-transactions/inventory-transaction.module";
 // sales
 import { SaleModule } from "./sales/sale.module";
+// payments
+import { PaymentModule } from "./payments/payment.module";
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
@@ -84,8 +86,9 @@ import { LayoutModule } from "@angular/cdk/layout";
     PurchaseOrderModule,
     InventoryTransactionModule,
     SaleModule,
+    PaymentModule
   ],
   providers: [],
   entryComponents: [],
 })
-export class AppModule {}
+export class AppModule { }

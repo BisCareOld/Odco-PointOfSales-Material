@@ -29,5 +29,9 @@ namespace Odco.PointOfSales.Application.Sales
         #region NonInventoryProduct
         Task<List<NonInventorySalesProductDto>> GetNonInventoryProductBySaleIdAsync(Guid saleId);
         #endregion
+
+        #region CustomerOutstanding & CustomerOutstandingSettlement
+        Task<List<OutstandingSaleDto>> GetOutstandingSalesByCustomerIdAsync(Guid customerId);
+        #endregion
     }
 }
