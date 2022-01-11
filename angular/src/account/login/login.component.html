@@ -1,83 +1,63 @@
-﻿<div [@routerTransition]>
-  <h4 class="text-center mb-3">{{ "LogIn" | localize }}</h4>
-  <form novalidate autocomplete="off" #loginForm="ngForm" (ngSubmit)="login()">
-    <div class="form-group">
-      <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          name="userNameOrEmailAddress"
-          [(ngModel)]="authService.authenticateModel.userNameOrEmailAddress"
-          [placeholder]="'UserNameOrEmail' | localize"
-          required
-          maxlength="256"
-          #userNameOrEmailAddressModel="ngModel"
-          #userNameOrEmailAddressEl
-        />
-        <div class="input-group-append">
-          <div class="input-group-text">
-            <span class="fas fa-user"></span>
-          </div>
-        </div>
-      </div>
-      <abp-validation-summary
-        [control]="userNameOrEmailAddressModel"
-        [controlEl]="userNameOrEmailAddressEl"
-      ></abp-validation-summary>
-    </div>
-    <div class="form-group">
-      <div class="input-group">
-        <input
-          type="password"
-          class="form-control"
-          name="password"
-          [(ngModel)]="authService.authenticateModel.password"
-          [placeholder]="'Password' | localize"
-          required
-          maxlength="32"
-          #passwordModel="ngModel"
-          #passwordEl
-        />
-        <div class="input-group-append">
-          <div class="input-group-text">
-            <span class="fas fa-lock"></span>
-          </div>
-        </div>
-      </div>
-      <abp-validation-summary
-        [control]="passwordModel"
-        [controlEl]="passwordEl"
-      ></abp-validation-summary>
-    </div>
-    <div class="form-group row">
-      <div class="col-md-8">
-        <div class="custom-control custom-checkbox">
-          <input
-            type="checkbox"
-            class="custom-control-input"
-            id="rememberMe"
-            name="rememberMe"
-            [(ngModel)]="authService.rememberMe"
-          />
-          <label for="rememberMe" class="custom-control-label">
-            {{ "RememberMe" | localize }}
-          </label>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <button
-          type="submit"
-          class="btn btn-primary btn-block"
-          [disabled]="!loginForm.form.valid || submitting"
-        >
-          {{ "LogIn" | localize }}
+﻿<style>
+  :host {
+    display: flex;
+    justify-content: center;
+    margin: 100px 0px 5px 0px;
+  }
+
+  .mat-form-field {
+    width: 100%;
+    min-width: 350px;
+  }
+
+  mat-card-title,
+  mat-card-content {
+    display: flex;
+    justify-content: center;
+  }
+
+  .error {
+    padding: 16px;
+    width: 300px;
+    color: white;
+    background-color: red;
+  }
+
+  .button {
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>
+
+<mat-card [@routerTransition]>
+  <mat-card-title>{{ "LogIn" | localize }}</mat-card-title>
+  <mat-card-content>
+    <form novalidate autocomplete="off" #loginForm="ngForm" (ngSubmit)="login()">
+      <p>
+        <mat-form-field>
+          <input type="text" matInput name="userNameOrEmailAddress"
+            [(ngModel)]="authService.authenticateModel.userNameOrEmailAddress"
+            [placeholder]="'UserNameOrEmail' | localize" required maxlength="256" #userNameOrEmailAddressModel="ngModel"
+            #userNameOrEmailAddressEl />
+          <abp-validation-summary [control]="userNameOrEmailAddressModel" [controlEl]="userNameOrEmailAddressEl">
+          </abp-validation-summary>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field>
+          <input type="password" matInput name="password" [(ngModel)]="authService.authenticateModel.password"
+            [placeholder]="'Password' | localize" required maxlength="32" #passwordModel="ngModel" #passwordEl />
+          <abp-validation-summary [control]="passwordModel" [controlEl]="passwordEl"></abp-validation-summary>
+        </mat-form-field>
+      </p>
+      <div class="button">
+        <a *ngIf="isSelfRegistrationAllowed" mat-button [routerLink]="['../register']">
+          <i class="fa fa-plus-circle"></i> {{ "Register" | localize }}
+        </a>
+        <button type="submit" mat-button [disabled]="!loginForm.form.valid || submitting">
+          {{ "LogIn" | localize}}
         </button>
       </div>
-    </div>
-  </form>
-  <p *ngIf="isSelfRegistrationAllowed" class="mb-1">
-    <a [routerLink]="['../register']">
-      <i class="fa fa-plus-circle"></i> {{ "Register" | localize }}
-    </a>
-  </p>
-</div>
+    </form>
+  </mat-card-content>
+</mat-card>
