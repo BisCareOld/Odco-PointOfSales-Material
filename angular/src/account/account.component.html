@@ -1,13 +1,13 @@
-﻿<div class="login-box">
+﻿<div>
   <account-header></account-header>
-  <div class="card">
-    <div *ngIf="showTenantChange()" class="card-header">
+  <div>
+    <div *ngIf="showTenantChange()">
       <tenant-change></tenant-change>
     </div>
-    <div class="card-body login-card-body">
+    <div>
       <router-outlet></router-outlet>
     </div>
-    <div class="card-footer">
+    <div>
       <account-languages></account-languages>
     </div>
   </div>
