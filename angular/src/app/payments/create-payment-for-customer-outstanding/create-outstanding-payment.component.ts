@@ -1,3 +1,4 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Injector, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,6 +14,7 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
   paymentForm;
   displayedColumns: string[] = [
     "is-selected",
+    "position",
     "sales-number",
     "net-amount",
     "paid-amount",
@@ -57,9 +59,10 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
       isSelected: [os.isSelected],
       salesId: [os.saleId, Validators.required],
       salesNumber: [os.salesNumber, Validators.required],
-      netAmount: [os.netAmount],
-      DueOutstandingAmount: [os.dueOutstandingAmount],
-      enteredAmount: [os.enteredAmount, Validators.max(os.netAmount - os.dueOutstandingAmount)],
+      netAmount: [os.netAmount.toFixed(2)],
+      paidAmount: [(os.netAmount - os.dueOutstandingAmount).toFixed(2)],    // only for showing in UI
+      dueOutstandingAmount: [os.dueOutstandingAmount.toFixed(2)],
+      enteredAmount: [os.enteredAmount.toFixed(2), Validators.max(os.netAmount - os.dueOutstandingAmount)],
     });
     this.outstandingSales.push(item);
     this.dataSource.data.push(item);
@@ -67,12 +70,12 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
   }
 
   selectCustomer($event: CustomerSearchResultDto) {
-    console.log($event);
     if ($event != undefined && $event != null) {
       this.setValuesForCustomer($event.id, $event.code, $event.name);
       this.getOutstandingSalesByCustomerId($event.id);
     } else {
       this.setValuesForCustomer(null, null, null);
+      this.dataSource.data = [];
     }
   }
 
@@ -80,13 +83,45 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
     this.customerId.setValue(id);
     this.customerCode.setValue(code);
     this.customerName.setValue(name);
-    console.log(this.paymentForm);
   }
 
   private getOutstandingSalesByCustomerId(customerId) {
     this._salesService.getOutstandingSalesByCustomerId(customerId).subscribe((results) => {
       results.forEach((result: OutstandingSaleDto) => this.initializeOutstandingSalesForm(result));
     });
+  }
+
+  //#region outstandingSales => isSelected
+  isSelectToggle(element: FormGroup) {
+    let x = element.get("isSelected").value;
+    element.get("isSelected").setValue(!x);
+  }
+
+  isSalesSelected(element: FormGroup): boolean {
+    return element.get("isSelected").value;
+  }
+
+  isAnySalesSelected(): boolean {
+    return this.dataSource.data.filter(x => x.get("isSelected").value == true).length > 0 ? true : false;
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected(): boolean {
+    const numSelected = this.dataSource.data.filter((x) => x.get("isSelected").value == true).length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.dataSource.data.forEach((x) => x.get("isSelected").setValue(false)) :
+      this.dataSource.data.forEach((x) => x.get("isSelected").setValue(true));
+  }
+  //#endregion
+
+  save() {
+
   }
 
   //#region Propertises

@@ -1,4 +1,94 @@
-<p>create-outstanding-payment works!</p>
-<app-partial-customers [isClearWhenSelected]="false" [isDisabledWhenSelected]="true" [fieldRequired]="true"
-    (selectedEvent)="selectCustomer($event)">
-</app-partial-customers>
+<div *ngIf="paymentForm">
+
+    <!-- 1. CUSTOMER -->
+    <app-partial-customers [isClearWhenSelected]="false" [isDisabledWhenSelected]="true" [fieldRequired]="true"
+        (selectedEvent)="selectCustomer($event)">
+    </app-partial-customers>
+
+
+    <!-- 2. SALES TABLE -->
+    <form [formGroup]="paymentForm" novalidate (ngSubmit)="save()">
+        <ng-container formArrayName="outstandingSales">
+            <table class="full-width-table" mat-table [dataSource]="dataSource">
+                <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+                <!-- Select Column -->
+                <ng-container matColumnDef="is-selected">
+                    <th mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="isAnySalesSelected() && isAllSelected()"
+                            [indeterminate]="isAnySalesSelected() && !isAllSelected()">
+                        </mat-checkbox>
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <mat-checkbox (click)="$event.stopPropagation()" (change)="isSelectToggle(element)"
+                            [checked]="isSalesSelected(element)">
+                        </mat-checkbox>
+                    </td>
+                </ng-container>
+
+                <!-- Position Column -->
+                <ng-container matColumnDef="position">
+                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                    <td mat-cell *matCellDef="let element; let i = index"> {{i+1}} </td>
+                </ng-container>
+
+                <!-- Sales Number Column -->
+                <ng-container matColumnDef="sales-number">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "Sales Number" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.get("salesNumber").value }}
+                    </td>
+                </ng-container>
+
+                <!-- Net Amount Column -->
+                <ng-container matColumnDef="net-amount">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "NetAmount" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        LKR. {{ element.get("netAmount").value }}
+                    </td>
+                </ng-container>
+
+                <!-- Paid Amount Column -->
+                <ng-container matColumnDef="paid-amount">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "PaidAmount" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        LKR. {{ element.get("paidAmount").value }}
+                    </td>
+                </ng-container>
+
+                <!-- Due Outstanding Amount Column -->
+                <ng-container matColumnDef="due-outstanding-amount">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "DueAmount" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        LKR. {{ element.get("dueOutstandingAmount").value }}
+                    </td>
+                </ng-container>
+
+                <!-- Enter Amount Column -->
+                <ng-container matColumnDef="entered-amount">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "EnteredAmount" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        LKR. {{ element.get("enteredAmount").value }}
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+        </ng-container>
+    </form>
+
+
+</div>
