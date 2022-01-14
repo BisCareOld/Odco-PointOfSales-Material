@@ -5,9 +5,29 @@
         (selectedEvent)="selectCustomer($event)">
     </app-partial-customers>
 
-
     <!-- 2. SALES TABLE -->
     <form [formGroup]="paymentForm" novalidate (ngSubmit)="save()">
+
+        <!-- Cash -->
+        <ng-container formArrayName="cashes">
+            <ng-container *ngFor="let cashForm of cashes.controls; let i = index">
+                <div [formGroup]="cashForm">
+                    <mat-form-field>
+                        <mat-label>Cash Amount</mat-label>
+                        <input matInput type="number" formControlName="cashAmount" required
+                            (onchange)="calculateBalanceAmount()">
+                    </mat-form-field>
+                    <span *ngIf="cashForm.get('cashAmount').touched">
+                        <mat-error *ngIf="cashForm.get('cashAmount').errors?.required">Cash amount is required.
+                        </mat-error>
+                        <mat-error *ngIf="cashForm.get('cashAmount').errors?.min">Should be minimum 1.</mat-error>
+                        <mat-error *ngIf="cashForm.get('cashAmount').errors?.max">Should be below
+                            {{ cashForm.get("cashAmount").errors?.max.max }}.</mat-error>
+                    </span>
+                </div>
+            </ng-container>
+        </ng-container>
+
         <ng-container formArrayName="outstandingSales">
             <table class="full-width-table" mat-table [dataSource]="dataSource">
                 <!--- Note that these columns can be defined in any order.
@@ -74,21 +94,16 @@
                     </td>
                 </ng-container>
 
-                <!-- Enter Amount Column -->
-                <ng-container matColumnDef="entered-amount">
-                    <th mat-header-cell *matHeaderCellDef>
-                        {{ "EnteredAmount" | localize }}
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        LKR. {{ element.get("enteredAmount").value }}
-                    </td>
-                </ng-container>
-
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
         </ng-container>
-    </form>
 
+        <p>Total Due Amount = LKR. {{ calculateTotalDueOutstandingAmount() }}</p>
+        <p>Total Selected Due Amount = LKR. {{ calculateSelectedTotalDueOutstandingAmount() }}</p>
+        <p>Balanced Amount = LKR. {{ calculateBalanceAmount() }}</p>
+
+        <button type="submit" mat-button>Submit</button>
+    </form>
 
 </div>

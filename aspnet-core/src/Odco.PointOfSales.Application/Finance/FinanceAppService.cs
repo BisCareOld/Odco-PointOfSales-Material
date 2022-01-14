@@ -40,7 +40,8 @@ namespace Odco.PointOfSales.Application.Finance
             _customerOutstandingSettlementRepository = customerOutstandingSettlementRepository;
         }
 
-        public async Task CreatePaymentForCustomerOutstandingAsync(CreatePaymentForOutstandingDto input)
+        #region Payment
+        public async Task<PaymentDto> CreatePaymentForCustomerOutstandingAsync(CreatePaymentForOutstandingDto input)
         {
             // 1. Map to 
             //      Payment
@@ -172,10 +173,11 @@ namespace Odco.PointOfSales.Application.Finance
             var inputOutstandingSales = isAnySalesChecked ?
                                         input.OutstandingSales.Where(os => os.IsSelected).ToList() :
                                         input.OutstandingSales.ToList();
+            
+            var paramA = inputOutstandingSales.Select(os => os.SaleId).ToArray();
+            var sales = GetSalesQueryBySaleIdsAsync(paramA).Result.ToList();
 
-            var sales = await GetSalesQueryBySaleIdsAsync(inputOutstandingSales.Select(os => os.SaleId).ToArray());
-
-            var customerOutstandings = await GetCustomerOutstandingsQueryBySaleIdAsync(input.CustomerId.Value);
+            var customerOutstandings = GetCustomerOutstandingsQueryBySaleIdAsync(input.CustomerId.Value).Result.ToList();
 
             decimal remainingPaidAmount2 = input.TotalReceivedAmount - input.TotalBalanceAmount;
 
@@ -221,7 +223,10 @@ namespace Odco.PointOfSales.Application.Finance
                 if (remainingPaidAmount2 == 0) break;
             }
             #endregion
+
+            return new PaymentDto { Id = payment.Id, InvoiceNumber = invoiceNumber };
         }
+        #endregion
 
         private async Task<IQueryable<Sale>> GetSalesQueryBySaleIdsAsync(Guid[] saleIds)
         {

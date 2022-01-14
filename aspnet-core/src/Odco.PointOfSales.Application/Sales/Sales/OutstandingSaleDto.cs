@@ -13,7 +13,5 @@ namespace Odco.PointOfSales.Application.Sales.Sales
         public decimal NetAmount { get; set; }              //  100
 
         public decimal DueOutstandingAmount { get; set; }   //  100 ->  0
-
-        public decimal? EnteredAmount { get; set; }         // Check null or 0
     }
 }

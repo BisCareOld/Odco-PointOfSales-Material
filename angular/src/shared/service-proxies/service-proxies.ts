@@ -460,7 +460,7 @@ export class FinanceServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    createPaymentForCustomerOutstanding(body: CreatePaymentForOutstandingDto | undefined): Observable<void> {
+    createPaymentForCustomerOutstanding(body: CreatePaymentForOutstandingDto | undefined): Observable<PaymentDto> {
         let url_ = this.baseUrl + "/api/services/app/Finance/CreatePaymentForCustomerOutstanding";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -472,6 +472,7 @@ export class FinanceServiceProxy {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
             })
         };
 
@@ -482,14 +483,14 @@ export class FinanceServiceProxy {
                 try {
                     return this.processCreatePaymentForCustomerOutstanding(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<PaymentDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<PaymentDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreatePaymentForCustomerOutstanding(response: HttpResponseBase): Observable<void> {
+    protected processCreatePaymentForCustomerOutstanding(response: HttpResponseBase): Observable<PaymentDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -498,14 +499,17 @@ export class FinanceServiceProxy {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaymentDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<PaymentDto>(<any>null);
     }
 }
 
@@ -5697,7 +5701,6 @@ export class OutstandingSaleDto implements IOutstandingSaleDto {
     salesNumber: string | undefined;
     netAmount: number;
     dueOutstandingAmount: number;
-    enteredAmount: number | undefined;
 
     constructor(data?: IOutstandingSaleDto) {
         if (data) {
@@ -5715,7 +5718,6 @@ export class OutstandingSaleDto implements IOutstandingSaleDto {
             this.salesNumber = _data["salesNumber"];
             this.netAmount = _data["netAmount"];
             this.dueOutstandingAmount = _data["dueOutstandingAmount"];
-            this.enteredAmount = _data["enteredAmount"];
         }
     }
 
@@ -5733,7 +5735,6 @@ export class OutstandingSaleDto implements IOutstandingSaleDto {
         data["salesNumber"] = this.salesNumber;
         data["netAmount"] = this.netAmount;
         data["dueOutstandingAmount"] = this.dueOutstandingAmount;
-        data["enteredAmount"] = this.enteredAmount;
         return data; 
     }
 
@@ -5751,7 +5752,6 @@ export interface IOutstandingSaleDto {
     salesNumber: string | undefined;
     netAmount: number;
     dueOutstandingAmount: number;
-    enteredAmount: number | undefined;
 }
 
 export class CashDto implements ICashDto {
@@ -5950,6 +5950,7 @@ export class CreatePaymentForOutstandingDto implements ICreatePaymentForOutstand
     customerName: string | undefined;
     totalReceivedAmount: number;
     totalBalanceAmount: number;
+    remarks: string | undefined;
     isOutstandingPaymentInvolved: boolean;
     outstandingSales: OutstandingSaleDto[] | undefined;
     cashes: CashDto[] | undefined;
@@ -5973,6 +5974,7 @@ export class CreatePaymentForOutstandingDto implements ICreatePaymentForOutstand
             this.customerName = _data["customerName"];
             this.totalReceivedAmount = _data["totalReceivedAmount"];
             this.totalBalanceAmount = _data["totalBalanceAmount"];
+            this.remarks = _data["remarks"];
             this.isOutstandingPaymentInvolved = _data["isOutstandingPaymentInvolved"];
             if (Array.isArray(_data["outstandingSales"])) {
                 this.outstandingSales = [] as any;
@@ -6016,6 +6018,7 @@ export class CreatePaymentForOutstandingDto implements ICreatePaymentForOutstand
         data["customerName"] = this.customerName;
         data["totalReceivedAmount"] = this.totalReceivedAmount;
         data["totalBalanceAmount"] = this.totalBalanceAmount;
+        data["remarks"] = this.remarks;
         data["isOutstandingPaymentInvolved"] = this.isOutstandingPaymentInvolved;
         if (Array.isArray(this.outstandingSales)) {
             data["outstandingSales"] = [];
@@ -6059,12 +6062,100 @@ export interface ICreatePaymentForOutstandingDto {
     customerName: string | undefined;
     totalReceivedAmount: number;
     totalBalanceAmount: number;
+    remarks: string | undefined;
     isOutstandingPaymentInvolved: boolean;
     outstandingSales: OutstandingSaleDto[] | undefined;
     cashes: CashDto[] | undefined;
     cheques: ChequeDto[] | undefined;
     debitCards: DebitCardDto[] | undefined;
     giftCards: GiftCardDto[] | undefined;
+}
+
+export class PaymentDto implements IPaymentDto {
+    saleId: string | undefined;
+    salesNumber: string | undefined;
+    invoiceNumber: string;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    totalReceivedAmount: number;
+    totalBalanceAmount: number;
+    totalPaidAmount: number;
+    remarks: string | undefined;
+    isOutstandingPaymentInvolved: boolean;
+    id: string;
+
+    constructor(data?: IPaymentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.saleId = _data["saleId"];
+            this.salesNumber = _data["salesNumber"];
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.totalReceivedAmount = _data["totalReceivedAmount"];
+            this.totalBalanceAmount = _data["totalBalanceAmount"];
+            this.totalPaidAmount = _data["totalPaidAmount"];
+            this.remarks = _data["remarks"];
+            this.isOutstandingPaymentInvolved = _data["isOutstandingPaymentInvolved"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): PaymentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaymentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["saleId"] = this.saleId;
+        data["salesNumber"] = this.salesNumber;
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["totalReceivedAmount"] = this.totalReceivedAmount;
+        data["totalBalanceAmount"] = this.totalBalanceAmount;
+        data["totalPaidAmount"] = this.totalPaidAmount;
+        data["remarks"] = this.remarks;
+        data["isOutstandingPaymentInvolved"] = this.isOutstandingPaymentInvolved;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): PaymentDto {
+        const json = this.toJSON();
+        let result = new PaymentDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IPaymentDto {
+    saleId: string | undefined;
+    salesNumber: string | undefined;
+    invoiceNumber: string;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    totalReceivedAmount: number;
+    totalBalanceAmount: number;
+    totalPaidAmount: number;
+    remarks: string | undefined;
+    isOutstandingPaymentInvolved: boolean;
+    id: string;
 }
 
 export enum TransactionStatus {

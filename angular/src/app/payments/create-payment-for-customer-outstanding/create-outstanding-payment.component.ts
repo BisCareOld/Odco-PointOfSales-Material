@@ -1,9 +1,9 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Injector, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";;
 import { MatTableDataSource } from '@angular/material/table';
 import { AppComponentBase } from '@shared/app-component-base';
-import { SalesServiceProxy, CustomerSearchResultDto, OutstandingSaleDto } from '@shared/service-proxies/service-proxies';
+import { SalesServiceProxy, FinanceServiceProxy, CustomerSearchResultDto, OutstandingSaleDto, PaymentDto } from '@shared/service-proxies/service-proxies';
 
 @Component({
   selector: 'app-create-outstanding-payment',
@@ -19,14 +19,14 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
     "net-amount",
     "paid-amount",
     "due-outstanding-amount",
-    "entered-amount",
   ];
   dataSource = new MatTableDataSource<FormGroup>();
 
   constructor(
     injector: Injector,
     private fb: FormBuilder,
-    private _salesService: SalesServiceProxy
+    private _salesService: SalesServiceProxy,
+    private _financeService: FinanceServiceProxy
   ) {
     super(injector);
   }
@@ -50,6 +50,15 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
       debitCards: this.fb.array([]),
       giftCards: this.fb.array([]),
     });
+
+    let cash = this.fb.group({
+      cashAmount: [null,
+        Validators.compose([
+          Validators.required,
+          Validators.min(1)
+        ])],
+    });
+    this.cashes.push(cash);
   }
 
   private initializeOutstandingSalesForm(
@@ -57,12 +66,11 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
   ) {
     let item = this.fb.group({
       isSelected: [os.isSelected],
-      salesId: [os.saleId, Validators.required],
+      saleId: [os.saleId, Validators.required],
       salesNumber: [os.salesNumber, Validators.required],
       netAmount: [os.netAmount.toFixed(2)],
       paidAmount: [(os.netAmount - os.dueOutstandingAmount).toFixed(2)],    // only for showing in UI
-      dueOutstandingAmount: [os.dueOutstandingAmount.toFixed(2)],
-      enteredAmount: [os.enteredAmount.toFixed(2), Validators.max(os.netAmount - os.dueOutstandingAmount)],
+      dueOutstandingAmount: [os.dueOutstandingAmount.toFixed(2)]
     });
     this.outstandingSales.push(item);
     this.dataSource.data.push(item);
@@ -89,6 +97,49 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
     this._salesService.getOutstandingSalesByCustomerId(customerId).subscribe((results) => {
       results.forEach((result: OutstandingSaleDto) => this.initializeOutstandingSalesForm(result));
     });
+  }
+
+  calculateTotalDueOutstandingAmount() {
+    let total = 0;
+    this.outstandingSales.controls.forEach(function (item) {
+      total += +item.get("dueOutstandingAmount").value;
+    });
+    return total.toFixed(2);
+  }
+
+  calculateSelectedTotalDueOutstandingAmount() {
+    let total = 0;
+    this.outstandingSales.controls.forEach(function (item) {
+      if (item.get("isSelected").value) {
+        total += +item.get("dueOutstandingAmount").value;
+      }
+    });
+    return total.toFixed(2);
+  }
+
+  calculateBalanceAmount() {
+    let totDueAmount = 0;
+    let totPayingAmount = 0;
+    let totBalanceAmount = "0";
+    if (this.dataSource.data.filter((x) => x.get("isSelected").value == true).length > 0)
+      totDueAmount = +this.calculateSelectedTotalDueOutstandingAmount()
+    else
+      totDueAmount = +this.calculateTotalDueOutstandingAmount();
+
+    this.cashes.value.forEach(element => {
+      totPayingAmount += element.cashAmount;
+    });
+
+    if (totDueAmount < totPayingAmount)
+      totBalanceAmount = (totPayingAmount - totDueAmount).toFixed(2);
+    else
+      totBalanceAmount = "0.00"
+
+    this.totalReceivedAmount.setValue(+totPayingAmount);
+
+    this.totalBalanceAmount.setValue(+totBalanceAmount);
+
+    return totBalanceAmount;
   }
 
   //#region outstandingSales => isSelected
@@ -121,7 +172,11 @@ export class CreateOutstandingPaymentComponent extends AppComponentBase implemen
   //#endregion
 
   save() {
-
+    console.log(this.paymentForm.value);
+    this._financeService.createPaymentForCustomerOutstanding(this.paymentForm.value).subscribe((result: PaymentDto) => {
+      console.log(result);
+      this.notify.success(this.l("PaymentSuccessfullyCompleted " + result.invoiceNumber));
+    });
   }
 
   //#region Propertises

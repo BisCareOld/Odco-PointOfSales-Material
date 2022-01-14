@@ -993,8 +993,11 @@ namespace Odco.PointOfSales.Application.Sales
 
             var _totalPayingAmount = previouslyPaidAmount + totalPayingAmount;
 
+            if(_totalPayingAmount == 0)
+                return PaymentStatus.NotPurchased;
             if (netAmount <= _totalPayingAmount)
                 return PaymentStatus.Completed;
+            
             return PaymentStatus.PartiallyPaid;
         }
         #endregion
@@ -1010,8 +1013,7 @@ namespace Odco.PointOfSales.Application.Sales
                     SaleId = co.SaleId,
                     SalesNumber = co.SalesNumber,
                     NetAmount = co.NetAmount,
-                    DueOutstandingAmount = co.DueOutstandingAmount,
-                    EnteredAmount = 0
+                    DueOutstandingAmount = co.DueOutstandingAmount
                 })
                 .OrderBy(os => os.SalesNumber)
                 .ToListAsync();
