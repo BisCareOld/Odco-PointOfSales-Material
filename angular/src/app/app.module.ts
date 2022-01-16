@@ -41,9 +41,7 @@ import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component
 import { HeaderLanguageMenuComponent } from "./layout/header-language-menu.component";
 import { HeaderUserMenuComponent } from "./layout/header-user-menu.component";
 import { FooterComponent } from "./layout/footer.component";
-import { SidebarComponent } from "./layout/sidebar.component";
-import { SidebarLogoComponent } from "./layout/sidebar-logo.component";
-import { SidebarUserPanelComponent } from "./layout/sidebar-user-panel.component";
+
 import { SidebarMenuComponent } from "./layout/sidebar-menu.component";
 import { NavComponent } from "./layout/nav.component";
 import { LayoutModule } from "@angular/cdk/layout";
@@ -59,9 +57,6 @@ import { LayoutModule } from "@angular/cdk/layout";
     HeaderLanguageMenuComponent,
     HeaderUserMenuComponent,
     FooterComponent,
-    SidebarComponent,
-    SidebarLogoComponent,
-    SidebarUserPanelComponent,
     SidebarMenuComponent,
     NavComponent,
   ],

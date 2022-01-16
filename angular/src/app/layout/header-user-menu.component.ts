@@ -7,7 +7,9 @@ import { AppAuthService } from '@shared/auth/app-auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderUserMenuComponent {
-  constructor(private _authService: AppAuthService) {}
+  constructor(private _authService: AppAuthService) { }
+
+  //this.shownLoginName = this.appSession.getShownLoginName()     extends AppComponentBase
 
   logout(): void {
     this._authService.logout();
