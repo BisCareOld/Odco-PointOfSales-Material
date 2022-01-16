@@ -1,0 +1,123 @@
+<div [@routerTransition]>
+    <section class="mat-typography">
+        <h1>{{ "Payments" | localize }}</h1>
+    </section>
+    <mat-card>
+        <button mat-raised-button color="primary" (click)="refresh()" style="float: right">
+            {{ "Refresh" | localize }}
+        </button>
+        <mat-form-field>
+            <mat-label>Filter</mat-label>
+            <input matInput name="keyword" [placeholder]="'SearchWithThreeDot' | localize" [(ngModel)]="keyword"
+                (keyup.enter)="getDataPage(1)" #input />
+        </mat-form-field>
+
+        <div class="mat-elevation-z8">
+            <table class="full-width-table" mat-table [dataSource]="dataSource">
+                <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+                <!-- Number Column -->
+                <ng-container matColumnDef="sales-number">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "SalesNumber" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="isNullOrEmpty(element.salesNumber); else salesNumberExist"
+                            class="badge rounded-pill bg-light text-dark">N/A</span>
+                        <ng-template #salesNumberExist>{{ element.salesNumber }}</ng-template>
+                        <span style="float: right;">
+                            <button color="primary" mat-icon-button [matMenuTriggerFor]=" menu"
+                                aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item>
+                                    <mat-icon>dialpad</mat-icon>
+                                    <span>View Payment</span>
+                                </button>
+                                <button mat-menu-item disabled>
+                                    <mat-icon>voicemail</mat-icon>
+                                    <span>View Sale</span>
+                                </button>
+                            </mat-menu>
+                        </span>
+                    </td>
+                </ng-container>
+
+                <!-- Invoice Number Column -->
+                <ng-container matColumnDef="invoice-number">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "InvoiceNumber" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="isNullOrEmpty(element.invoiceNumber); else invoiceNumberExist"
+                            class="badge rounded-pill bg-light text-dark">N/A</span>
+                        <ng-template #invoiceNumberExist>{{ element.invoiceNumber }}</ng-template>
+                    </td>
+                </ng-container>
+
+                <!-- Customer Name Column -->
+                <ng-container matColumnDef="customer">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "Customer" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="isNullOrEmpty(element.customerName); else customerExist"
+                            class="badge rounded-pill bg-light text-dark">N/A</span>
+                        <ng-template #customerExist>{{ element.customerName }}</ng-template>
+                    </td>
+                </ng-container>
+
+                <!-- Type Name Column -->
+                <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "PaymentType" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="!isNullOrEmpty(element.salesNumber)"
+                            class="badge rounded-pill bg-info text-dark">Sales</span>
+                        <span *ngIf="isNullOrEmpty(element.salesNumber) && !isNullOrEmpty(element.invoiceNumber)"
+                            class="badge rounded-pill bg-warning text-dark">Outstanding</span>
+                    </td>
+                </ng-container>
+
+                <!-- Is Outstanding Payment Involved Column -->
+                <ng-container matColumnDef="is-outstanding-payment-involved">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "OutstandingPayment" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.isOutstandingPaymentInvolved }}
+                    </td>
+                </ng-container>
+
+                <!-- Paid Amount Column -->
+                <ng-container matColumnDef="paid-amount">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "PaidAmount" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        Rs. {{ element.totalPaidAmount }}
+                    </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <!-- <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
+                    <td mat-cell *matCellDef="let element">
+                        <button mat-button color="accent" (click)="detailPage(element)">
+                            {{ "View" | localize }}
+                        </button>
+                    </td>
+                </ng-container> -->
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+            <abp-pagination-controls [totalItems]="totalItems" (pageChange)="pageChanges($event)">
+            </abp-pagination-controls>
+        </div>
+    </mat-card>
+</div>

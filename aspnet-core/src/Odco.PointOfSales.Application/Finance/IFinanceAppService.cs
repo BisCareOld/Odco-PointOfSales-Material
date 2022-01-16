@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services;
+using Abp.Application.Services.Dto;
 using Odco.PointOfSales.Application.Finance.Payments;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ namespace Odco.PointOfSales.Application.Finance
     {
         #region Payment
         Task<PaymentDto> CreatePaymentForCustomerOutstandingAsync(CreatePaymentForOutstandingDto input);
+        Task<PagedResultDto<PaymentDto>> GetAllPaymentsAsync(PagedPaymentResultRequestDto input);
         #endregion
     }
 }

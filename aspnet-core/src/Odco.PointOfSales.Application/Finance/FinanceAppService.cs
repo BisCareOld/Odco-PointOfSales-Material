@@ -1,10 +1,11 @@
 ﻿using Abp.Application.Services;
+using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.Linq;
-using Microsoft.EntityFrameworkCore;
+using Abp.Linq.Extensions;
 using Odco.PointOfSales.Application.Common.SequenceNumbers;
 using Odco.PointOfSales.Application.Finance.Payments;
-using Odco.PointOfSales.Application.Sales.Sales;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Finance;
 using Odco.PointOfSales.Core.Sales;
@@ -225,6 +226,31 @@ namespace Odco.PointOfSales.Application.Finance
             #endregion
 
             return new PaymentDto { Id = payment.Id, InvoiceNumber = invoiceNumber };
+        }
+
+        public async Task<PagedResultDto<PaymentDto>> GetAllPaymentsAsync(PagedPaymentResultRequestDto input)
+        {
+            try
+            {
+                var query = _paymentRepository.GetAll()
+                        .WhereIf(!input.Keyword.IsNullOrWhiteSpace(),
+                        x => x.CustomerName.Contains(input.Keyword));
+
+                var result = _asyncQueryableExecuter.ToListAsync
+                    (
+                        query.OrderByDescending(o => o.CreationTime)
+                             .PageBy(input.SkipCount, input.MaxResultCount)
+                    );
+
+                var count = await _asyncQueryableExecuter.CountAsync(query);
+
+                var resultDto = ObjectMapper.Map<List<PaymentDto>>(result.Result);
+                return new PagedResultDto<PaymentDto>(count, resultDto);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         #endregion
 
