@@ -578,6 +578,62 @@ export class FinanceServiceProxy {
         }
         return _observableOf<PaymentDtoPagedResultDto>(<any>null);
     }
+
+    /**
+     * @param paymentId (optional) 
+     * @return Success
+     */
+    getPayment(paymentId: string | undefined): Observable<PaymentDto> {
+        let url_ = this.baseUrl + "/api/services/app/Finance/GetPayment?";
+        if (paymentId === null)
+            throw new Error("The parameter 'paymentId' cannot be null.");
+        else if (paymentId !== undefined)
+            url_ += "paymentId=" + encodeURIComponent("" + paymentId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPayment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPayment(<any>response_);
+                } catch (e) {
+                    return <Observable<PaymentDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PaymentDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetPayment(response: HttpResponseBase): Observable<PaymentDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaymentDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PaymentDto>(<any>null);
+    }
 }
 
 @Injectable()
@@ -6138,6 +6194,133 @@ export interface ICreatePaymentForOutstandingDto {
     giftCards: GiftCardDto[] | undefined;
 }
 
+export class PaymentLineLevelDto implements IPaymentLineLevelDto {
+    paymentId: string | undefined;
+    invoiceNumber: string | undefined;
+    saleId: string | undefined;
+    salesNumber: string | undefined;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    chequeNumber: string | undefined;
+    bankId: string | undefined;
+    bank: string | undefined;
+    branchId: string | undefined;
+    branch: string | undefined;
+    chequeReturnDate: moment.Moment | undefined;
+    specificReceivedAmount: number;
+    specificBalanceAmount: number;
+    paidAmount: number;
+    isCash: boolean;
+    isCheque: boolean;
+    isDebitCard: boolean;
+    isGiftCard: boolean;
+    isOutstandingPaymentInvolved: boolean;
+    id: string;
+
+    constructor(data?: IPaymentLineLevelDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paymentId = _data["paymentId"];
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.saleId = _data["saleId"];
+            this.salesNumber = _data["salesNumber"];
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.chequeNumber = _data["chequeNumber"];
+            this.bankId = _data["bankId"];
+            this.bank = _data["bank"];
+            this.branchId = _data["branchId"];
+            this.branch = _data["branch"];
+            this.chequeReturnDate = _data["chequeReturnDate"] ? moment(_data["chequeReturnDate"].toString()) : <any>undefined;
+            this.specificReceivedAmount = _data["specificReceivedAmount"];
+            this.specificBalanceAmount = _data["specificBalanceAmount"];
+            this.paidAmount = _data["paidAmount"];
+            this.isCash = _data["isCash"];
+            this.isCheque = _data["isCheque"];
+            this.isDebitCard = _data["isDebitCard"];
+            this.isGiftCard = _data["isGiftCard"];
+            this.isOutstandingPaymentInvolved = _data["isOutstandingPaymentInvolved"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): PaymentLineLevelDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaymentLineLevelDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paymentId"] = this.paymentId;
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["saleId"] = this.saleId;
+        data["salesNumber"] = this.salesNumber;
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["chequeNumber"] = this.chequeNumber;
+        data["bankId"] = this.bankId;
+        data["bank"] = this.bank;
+        data["branchId"] = this.branchId;
+        data["branch"] = this.branch;
+        data["chequeReturnDate"] = this.chequeReturnDate ? this.chequeReturnDate.toISOString() : <any>undefined;
+        data["specificReceivedAmount"] = this.specificReceivedAmount;
+        data["specificBalanceAmount"] = this.specificBalanceAmount;
+        data["paidAmount"] = this.paidAmount;
+        data["isCash"] = this.isCash;
+        data["isCheque"] = this.isCheque;
+        data["isDebitCard"] = this.isDebitCard;
+        data["isGiftCard"] = this.isGiftCard;
+        data["isOutstandingPaymentInvolved"] = this.isOutstandingPaymentInvolved;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): PaymentLineLevelDto {
+        const json = this.toJSON();
+        let result = new PaymentLineLevelDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IPaymentLineLevelDto {
+    paymentId: string | undefined;
+    invoiceNumber: string | undefined;
+    saleId: string | undefined;
+    salesNumber: string | undefined;
+    customerId: string | undefined;
+    customerCode: string | undefined;
+    customerName: string | undefined;
+    chequeNumber: string | undefined;
+    bankId: string | undefined;
+    bank: string | undefined;
+    branchId: string | undefined;
+    branch: string | undefined;
+    chequeReturnDate: moment.Moment | undefined;
+    specificReceivedAmount: number;
+    specificBalanceAmount: number;
+    paidAmount: number;
+    isCash: boolean;
+    isCheque: boolean;
+    isDebitCard: boolean;
+    isGiftCard: boolean;
+    isOutstandingPaymentInvolved: boolean;
+    id: string;
+}
+
 export class PaymentDto implements IPaymentDto {
     saleId: string | undefined;
     salesNumber: string | undefined;
@@ -6150,6 +6333,7 @@ export class PaymentDto implements IPaymentDto {
     totalPaidAmount: number;
     remarks: string | undefined;
     isOutstandingPaymentInvolved: boolean;
+    paymentLineLevels: PaymentLineLevelDto[] | undefined;
     id: string;
 
     constructor(data?: IPaymentDto) {
@@ -6174,6 +6358,11 @@ export class PaymentDto implements IPaymentDto {
             this.totalPaidAmount = _data["totalPaidAmount"];
             this.remarks = _data["remarks"];
             this.isOutstandingPaymentInvolved = _data["isOutstandingPaymentInvolved"];
+            if (Array.isArray(_data["paymentLineLevels"])) {
+                this.paymentLineLevels = [] as any;
+                for (let item of _data["paymentLineLevels"])
+                    this.paymentLineLevels.push(PaymentLineLevelDto.fromJS(item));
+            }
             this.id = _data["id"];
         }
     }
@@ -6198,6 +6387,11 @@ export class PaymentDto implements IPaymentDto {
         data["totalPaidAmount"] = this.totalPaidAmount;
         data["remarks"] = this.remarks;
         data["isOutstandingPaymentInvolved"] = this.isOutstandingPaymentInvolved;
+        if (Array.isArray(this.paymentLineLevels)) {
+            data["paymentLineLevels"] = [];
+            for (let item of this.paymentLineLevels)
+                data["paymentLineLevels"].push(item.toJSON());
+        }
         data["id"] = this.id;
         return data; 
     }
@@ -6222,6 +6416,7 @@ export interface IPaymentDto {
     totalPaidAmount: number;
     remarks: string | undefined;
     isOutstandingPaymentInvolved: boolean;
+    paymentLineLevels: PaymentLineLevelDto[] | undefined;
     id: string;
 }
 

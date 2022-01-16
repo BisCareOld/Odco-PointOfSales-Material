@@ -1,8 +1,10 @@
 ﻿
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
+using Odco.PointOfSales.Application.Finance.PaymentLineLevels;
 using Odco.PointOfSales.Core.Finance;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Odco.PointOfSales.Application.Finance.Payments
@@ -48,5 +50,13 @@ namespace Odco.PointOfSales.Application.Finance.Payments
         public string Remarks { get; set; }
 
         public bool IsOutstandingPaymentInvolved { get; set; }
+
+        public ICollection<PaymentLineLevelDto> PaymentLineLevels { get; set; }
+
+        public PaymentDto()
+        {
+            PaymentLineLevels = new HashSet<PaymentLineLevelDto>();
+        }
+
     }
 }

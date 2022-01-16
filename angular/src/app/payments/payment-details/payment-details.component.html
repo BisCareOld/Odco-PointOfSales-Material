@@ -1,0 +1,103 @@
+<div *ngIf="payment">
+    <div class="row">
+        <div class="col-md-6">
+            <table>
+                <tr>
+                    <td>
+                        <label>{{ "InvoiceNumber" | localize }}</label>
+                    </td>
+                    <td><label>{{ payment.invoiceNumber }}</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>{{ "SalesNumber" | localize }}</label>
+                    </td>
+                    <td><label>{{ payment.salesNumber }}</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>{{ "CustomerName" | localize }}</label>
+                    </td>
+                    <td><label>{{ payment.customerName }}</label></td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table>
+                <tr>
+                    <td>
+                        <label>{{ "Remarks" | localize }}</label>
+                    </td>
+                    <td><label>{{ payment.remarks }}</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>{{ "ReceivedAmount" | localize }}</label>
+                    </td>
+                    <td><label>{{ payment.totalReceivedAmount }}</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>{{ "BalanceAmount" | localize }}</label>
+                    </td>
+                    <td><label>{{ payment.totalBalanceAmount }}</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>{{ "PaidAmount" | localize }}</label>
+                    </td>
+                    <td><label>{{ payment.totalPaidAmount }}</label></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="position">
+                <th mat-header-cell *matHeaderCellDef>{{ "No" | localize }}</th>
+                <td mat-cell *matCellDef="let element; let i = index"> {{ i+1 }} </td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>{{ "Type" | localize }}</th>
+                <td mat-cell *matCellDef="let element"> {{
+                    element.isCash ? 'Cash' : element.isCheque ? 'Cheque' : element.isDebitCard ? 'Debit Card' :
+                    element.isGiftCard ? 'Gift Card' : 'Others'
+                    }} </td>
+            </ng-container>
+
+            <!-- Received Amount Column -->
+            <ng-container matColumnDef="received-amount">
+                <th mat-header-cell *matHeaderCellDef>{{ "ReceivedAmount" | localize }}</th>
+                <td class="td-amount" mat-cell *matCellDef="let element"> {{
+                    element.specificReceivedAmount.toFixed(2)
+                    }}</td>
+            </ng-container>
+
+            <!-- Balance Amount Column -->
+            <ng-container matColumnDef="balance-amount">
+                <th mat-header-cell *matHeaderCellDef>{{ "BalanceAmount" | localize }}</th>
+                <td class="td-amount" mat-cell *matCellDef="let element"> {{ element.specificBalanceAmount.toFixed(2) }}
+                </td>
+            </ng-container>
+
+            <!-- Paid Amount Column -->
+            <ng-container matColumnDef="paid-amount">
+                <th mat-header-cell *matHeaderCellDef>{{ "PaidAmount" | localize }}</th>
+                <td class="td-amount" mat-cell *matCellDef="let element"> {{ element.paidAmount.toFixed(2) }} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+    </div>
+</div>

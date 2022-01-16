@@ -32,7 +32,8 @@
                                 <mat-icon>more_vert</mat-icon>
                             </button>
                             <mat-menu #menu="matMenu">
-                                <button mat-menu-item>
+                                <button mat-menu-item [routerLink]="['/app/payment-details']"
+                                    [queryParams]="{paymentId: element.id}">
                                     <mat-icon>dialpad</mat-icon>
                                     <span>View Payment</span>
                                 </button>

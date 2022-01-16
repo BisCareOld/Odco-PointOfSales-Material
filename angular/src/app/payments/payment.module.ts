@@ -5,11 +5,13 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { PaymentsComponent } from './payments.component';
+import { PaymentDetailsComponent } from './payment-details/payment-details.component';
 
 @NgModule({
   declarations: [
     CreateOutstandingPaymentComponent,
-    PaymentsComponent
+    PaymentsComponent,
+    PaymentDetailsComponent
   ],
   imports: [
     CommonModule,

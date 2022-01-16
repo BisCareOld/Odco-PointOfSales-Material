@@ -252,6 +252,14 @@ namespace Odco.PointOfSales.Application.Finance
                 throw ex;
             }
         }
+
+        public async Task<PaymentDto> GetPaymentAsync(Guid paymentId)
+        {
+            var payment = _paymentRepository
+                .GetAllIncluding(p => p.PaymentLineLevels)
+                .FirstOrDefault(p => p.Id == paymentId);
+            return ObjectMapper.Map<PaymentDto>(payment);
+        }
         #endregion
 
         private async Task<IQueryable<Sale>> GetSalesQueryBySaleIdsAsync(Guid[] saleIds)
@@ -269,5 +277,6 @@ namespace Odco.PointOfSales.Application.Finance
             await _customerOutstandingSettlementRepository.InsertAsync(cos);
         }
 
+        
     }
 }
