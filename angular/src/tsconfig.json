@@ -30,8 +30,5 @@
   "include": [
     "src/**/*.d.ts",
     "typings.d.ts"
-  ],
-  "angularCompilerOptions": {
-    "enableIvy": false
-  }
+  ]
 }
