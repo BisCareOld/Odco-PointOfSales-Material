@@ -1,100 +1,63 @@
 <style>
-  .active {
+  .nav-menu .active {
     background-color: #3f51b5;
     color: ivory;
   }
+
+  .nav-menu .menu-button {
+    transition: 400ms ease-in-out;
+    transform: rotate(0deg);
+  }
+
+  .nav-menu .menu-button.rotated {
+    transform: rotate(180deg);
+  }
+
+  .nav-menu mat-list-item {
+    font-size: 0.8rem;
+  }
+
+  .mat-list-base {
+    padding: 0px;
+  }
 </style>
 
-<!-- <nav class="mt-2">
-  <ul
-    class="nav nav-pills nav-sidebar flex-column nav-flat"
-    data-widget="treeview"
-    role="menu"
-    data-accordion="false"
-  >
-    <ng-container *ngFor="let item of menuItems">
-      <ng-container
-        *ngTemplateOutlet="sidebarInner; context: { item: item }"
-      ></ng-container>
-    </ng-container>
-  </ul>
-</nav>
+<mat-nav-list class="nav-menu">
+  <ng-container *ngFor="let item of menuItems">
+    <ng-container *ngTemplateOutlet="sidebarInner; context: { item: item }"></ng-container>
+  </ng-container>
+</mat-nav-list>
 
 <ng-template #sidebarInner let-item="item">
-  <li
-    *ngIf="isMenuItemVisible(item)"
-    class="nav-item"
-    [class.menu-open]="!item.isCollapsed"
-    [class.has-treeview]="item.children"
-  >
-    <a
-      *ngIf="item.route && item.route.indexOf('http') != 0"
-      class="nav-link"
-      [routerLink]="item.route"
-      [class.active]="item.isActive"
-    >
-      <i class="nav-icon {{ item.icon }}"></i>
-      <p>
-        {{ item.label }}
-      </p>
-    </a>
-    <a
-      *ngIf="item.route && item.route.indexOf('http') == 0 && !item.children"
-      class="nav-link"
-      target="_blank"
-      [href]="item.route"
-    >
-      <i class="nav-icon {{ item.icon }}"></i>
-      <p>
-        {{ item.label }}
-      </p>
-    </a>
-    <a
-      *ngIf="!item.route && item.children"
-      class="nav-link"
-      href="javascript:;"
-      [class.active]="item.isActive"
-      (click)="item.isCollapsed = !item.isCollapsed"
-    >
-      <i class="nav-icon {{ item.icon }}"></i>
-      <p>
-        {{ item.label }}
-        <i class="right fas fa-angle-left"></i>
-      </p>
-    </a>
-    <ul
-      *ngIf="item.children"
-      class="nav nav-treeview"
-      [collapse]="item.isCollapsed"
-      [isAnimated]="true"
-    >
-      <ng-container *ngFor="let item of item.children">
-        <ng-container
-          *ngTemplateOutlet="sidebarInner; context: { item: item }"
-        ></ng-container>
-      </ng-container>
-    </ul>
-  </li>
-</ng-template> -->
-
-<!-- <ul
-  class="nav nav-pills nav-sidebar flex-column nav-flat"
-  data-widget="treeview"
-  role="menu"
-  data-accordion="false"
->
-
-</ul> -->
-
-<ng-container *ngFor="let item of menuItems">
-  <ng-container *ngTemplateOutlet="sidebarInner; context: { item: item }"></ng-container>
-</ng-container>
-
-<ng-template #sidebarInner let-item="item">
-  <a mat-list-item *ngIf="item.route && item.route.indexOf('http') != 0" class="nav-link" [routerLink]="item.route"
+  <mat-list-item *ngIf="item.route && item.route.indexOf('http') != 0" [routerLink]="item.route"
     [class.active]="item.isActive">
     <mat-icon style="margin-right: 7px">{{ item.icon }}</mat-icon>
-    {{ item.label }}
+    <span class="full-width">{{ item.label }}</span>
+  </mat-list-item>
+
+  <a *ngIf="item.route && item.route.indexOf('http') == 0 && !item.children" target="_blank" [href]="item.route">
+    <mat-list-item>
+      <mat-icon style="margin-right: 7px">{{ item.icon }}</mat-icon>
+      <span>{{ item.label }}</span>
+    </mat-list-item>
   </a>
+
+  <a *ngIf="!item.route && item.children" href="javascript:;" [class.active]="item.isActive"
+    (click)="item.isCollapsed = !item.isCollapsed">
+    <mat-list-item>
+      <mat-icon style="margin-right: 7px">{{ item.icon }}</mat-icon>
+      <span>
+        {{ item.label }}
+      </span>
+      <mat-icon class="menu-button" [ngClass]="{'rotated' : item.isCollapsed}">expand_less</mat-icon>
+    </mat-list-item>
+  </a>
+
+  <ul *ngIf="item.children && !item.isCollapsed" [collapse]="item.isCollapsed" [isAnimated]="true">
+    <ng-container *ngFor="let item of item.children">
+      <ng-container *ngTemplateOutlet="sidebarInner; context: { item: item }"></ng-container>
+    </ng-container>
+  </ul>
+
 </ng-template>
 <app-footer></app-footer>
