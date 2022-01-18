@@ -44,24 +44,6 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
   getMenuItems(): MenuItem[] {
     return [
       new MenuItem(this.l("HomePage"), "/app/home", "home"),
-      new MenuItem(
-        this.l("Roles"),
-        "/app/roles",
-        "verified_user",
-        "Pages.Roles"
-      ),
-      new MenuItem(
-        this.l("Tenants"),
-        "/app/tenants",
-        "account_balance",
-        "Pages.Tenants"
-      ),
-      new MenuItem(
-        this.l("Users"),
-        "/app/users",
-        "supervised_user_circle",
-        "Pages.Users"
-      ),
       new MenuItem(this.l("Products"), "", "verified_user", "", [
         new MenuItem(
           this.l("Products"),
@@ -111,27 +93,47 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
       new MenuItem(
         this.l("Sales"),
         "/app/sales",
-        "add_shopping_cart",
+        "point_of_sale",
         "Pages.Users"
       ),
       new MenuItem(
         this.l("Sales"),
         "/app/sales-list",
-        "add_shopping_cart",
+        "receipt",
         "Pages.Users"
       ),
       new MenuItem(
-        this.l("Payment"),
+        this.l("OutstandingPayment"),
         "/app/create-customer-outstanding-payment",
-        "add_shopping_cart",
+        "sell",
         "Pages.Users"
       ),
       new MenuItem(
         this.l("Payments"),
         "/app/payments",
-        "add_shopping_cart",
+        "request_quote",
         "Pages.Users"
       ),
+      new MenuItem(this.l("Administrator"), "", "verified_user", "", [
+        new MenuItem(
+          this.l("Tenants"),
+          "/app/tenants",
+          "account_balance",
+          "Pages.Tenants"
+        ),
+        new MenuItem(
+          this.l("Roles"),
+          "/app/roles",
+          "verified_user",
+          "Pages.Roles"
+        ),
+        new MenuItem(
+          this.l("Users"),
+          "/app/users",
+          "supervised_user_circle",
+          "Pages.Users"
+        ),
+      ]),
       new MenuItem(this.l("MultiLevelMenu"), "", "verified_user", "", [
         new MenuItem("ASP.NET Boilerplate", "", "verified_user", "", [
           new MenuItem(
