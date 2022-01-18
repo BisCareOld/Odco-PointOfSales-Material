@@ -1,0 +1,113 @@
+.parent {
+  margin: 10px;
+  display: grid;
+  height: 95%;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 10% 70% 20%;
+}
+
+.child {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid grey;
+  border-bottom: 0;
+}
+
+.product-search-panel {
+  grid-column: 1/3;
+  display: flex;
+  border: 1px solid grey;
+  border-bottom: 0;
+
+  .product-search {
+    width: 100%;
+    font-size: 0.7rem;
+    margin-left: 10px;
+  }
+}
+
+.product-display {
+  height: 129%;
+  overflow: auto;
+}
+
+.sales-options {
+  grid-column: 2/3;
+  grid-row: 2/4;
+}
+
+.active {
+  background-color: #3f51b5;
+  color: #fff;
+}
+
+.common-functions {
+  display: grid;
+  height: 21%;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+
+  button {
+    border: 1px solid grey;
+    text-align: center;
+    border-radius: 0;
+    line-height: 2.5rem;
+
+    mat-icon {
+      display: grid;
+      margin: auto;
+      width: 100%;
+      font-size: 2.5rem;
+    }
+  }
+}
+
+.calculation-summary {
+  padding: 1rem;
+  font-size: 1rem;
+}
+
+.below-functions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  grid-template-rows: 40% 40% 40%;
+  gap: 5px;
+
+  button {
+    border: 1px solid grey;
+    text-align: center;
+    border-radius: 0;
+
+    mat-icon,
+    .shortcut-key {
+      display: grid;
+      margin: auto;
+      width: 50%;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+  }
+}
+
+.payment-button {
+  background-color: rgb(63, 194, 63);
+  color: rgb(255, 255, 255);
+}
+
+.void-button {
+  background-color: rgb(238, 43, 43);
+  color: rgb(255, 255, 255);
+}
+
+.remove-product-button {
+  border: 0;
+  color: #fff;
+  background-color: rgb(238, 43, 43);
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  background-color: rgb(179, 148, 25);
+  border-radius: 50%;
+  display: inline-block;
+}

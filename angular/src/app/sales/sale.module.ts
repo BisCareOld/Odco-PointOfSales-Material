@@ -6,11 +6,13 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { SharedModule } from "@shared/shared.module";
 
 import { SalesComponent } from "./sales.component";
+import { CreateSalesComponent } from './create-sales/create-sales.component';
 import { PaymentPanelComponent } from "./payment-panel/payment-panel.component";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 import { ChequeDialogComponent } from "./payment-methods/cheque/cheque-dialog.component";
 import { CreateNonInventoryProductDialogComponent } from './create-non-inventory-product/create-non-inventory-product-dialog.component';
 import { TempSalesListComponent } from './temp-sales-list/temp-sales-list.component';
+
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { TempSalesListComponent } from './temp-sales-list/temp-sales-list.compon
     StockBalanceDialogComponent,
     ChequeDialogComponent,
     CreateNonInventoryProductDialogComponent,
-    TempSalesListComponent
+    TempSalesListComponent,
+    CreateSalesComponent
   ],
   imports: [
     CommonModule,

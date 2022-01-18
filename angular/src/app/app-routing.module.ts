@@ -20,6 +20,7 @@ import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.
 import { CreateOutstandingPaymentComponent } from "./payments/create-payment-for-customer-outstanding/create-outstanding-payment.component";
 import { PaymentsComponent } from "./payments/payments.component";
 import { PaymentDetailsComponent } from "./payments/payment-details/payment-details.component";
+import { CreateSalesComponent } from "./sales/create-sales/create-sales.component";
 
 @NgModule({
   imports: [
@@ -94,11 +95,17 @@ import { PaymentDetailsComponent } from "./payments/payment-details/payment-deta
             canActivate: [AppRouteGuard],
           },
           {
-            path: "sales",
-            component: SalesComponent,
+            path: "create-sales",
+            component: CreateSalesComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
+          // {
+          //   path: "sales",
+          //   component: SalesComponent,
+          //   data: { permission: "Pages.Tenants" },
+          //   canActivate: [AppRouteGuard],
+          // },
           {
             path: "payment-component/:tempSalesId",
             component: PaymentPanelComponent,
