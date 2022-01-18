@@ -8,16 +8,15 @@ import {
   SaleDto,
   CommonKeyValuePairDto,
 } from "@shared/service-proxies/service-proxies";
-import { ChequeDialogComponent } from "../payment-methods/cheque/cheque-dialog.component";
 import { MatAccordion } from '@angular/material/expansion';
 import { AppComponentBase } from "@shared/app-component-base";
 
 @Component({
-  selector: "app-payment-panel",
-  templateUrl: "./payment-panel.component.html",
-  styleUrls: ["./payment-panel.component.scss"],
+  selector: "app-create-payment",
+  templateUrl: "./create-payment.component.html",
+  styleUrls: ["./create-payment.component.scss"],
 })
-export class PaymentPanelComponent extends AppComponentBase implements OnInit {
+export class CreatePaymentComponent extends AppComponentBase implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
   saleDto: SaleDto;
   paymentMethod: number = 0;
@@ -57,20 +56,6 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
   getNonInventoryProductBySaleId(saleId: string) {
     this._salesService.getNonInventoryProductBySaleId(saleId).subscribe((result) => {
 
-    });
-  }
-
-  showChequeDialog(salesId: number, netAmount: number) {
-    let materialDialog = this._matDialogService.open(ChequeDialogComponent, {
-      data: { tempSalesId: salesId, netAmount: netAmount },
-      width: "70%",
-    });
-
-    materialDialog.afterClosed().subscribe((result) => {
-      // "SelectedProduct" came from Dialog
-      if (result && result.event == "SelectedProduct") {
-        //this.addProductToTable(netAmount, result.data);
-      }
     });
   }
 
