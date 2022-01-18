@@ -98,7 +98,7 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
       ),
       new MenuItem(
         this.l("Sales"),
-        "/app/sales-list",
+        "/app/sales",
         "receipt",
         "Pages.Users"
       ),

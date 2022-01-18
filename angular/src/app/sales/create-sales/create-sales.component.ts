@@ -487,7 +487,7 @@ export class CreateSalesComponent extends AppComponentBase implements OnInit {
   }
 
   newSale() {
-    this.router.navigate(["/app/sales"]);
+    this.router.navigate(["/app/create-sales"]);
   }
 
   showCreateOrEditNonInventoryProductDialog(): void {

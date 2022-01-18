@@ -117,7 +117,7 @@ export class PaymentPanelComponent extends AppComponentBase implements OnInit {
 
   navigateBack() {
     this.router.navigate(
-      ["/app/sales"],
+      ["/app/create-sales"],
       {
         queryParams: { salesHeaderId: this.saleDto.id }
       });

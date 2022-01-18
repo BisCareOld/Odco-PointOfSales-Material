@@ -1,0 +1,89 @@
+<div [@routerTransition]>
+    <section class="mat-typography">
+        <h1>{{ "Sales" | localize }}</h1>
+    </section>
+    <mat-card>
+        <button mat-raised-button color="primary" (click)="refresh()" style="float: right">
+            {{ "Refresh" | localize }}
+        </button>
+        <mat-form-field>
+            <mat-label>Filter</mat-label>
+            <input matInput name="keyword" [placeholder]="'SearchWithThreeDot' | localize" [(ngModel)]="keyword"
+                (keyup.enter)="getDataPage(1)" #input />
+        </mat-form-field>
+
+        <div class="mat-elevation-z8">
+            <table class="full-width-table" mat-table [dataSource]="dataSource">
+                <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+                <!-- Number Column -->
+                <ng-container matColumnDef="sales-number">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "SalesNumber" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="element.salesNumber == null; else salesNumberExist"
+                            class="badge rounded-pill bg-light text-dark">N/A</span>
+                        <ng-template #salesNumberExist>{{ element.salesNumber }}</ng-template>
+                    </td>
+                </ng-container>
+
+                <!-- Supplier Name Column -->
+                <ng-container matColumnDef="customer">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "Customer" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="element.customerName == null; else customerExist"
+                            class="badge rounded-pill bg-light text-dark">N/A</span>
+                        <ng-template #customerExist>{{ element.customerName }}</ng-template>
+                    </td>
+                </ng-container>
+
+                <!-- Net Amount Column -->
+                <ng-container matColumnDef="net-amount">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "NetAmount" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        Rs. {{ element.netAmount }}
+                    </td>
+                </ng-container>
+
+                <!-- Gross Amount Column -->
+                <ng-container matColumnDef="payment-status">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "PaymentStatus" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="element.paymentStatus == 0"
+                            class="badge rounded-pill bg-light text-dark">N/A</span>
+                        <span *ngIf="element.paymentStatus == 1" class="badge rounded-pill bg-danger">Not
+                            Purchased</span>
+                        <span *ngIf="element.paymentStatus == 2"
+                            class="badge rounded-pill bg-warning text-dark">Partially
+                            Paid</span>
+                        <span *ngIf="element.paymentStatus == 3" class="badge rounded-pill bg-success">Completed</span>
+                    </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
+                    <td mat-cell *matCellDef="let element">
+                        <button mat-button color="accent" (click)="detailPage(element)">
+                            {{ "View" | localize }}
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+            <abp-pagination-controls [totalItems]="totalItems" (pageChange)="pageChanges($event)">
+            </abp-pagination-controls>
+        </div>
+    </mat-card>
+</div>

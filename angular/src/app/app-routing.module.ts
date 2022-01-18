@@ -16,7 +16,6 @@ import { CreateInventoryTransactionsComponent } from "./inventory/inventory-tran
 import { CreatePurchaseOrderComponent } from "./purchasings/purchase-orders/create-purchase-order/create-purchase-order.component";
 import { SalesComponent } from "./sales/sales.component";
 import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.component";
-import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.component";
 import { CreateOutstandingPaymentComponent } from "./payments/create-payment-for-customer-outstanding/create-outstanding-payment.component";
 import { PaymentsComponent } from "./payments/payments.component";
 import { PaymentDetailsComponent } from "./payments/payment-details/payment-details.component";
@@ -100,12 +99,6 @@ import { CreateSalesComponent } from "./sales/create-sales/create-sales.componen
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
-          // {
-          //   path: "sales",
-          //   component: SalesComponent,
-          //   data: { permission: "Pages.Tenants" },
-          //   canActivate: [AppRouteGuard],
-          // },
           {
             path: "payment-component/:tempSalesId",
             component: PaymentPanelComponent,
@@ -113,8 +106,8 @@ import { CreateSalesComponent } from "./sales/create-sales/create-sales.componen
             canActivate: [AppRouteGuard],
           },
           {
-            path: "sales-list",
-            component: TempSalesListComponent,
+            path: "sales",
+            component: SalesComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
