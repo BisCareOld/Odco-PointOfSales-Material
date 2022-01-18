@@ -9,7 +9,6 @@ import { AppComponent } from "./app.component";
 import { ServiceProxyModule } from "@shared/service-proxies/service-proxy.module";
 import { SharedModule } from "@shared/shared.module";
 import { HomeComponent } from "@app/home/home.component";
-import { AboutComponent } from "@app/about/about.component";
 
 import { MaterialModule } from "../shared/material/material.module";
 
@@ -50,7 +49,6 @@ import { LayoutModule } from "@angular/cdk/layout";
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent,
     // layout
     HeaderComponent,
     HeaderLeftNavbarComponent,
