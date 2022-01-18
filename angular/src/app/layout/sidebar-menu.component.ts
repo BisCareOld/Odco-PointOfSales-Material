@@ -9,7 +9,6 @@ import {
 import { BehaviorSubject } from "rxjs";
 import { filter } from "rxjs/operators";
 import { MenuItem } from "@shared/layout/menu-item";
-import { result } from "lodash-es";
 
 @Component({
   selector: "sidebar-menu",
@@ -96,18 +95,20 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
         "add_shopping_cart",
         "Pages.Users"
       ),
-      new MenuItem(
-        this.l("InventoryTransactions"),
-        "/app/inventory-transactions",
-        "add_shopping_cart",
-        "Pages.Users"
-      ),
-      new MenuItem(
-        this.l("InventoryTransactions"),
-        "/app/create-inventory-transactions",
-        "add_shopping_cart",
-        "Pages.Users"
-      ),
+      new MenuItem(this.l("InventoryTransactions"), "", "add_shopping_cart", "", [
+        new MenuItem(
+          this.l("InventoryTransactions"),
+          "/app/inventory-transactions",
+          "add_shopping_cart",
+          "Pages.Users"
+        ),
+        new MenuItem(
+          this.l("CreateInventoryTransactions"),
+          "/app/create-inventory-transactions",
+          "add_shopping_cart",
+          "Pages.Users"
+        ),
+      ]),
       new MenuItem(
         this.l("Sales"),
         "/app/sales",
