@@ -6333,6 +6333,7 @@ export class PaymentDto implements IPaymentDto {
     totalPaidAmount: number;
     remarks: string | undefined;
     isOutstandingPaymentInvolved: boolean;
+    creationTime: moment.Moment;
     paymentLineLevels: PaymentLineLevelDto[] | undefined;
     id: string;
 
@@ -6358,6 +6359,7 @@ export class PaymentDto implements IPaymentDto {
             this.totalPaidAmount = _data["totalPaidAmount"];
             this.remarks = _data["remarks"];
             this.isOutstandingPaymentInvolved = _data["isOutstandingPaymentInvolved"];
+            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
             if (Array.isArray(_data["paymentLineLevels"])) {
                 this.paymentLineLevels = [] as any;
                 for (let item of _data["paymentLineLevels"])
@@ -6387,6 +6389,7 @@ export class PaymentDto implements IPaymentDto {
         data["totalPaidAmount"] = this.totalPaidAmount;
         data["remarks"] = this.remarks;
         data["isOutstandingPaymentInvolved"] = this.isOutstandingPaymentInvolved;
+        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         if (Array.isArray(this.paymentLineLevels)) {
             data["paymentLineLevels"] = [];
             for (let item of this.paymentLineLevels)
@@ -6416,6 +6419,7 @@ export interface IPaymentDto {
     totalPaidAmount: number;
     remarks: string | undefined;
     isOutstandingPaymentInvolved: boolean;
+    creationTime: moment.Moment;
     paymentLineLevels: PaymentLineLevelDto[] | undefined;
     id: string;
 }

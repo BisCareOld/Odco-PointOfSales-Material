@@ -103,16 +103,6 @@
                     </td>
                 </ng-container>
 
-                <!-- Actions Column -->
-                <!-- <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>{{ "Actions" | localize }}</th>
-                    <td mat-cell *matCellDef="let element">
-                        <button mat-button color="accent" (click)="detailPage(element)">
-                            {{ "View" | localize }}
-                        </button>
-                    </td>
-                </ng-container> -->
-
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>

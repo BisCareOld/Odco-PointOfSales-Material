@@ -51,6 +51,10 @@ namespace Odco.PointOfSales.Application.Finance.Payments
 
         public bool IsOutstandingPaymentInvolved { get; set; }
 
+        #region ABP 
+        public DateTime CreationTime { get; set; }
+        #endregion
+
         public ICollection<PaymentLineLevelDto> PaymentLineLevels { get; set; }
 
         public PaymentDto()
