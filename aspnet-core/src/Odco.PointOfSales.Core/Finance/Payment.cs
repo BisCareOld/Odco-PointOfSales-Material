@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Odco.PointOfSales.Core.Sales;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,19 +9,22 @@ namespace Odco.PointOfSales.Core.Finance
 {
     /// <summary>
     /// Sale : Payment = 1 : M
+    /// Payment : PaymentLineLevel = 1 : M
     /// Payment will generate the "InvoiceNumber"
+    /// 2 Types of Payment Header
+    ///     1. Sales Payment => SaleId (Exist) Or IsOutstandingPaymentInvolved (False)
+    ///     2. Outstanding Payment => SaleId (Not Exist) Or IsOutstandingPaymentInvolved (True)
     /// </summary>
     [Table("Finance.Payment")]
     public class Payment : FullAuditedEntity<Guid>
     {
         #region Sales
-        public Guid SaleId { get; set; }
+        public Guid? SaleId { get; set; }
 
         public Sale Sale { get; set; }
 
-        [Required]
         [StringLength(15)]
-        public string SaleNumber { get; set; }
+        public string SalesNumber { get; set; }
 
         /// <summary>
         /// Similar to PaymentNumber = InvoiceNumber
@@ -32,6 +36,7 @@ namespace Odco.PointOfSales.Core.Finance
         public string InvoiceNumber { get; set; }
         #endregion
 
+        #region Customer
         public Guid? CustomerId { get; set; }
 
         [StringLength(10)]
@@ -39,59 +44,26 @@ namespace Odco.PointOfSales.Core.Finance
 
         [StringLength(150)]
         public string CustomerName { get; set; }
-
-        [StringLength(15)]
-        public string CustomerPhoneNumber { get; set; }
-
-        #region Cash
-
         #endregion
 
-        #region Cheque
-        [StringLength(25)]
-        public string ChequeNumber { get; set; }
-
-        public Guid? BankId { get; set; }
-
-        [StringLength(100)]
-        public string Bank { get; set; }
-
-        public Guid? BranchId { get; set; }
-
-        [StringLength(100)]
-        public string Branch { get; set; }
-
-        public DateTime? ChequeReturnDate { get; set; }
-        #endregion
-
-        #region Debit Card
-
-        #endregion
-
-        #region Gift Card
-
-        #endregion
-
-        #region Based on Customer Payment, Getting Summery of Payment
+        #region Based on Customer Payment, Getting Summary of Payment
         public decimal TotalReceivedAmount { get; set; }
 
         public decimal TotalBalanceAmount { get; set; }
+
+        public decimal TotalPaidAmount { get; set; }
         #endregion
 
-        #region Based on Customer Payment
-        public decimal SpecificReceivedAmount { get; set; }
+        [StringLength(100)]
+        public string Remarks { get; set; }
 
-        public decimal SpecificBalanceAmount { get; set; }
-        #endregion
+        public bool IsOutstandingPaymentInvolved { get; set; }
 
-        public decimal PaidAmount { get; set; }
+        public ICollection<PaymentLineLevel> PaymentLineLevels { get; set; }
 
-        public bool IsCash { get; set; }
-        
-        public bool IsCheque { get; set; }
-        
-        public bool IsDebitCard { get; set; }
-        
-        public bool IsGiftCard { get; set; }
+        public Payment()
+        {
+            PaymentLineLevels = new HashSet<PaymentLineLevel>();
+        }
     }
 }

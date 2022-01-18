@@ -117,5 +117,17 @@
     <text name="ResetPasswordStepOneInfo">1. Enter your administrator password</text>
     <text name="ResetPasswordStepTwoInfo">2. Copy this random password so you can send it to the user</text>
     <text name="UsersActivation">Users activation</text>
+    <text name="InvoiceNumber">Invoice Number</text>
+    <text name="SalesNumber">Sales Number</text>
+    <text name="CustomerName">Customer Name</text>
+    <text name="Remarks">Remarks</text>
+    <text name="ReceivedAmount">Received Amount</text>
+    <text name="BalanceAmount">Balance Amount</text>
+    <text name="PaidAmount">Paid Amount</text>
+    <text name="No">No</text>
+    <text name="Type">Type</text>
+    <text name="ReceivedAmount">Received Amount</text>
+    <text name="BalanceAmount">Balance Amount</text>
+    <text name="PaidAmount">Paid Amount</text>
   </texts>
 </localizationDictionary>

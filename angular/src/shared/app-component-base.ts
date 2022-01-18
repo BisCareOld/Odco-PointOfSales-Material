@@ -56,4 +56,11 @@ export abstract class AppComponentBase {
     isGranted(permissionName: string): boolean {
         return this.permission.isGranted(permissionName);
     }
+
+    isNullOrEmptyString(stringVal: String): boolean {
+        if (stringVal != undefined && stringVal != null && stringVal.length > 0) {
+            return false;
+        }
+        return true;
+    }
 }

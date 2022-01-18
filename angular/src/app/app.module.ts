@@ -9,7 +9,6 @@ import { AppComponent } from "./app.component";
 import { ServiceProxyModule } from "@shared/service-proxies/service-proxy.module";
 import { SharedModule } from "@shared/shared.module";
 import { HomeComponent } from "@app/home/home.component";
-import { AboutComponent } from "@app/about/about.component";
 
 import { MaterialModule } from "../shared/material/material.module";
 
@@ -33,15 +32,15 @@ import { PurchaseOrderModule } from "./purchasings/purchase-orders/purchase-orde
 import { InventoryTransactionModule } from "./inventory/inventory-transactions/inventory-transaction.module";
 // sales
 import { SaleModule } from "./sales/sale.module";
+// payments
+import { PaymentModule } from "./payments/payment.module";
 // layout
 import { HeaderComponent } from "./layout/header.component";
 import { HeaderLeftNavbarComponent } from "./layout/header-left-navbar.component";
 import { HeaderLanguageMenuComponent } from "./layout/header-language-menu.component";
 import { HeaderUserMenuComponent } from "./layout/header-user-menu.component";
 import { FooterComponent } from "./layout/footer.component";
-import { SidebarComponent } from "./layout/sidebar.component";
-import { SidebarLogoComponent } from "./layout/sidebar-logo.component";
-import { SidebarUserPanelComponent } from "./layout/sidebar-user-panel.component";
+
 import { SidebarMenuComponent } from "./layout/sidebar-menu.component";
 import { NavComponent } from "./layout/nav.component";
 import { LayoutModule } from "@angular/cdk/layout";
@@ -50,16 +49,12 @@ import { LayoutModule } from "@angular/cdk/layout";
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent,
     // layout
     HeaderComponent,
     HeaderLeftNavbarComponent,
     HeaderLanguageMenuComponent,
     HeaderUserMenuComponent,
     FooterComponent,
-    SidebarComponent,
-    SidebarLogoComponent,
-    SidebarUserPanelComponent,
     SidebarMenuComponent,
     NavComponent,
   ],
@@ -84,8 +79,9 @@ import { LayoutModule } from "@angular/cdk/layout";
     PurchaseOrderModule,
     InventoryTransactionModule,
     SaleModule,
+    PaymentModule
   ],
   providers: [],
   entryComponents: [],
 })
-export class AppModule {}
+export class AppModule { }

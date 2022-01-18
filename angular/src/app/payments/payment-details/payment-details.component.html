@@ -1,0 +1,156 @@
+<div [@routerTransition]>
+    <section class="mat-typography">
+        <h1>{{ "Payment" | localize }}</h1>
+    </section>
+    <mat-card>
+
+        <div *ngIf="payment">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default invoice" id="invoice">
+                            <div class="panel-body">
+                                <div class="invoice-ribbon">
+                                    <div class="ribbon-inner">{{ "PAID" | localize }}</div>
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-sm-6 top-left">
+                                        <i class="fas fa-money-check-alt"></i>
+                                    </div>
+
+                                    <div class="col-sm-6 top-right">
+                                        <h3 class="marginright">{{ "Invoice" | localize }} #{{ payment.invoiceNumber }}
+                                        </h3>
+                                        <span class="marginright">{{ payment.creationTime }}</span>
+                                    </div>
+
+                                </div>
+                                <hr>
+                                <div class="row">
+
+                                    <div class="col-sm-6 to" *ngIf="payment.customerId">
+                                        <p class="lead marginbottom">To :
+                                            {{ !isNullOrEmptyString(payment.customerName) ? payment.customerName : "N/A"
+                                            }}
+                                            {{ !isNullOrEmptyString(payment.customerCode) ? "(" + payment.customerCode +
+                                            ")" : "" }}
+                                        </p>
+                                        <div *ngIf="customer">
+                                            <p>425 Market Street</p>
+                                            <p>Suite 2200, San Francisco</p>
+                                            <p>California, 94105</p>
+                                            <p>{{ "Phone" | localize }}: {{
+                                                !isNullOrEmptyString(customer.contactNumber1) ? customer.contactNumber1
+                                                : "N/A" }}</p>
+                                            <p>{{ "Email" | localize }}: {{ !isNullOrEmptyString(customer.email) ?
+                                                customer.email : "N/A" }}</p>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col text-right payment-details">
+                                        <p class="lead marginbottom payment-info">Payment details</p>
+                                        <p>
+                                            {{ "Date" | localize }}:
+                                            {{ payment.creationTime }}
+                                        </p>
+                                        <p>
+                                            {{ "SalesNumber" | localize }}:
+                                            {{ !isNullOrEmptyString(payment.salesNumber)
+                                            ? "#" + payment.salesNumber : "N/A" }}
+                                        </p>
+                                        <p>
+                                            {{ "TotalAmount" | localize }}: {{ payment.totalPaidAmount.toFixed(2) }}
+                                        </p>
+                                        <p>
+                                            {{ "Account Name" | localize }}: {{
+                                            !isNullOrEmptyString(payment.customerName) ? payment.customerName : "N/A" }}
+                                        </p>
+                                        <p>
+                                            {{ "Remarks" | localize }}:
+                                            {{ !isNullOrEmptyString(payment.remarks) ? payment.remarks :
+                                            'N/A' }}
+                                        </p>
+                                        <p>
+                                            {{ "Type" | localize }}:
+                                            <span *ngIf="!isNullOrEmptyString(payment.salesNumber)"
+                                                class="badge rounded-pill bg-info text-dark">Sales</span>
+                                            <span
+                                                *ngIf="isNullOrEmptyString(payment.salesNumber) && !isNullOrEmptyString(payment.invoiceNumber)"
+                                                class="badge rounded-pill bg-warning text-dark">Outstanding</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row table-row my-3">
+                                    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 center">
+
+                                        <!--- Note that these columns can be defined in any order.
+                                            The actual rendered columns are set as a property on the row definition" -->
+
+                                        <!-- Position Column -->
+                                        <ng-container matColumnDef="position">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "No" | localize }}</th>
+                                            <td mat-cell *matCellDef="let element; let i = index"> {{ i+1 }} </td>
+                                        </ng-container>
+
+                                        <!-- Type Column -->
+                                        <ng-container matColumnDef="type">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "Type" | localize }}</th>
+                                            <td mat-cell *matCellDef="let element"> {{
+                                                element.isCash ? 'Cash' : element.isCheque ? 'Cheque' :
+                                                element.isDebitCard ?
+                                                'DebitCard' :
+                                                element.isGiftCard ? 'Gift Card' : 'Others'
+                                                }} </td>
+                                        </ng-container>
+
+                                        <!-- Received Amount Column -->
+                                        <ng-container matColumnDef="received-amount">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "ReceivedAmount" | localize }}</th>
+                                            <td class="td-amount" mat-cell *matCellDef="let element"> {{
+                                                element.specificReceivedAmount.toFixed(2)
+                                                }}</td>
+                                        </ng-container>
+
+                                        <!-- Balance Amount Column -->
+                                        <ng-container matColumnDef="balance-amount">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "BalanceAmount" | localize }}</th>
+                                            <td class="td-amount" mat-cell *matCellDef="let element"> {{
+                                                element.specificBalanceAmount.toFixed(2) }}
+                                            </td>
+                                        </ng-container>
+
+                                        <!-- Paid Amount Column -->
+                                        <ng-container matColumnDef="paid-amount">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "PaidAmount" | localize }}</th>
+                                            <td class="td-amount" mat-cell *matCellDef="let element"> {{
+                                                element.paidAmount.toFixed(2)
+                                                }}
+                                            </td>
+                                        </ng-container>
+
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                    </table>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 text-right pull-right invoice-total" style="text-align: right;">
+                                        <p>{{ "ReceivedAmount" | localize }}: {{ payment.totalReceivedAmount.toFixed(2)
+                                            }}</p>
+                                        <p>{{ "BalanceAmount" | localize }}: {{ payment.totalBalanceAmount.toFixed(2) }}
+                                        </p>
+                                        <p>{{ "PaidAmount" | localize }}: {{ payment.totalPaidAmount.toFixed(2) }}</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-card>
+</div>

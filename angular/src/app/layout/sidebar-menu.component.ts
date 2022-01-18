@@ -19,7 +19,7 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
   menuItemsMap: { [key: number]: MenuItem } = {};
   activatedMenuItems: MenuItem[] = [];
   routerEvents: BehaviorSubject<RouterEvent> = new BehaviorSubject(undefined);
-  homeRoute = "/app/about";
+  homeRoute = "/app/home";
 
   constructor(injector: Injector, private router: Router) {
     super(injector);
@@ -43,44 +43,27 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
 
   getMenuItems(): MenuItem[] {
     return [
-      new MenuItem(this.l("About"), "/app/about", "info"),
       new MenuItem(this.l("HomePage"), "/app/home", "home"),
-      new MenuItem(
-        this.l("Roles"),
-        "/app/roles",
-        "verified_user",
-        "Pages.Roles"
-      ),
-      new MenuItem(
-        this.l("Tenants"),
-        "/app/tenants",
-        "account_balance",
-        "Pages.Tenants"
-      ),
-      new MenuItem(
-        this.l("Users"),
-        "/app/users",
-        "supervised_user_circle",
-        "Pages.Users"
-      ),
-      new MenuItem(
-        this.l("Products"),
-        "/app/products",
-        "shopping_cart",
-        "Pages.Users"
-      ),
-      new MenuItem(
-        this.l("Categories"),
-        "/app/categories",
-        "bookmarks",
-        "Pages.Users"
-      ),
-      new MenuItem(
-        this.l("Brands"),
-        "/app/brands",
-        "change_history",
-        "Pages.Users"
-      ),
+      new MenuItem(this.l("Products"), "", "verified_user", "", [
+        new MenuItem(
+          this.l("Products"),
+          "/app/products",
+          "shopping_cart",
+          "Pages.Users"
+        ),
+        new MenuItem(
+          this.l("Categories"),
+          "/app/categories",
+          "bookmarks",
+          "Pages.Users"
+        ),
+        new MenuItem(
+          this.l("Brands"),
+          "/app/brands",
+          "change_history",
+          "Pages.Users"
+        ),
+      ]),
       new MenuItem(
         this.l("Suppliers"),
         "/app/suppliers",
@@ -93,78 +76,112 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
         "add_shopping_cart",
         "Pages.Users"
       ),
-      new MenuItem(
-        this.l("InventoryTransactions"),
-        "/app/inventory-transactions",
-        "add_shopping_cart",
-        "Pages.Users"
-      ),
-      new MenuItem(
-        this.l("InventoryTransactions"),
-        "/app/create-inventory-transactions",
-        "add_shopping_cart",
-        "Pages.Users"
-      ),
+      new MenuItem(this.l("InventoryTransactions"), "", "add_shopping_cart", "", [
+        new MenuItem(
+          this.l("InventoryTransactions"),
+          "/app/inventory-transactions",
+          "add_shopping_cart",
+          "Pages.Users"
+        ),
+        new MenuItem(
+          this.l("CreateInventoryTransactions"),
+          "/app/create-inventory-transactions",
+          "add_shopping_cart",
+          "Pages.Users"
+        ),
+      ]),
       new MenuItem(
         this.l("Sales"),
         "/app/sales",
-        "add_shopping_cart",
+        "point_of_sale",
         "Pages.Users"
       ),
       new MenuItem(
         this.l("Sales"),
         "/app/sales-list",
-        "add_shopping_cart",
+        "receipt",
         "Pages.Users"
       ),
-      new MenuItem(this.l("MultiLevelMenu"), "", "fas fa-circle", "", [
-        new MenuItem("ASP.NET Boilerplate", "", "fas fa-dot-circle", "", [
+      new MenuItem(
+        this.l("OutstandingPayment"),
+        "/app/create-customer-outstanding-payment",
+        "sell",
+        "Pages.Users"
+      ),
+      new MenuItem(
+        this.l("Payments"),
+        "/app/payments",
+        "request_quote",
+        "Pages.Users"
+      ),
+      new MenuItem(this.l("Administrator"), "", "verified_user", "", [
+        new MenuItem(
+          this.l("Tenants"),
+          "/app/tenants",
+          "account_balance",
+          "Pages.Tenants"
+        ),
+        new MenuItem(
+          this.l("Roles"),
+          "/app/roles",
+          "verified_user",
+          "Pages.Roles"
+        ),
+        new MenuItem(
+          this.l("Users"),
+          "/app/users",
+          "supervised_user_circle",
+          "Pages.Users"
+        ),
+      ]),
+      new MenuItem(this.l("MultiLevelMenu"), "", "verified_user", "", [
+        new MenuItem("ASP.NET Boilerplate", "", "verified_user", "", [
           new MenuItem(
             "Home",
             "https://aspnetboilerplate.com?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
           new MenuItem(
             "Templates",
             "https://aspnetboilerplate.com/Templates?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
           new MenuItem(
             "Samples",
             "https://aspnetboilerplate.com/Samples?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
           new MenuItem(
             "Documents",
             "https://aspnetboilerplate.com/Pages/Documents?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
         ]),
-        new MenuItem("ASP.NET Zero", "", "fas fa-dot-circle", "", [
+        new MenuItem("ASP.NET Zero", "", "verified_user", "", [
           new MenuItem(
             "Home",
             "https://aspnetzero.com?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
           new MenuItem(
             "Features",
             "https://aspnetzero.com/Features?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
           new MenuItem(
             "Pricing",
             "https://aspnetzero.com/Pricing?ref=abptmpl#pricing",
-            "far fa-circle"
+            ""
           ),
           new MenuItem(
             "Faq",
             "https://aspnetzero.com/Faq?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
           new MenuItem(
             "Documents",
             "https://aspnetzero.com/Documents?ref=abptmpl",
-            "far fa-circle"
+            ""
           ),
         ]),
       ]),

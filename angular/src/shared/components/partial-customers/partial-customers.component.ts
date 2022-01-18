@@ -1,10 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
 import {
   CustomerSearchResultDto,
-  ProductionServiceProxy,
   SalesServiceProxy,
 } from "@shared/service-proxies/service-proxies";
-import { result } from "lodash-es";
 import { Observable } from "rxjs";
 
 @Component({
@@ -18,7 +16,7 @@ export class PartialCustomersComponent implements OnInit {
   disable: boolean = false;
 
   @Input('isClearWhenSelected') isClearWhenSelected: boolean = false;
-  @Input('fieldDisabled') fieldDisabled: boolean = false;
+  @Input('isDisabledWhenSelected') isDisabledWhenSelected: boolean = false;
   @Input('fieldRequired') fieldRequired: boolean = false;
   @Output() selectedEvent = new EventEmitter<CustomerSearchResultDto>();
 
@@ -27,28 +25,34 @@ export class PartialCustomersComponent implements OnInit {
   ngOnInit(): void { }
 
   changeKeyword() {
-    console.log(1)
     this.filteredOptions = this._salesService.getPartialCustomers(
       this.searchKeyword
     );
   }
 
   selectCustomer(option: CustomerSearchResultDto) {
-    console.log(2)
     var vm = this;
 
     this.selectedEvent.emit(option);
-    console.log(this.isClearWhenSelected)
-    if (!this.isClearWhenSelected) {
+    if (this.isDisabledWhenSelected) {
+      this.disableInput(true);
+    }
+
+    if (this.isClearWhenSelected) {
       setTimeout(function () {
         vm.clearSelectedCustomer();
       }, 1000);
     }
-
   }
 
-  clearSelectedCustomer() {
+  private clearSelectedCustomer() {
     this.searchKeyword = null;
+    this.selectedEvent.emit(null);
+    this.disableInput(false);
+  }
+
+  private disableInput(input: boolean) {
+    this.disable = input;
   }
 
 }

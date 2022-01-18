@@ -144,7 +144,7 @@
       </mat-accordion>
     </div>
     <div *ngIf="!customerId.value">
-      <app-partial-customers [isClearWhenSelected]="false" [fieldDisabled]="false" [fieldRequired]="false"
+      <app-partial-customers [isClearWhenSelected]="false" [isDisabledWhenSelected]="false" [fieldRequired]="false"
         (selectedEvent)="selectCustomer($event)">
       </app-partial-customers>
     </div>
@@ -200,6 +200,9 @@
     </div>
 
     <div class="calculation-summary" style="margin-top: 60px;">
+      <div *ngIf="salesNumber.value">Sales Number
+        <span style="float: right;">{{ salesNumber.value }}</span>
+      </div>
       <div>No of Items
         <span style="float: right;">{{ salesProducts.value.length }}</span>
       </div>

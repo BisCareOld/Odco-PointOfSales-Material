@@ -20,7 +20,7 @@ import * as ApiServiceProxies from "./service-proxies";
     ApiServiceProxies.SalesServiceProxy,
     ApiServiceProxies.CommonServiceProxy,
     ApiServiceProxies.StockBalanceServiceProxy,
-    //ApiServiceProxies.FinanceServiceProxy,
+    ApiServiceProxies.FinanceServiceProxy,
     { provide: HTTP_INTERCEPTORS, useClass: AbpHttpInterceptor, multi: true },
   ],
 })

@@ -5,6 +5,10 @@
     </button>
     <span>Odco Point Of Sales</span>
     <span style="flex: auto"></span>
+
+    <header-language-menu></header-language-menu>
+    <header-user-menu></header-user-menu>
+
     <mat-slide-toggle labelPosition="before" [(ngModel)]="isDarkTheme" (change)="storeThemeSelection()">
       <mat-icon>bedtime</mat-icon>
     </mat-slide-toggle>
@@ -12,7 +16,7 @@
 </mat-toolbar>
 <mat-sidenav-container class="sidenav-container mat-app-background" [ngClass]="{ 'unicorn-dark-theme': isDarkTheme }">
   <mat-sidenav #sidenav opened="true" mode="side">
-    <mat-nav-list>
+    <mat-nav-list style="padding: 0;">
       <sidebar-menu></sidebar-menu>
     </mat-nav-list>
   </mat-sidenav>

@@ -3,7 +3,6 @@ import { RouterModule } from "@angular/router";
 import { AppComponent } from "./app.component";
 import { AppRouteGuard } from "@shared/auth/auth-route-guard";
 import { HomeComponent } from "./home/home.component";
-import { AboutComponent } from "./about/about.component";
 import { UsersComponent } from "./users/users.component";
 import { TenantsComponent } from "./tenants/tenants.component";
 import { RolesComponent } from "app/roles/roles.component";
@@ -18,6 +17,9 @@ import { CreatePurchaseOrderComponent } from "./purchasings/purchase-orders/crea
 import { SalesComponent } from "./sales/sales.component";
 import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.component";
 import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.component";
+import { CreateOutstandingPaymentComponent } from "./payments/create-payment-for-customer-outstanding/create-outstanding-payment.component";
+import { PaymentsComponent } from "./payments/payments.component";
+import { PaymentDetailsComponent } from "./payments/payment-details/payment-details.component";
 
 @NgModule({
   imports: [
@@ -47,11 +49,6 @@ import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.
             path: "tenants",
             component: TenantsComponent,
             data: { permission: "Pages.Tenants" },
-            canActivate: [AppRouteGuard],
-          },
-          {
-            path: "about",
-            component: AboutComponent,
             canActivate: [AppRouteGuard],
           },
           {
@@ -111,6 +108,24 @@ import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.
           {
             path: "sales-list",
             component: TempSalesListComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "create-customer-outstanding-payment",
+            component: CreateOutstandingPaymentComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "payments",
+            component: PaymentsComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "payment-details",
+            component: PaymentDetailsComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
