@@ -34,7 +34,8 @@
                         </th>
                         <td mat-cell *matCellDef="let element">
                             <div>
-                                <span [class]="element.get('isNonInventoryProductInvolved').value ? 'dot' : '' "></span>
+                                <span
+                                    [class.non-inventory-product-identification]="element.get('isNonInventoryProductInvolved').value"></span>
                                 {{ element.get("productName").value }}
                             </div>
                             <div>#{{ element.get("productCode").value }}</div>

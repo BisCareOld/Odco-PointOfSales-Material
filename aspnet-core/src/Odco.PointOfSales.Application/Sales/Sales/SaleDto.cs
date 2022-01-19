@@ -46,6 +46,10 @@ namespace Odco.PointOfSales.Application.Sales.Sales
 
         public bool IsActive { get; set; }
 
+        #region ABP
+        public DateTime CreationTime { get; set; }
+        #endregion
+
         public ICollection<InventorySalesProductDto> InventorySalesProducts { get; set; }
         
         public ICollection<NonInventorySalesProductDto> NonInventorySalesProducts { get; set; }

@@ -2,7 +2,7 @@ import { Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/app-component-base';
-import { FinanceServiceProxy, InventorySalesProductDto, NonInventorySalesProductDto, SaleDto, SalesServiceProxy } from '@shared/service-proxies/service-proxies';
+import { FinanceServiceProxy, SalesServiceProxy, InventorySalesProductDto, NonInventorySalesProductDto, SaleDto, CustomerDto } from '@shared/service-proxies/service-proxies';
 
 // Having combination of "InventorySalesProductDto" & "NonInventorySalesProductDto"
 class SalesProduct {
@@ -33,7 +33,6 @@ class SalesProduct {
   isActive: boolean;
 
   isInventorySalesProduct: boolean; // "InventorySalesProductDto" => true, "NonInventorySalesProductDto" => false
-
 }
 
 @Component({
@@ -44,7 +43,11 @@ class SalesProduct {
 })
 export class SalesDetailsComponent extends AppComponentBase implements OnInit {
   saleId: string;
+  sale: SaleDto;
   salesProducts: SalesProduct[] = [];
+  customer: CustomerDto;
+  displayedColumns: string[] = ["sequence-number", "product-name", "price", "quantity", "discount", "line-total"];
+  dataSource: SalesProduct[] = [];
 
   constructor(
     injector: Injector,
@@ -67,7 +70,9 @@ export class SalesDetailsComponent extends AppComponentBase implements OnInit {
 
   getSaledetails() {
     this._salesService.getSales(this.saleId).subscribe((result: SaleDto) => {
-      console.log(result);
+      this.sale = result;
+
+      if (this.sale.customerId) this.getCustomerDetails(this.sale.customerId);
 
       result.inventorySalesProducts.forEach((isp: InventorySalesProductDto) => {
         let obj = new SalesProduct();
@@ -121,10 +126,21 @@ export class SalesDetailsComponent extends AppComponentBase implements OnInit {
         this.salesProducts.push(obj);
       });
 
-      this.salesProducts.sort(x => x.sequenceNumber);
-      console.log(this.salesProducts);
-
+      this.salesProducts.sort(sp => sp.sequenceNumber);
+      this.dataSource = this.salesProducts;
     });
+  }
+
+  getCustomerDetails(id) {
+    this._salesService.getCustomer(id).subscribe((result) => {
+      this.customer = result;
+    });
+  }
+
+  paymentStatus(): string {
+    if (this.sale.paymentStatus == 3) return "Paid";
+    else if (this.sale.paymentStatus == 1 || this.sale.paymentStatus == 2) return "Pending";
+    else "N/A"
   }
 
 }

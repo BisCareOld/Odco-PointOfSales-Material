@@ -10240,6 +10240,7 @@ export class SaleDto implements ISaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
+    creationTime: moment.Moment;
     inventorySalesProducts: InventorySalesProductDto[] | undefined;
     nonInventorySalesProducts: NonInventorySalesProductDto[] | undefined;
     id: string;
@@ -10269,6 +10270,7 @@ export class SaleDto implements ISaleDto {
             this.remarks = _data["remarks"];
             this.paymentStatus = _data["paymentStatus"];
             this.isActive = _data["isActive"];
+            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
             if (Array.isArray(_data["inventorySalesProducts"])) {
                 this.inventorySalesProducts = [] as any;
                 for (let item of _data["inventorySalesProducts"])
@@ -10306,6 +10308,7 @@ export class SaleDto implements ISaleDto {
         data["remarks"] = this.remarks;
         data["paymentStatus"] = this.paymentStatus;
         data["isActive"] = this.isActive;
+        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         if (Array.isArray(this.inventorySalesProducts)) {
             data["inventorySalesProducts"] = [];
             for (let item of this.inventorySalesProducts)
@@ -10343,6 +10346,7 @@ export interface ISaleDto {
     remarks: string | undefined;
     paymentStatus: PaymentStatus;
     isActive: boolean;
+    creationTime: moment.Moment;
     inventorySalesProducts: InventorySalesProductDto[] | undefined;
     nonInventorySalesProducts: NonInventorySalesProductDto[] | undefined;
     id: string;
