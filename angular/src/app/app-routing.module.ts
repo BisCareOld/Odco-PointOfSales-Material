@@ -20,6 +20,7 @@ import { CreateOutstandingPaymentComponent } from "./payments/create-payment-for
 import { PaymentsComponent } from "./payments/payments.component";
 import { PaymentDetailsComponent } from "./payments/payment-details/payment-details.component";
 import { CreateSalesComponent } from "./sales/create-sales/create-sales.component";
+import { SalesDetailsComponent } from "./sales/sales-details/sales-details.component";
 
 @NgModule({
   imports: [
@@ -96,6 +97,12 @@ import { CreateSalesComponent } from "./sales/create-sales/create-sales.componen
           {
             path: "create-sales",
             component: CreateSalesComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "sales-details",
+            component: SalesDetailsComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },

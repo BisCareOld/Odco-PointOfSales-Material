@@ -19,13 +19,14 @@ export class SalesComponent extends PagedListingComponentBase<SaleDto> {
   keyword = "";
   isActive: boolean | null;
   advancedFiltersVisible = false;
+  pageNumber: number = 1;
 
   displayedColumns: string[] = [
+    "no",
     "sales-number",
     "customer",
     "net-amount",
-    "payment-status",
-    "actions",
+    "payment-status"
   ];
   dataSource;
 
@@ -41,6 +42,8 @@ export class SalesComponent extends PagedListingComponentBase<SaleDto> {
     pageNumber: number,
     finishedCallback: Function
   ): void {
+    console.log(this.pageNumber);
+    this.pageNumber = pageNumber;
     request.keyword = this.keyword;
     request.isActive = this.isActive;
 
@@ -58,6 +61,7 @@ export class SalesComponent extends PagedListingComponentBase<SaleDto> {
       )
       .subscribe((result: SaleDtoPagedResultDto) => {
         this.dataSource = result.items;
+        console.log(result.items.length)
         this.showPaging(result, pageNumber);
       });
   }

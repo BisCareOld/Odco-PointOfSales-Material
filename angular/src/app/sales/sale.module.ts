@@ -10,6 +10,7 @@ import { CreateSalesComponent } from './create-sales/create-sales.component';
 import { CreatePaymentComponent } from "./create-payment/create-payment.component";
 import { StockBalanceDialogComponent } from "./stock-balance/stock-balance-dialog.component";
 import { CreateNonInventoryProductDialogComponent } from './create-non-inventory-product/create-non-inventory-product-dialog.component';
+import { SalesDetailsComponent } from './sales-details/sales-details.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { CreateNonInventoryProductDialogComponent } from './create-non-inventory
     CreatePaymentComponent,
     StockBalanceDialogComponent,
     CreateNonInventoryProductDialogComponent,
-    CreateSalesComponent
+    CreateSalesComponent,
+    SalesDetailsComponent
   ],
   imports: [
     CommonModule,

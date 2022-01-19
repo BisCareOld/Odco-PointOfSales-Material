@@ -111,7 +111,6 @@ export class CreateSalesComponent extends AppComponentBase implements OnInit {
 
         this.getNonInventorySalesProductsBySaleId(id);
         this.populateSalesDetails(false, result);
-        console.log(result);
         result.inventorySalesProducts.forEach((value, i) => {
           this.populateSalesProductDetails(
             false,
@@ -562,7 +561,6 @@ export class CreateSalesComponent extends AppComponentBase implements OnInit {
 
       let _b = new CreateNonInventorySalesProductDto();
       if (item.isNonInventoryProductInvolved) {
-        console.log(item);
         _b.id = item.id;
         _b.sequenceNumber = sequenceNumber++;
         _b.saleId = item.tempSaleId;
@@ -584,7 +582,6 @@ export class CreateSalesComponent extends AppComponentBase implements OnInit {
         _b.price = item.soldPrice;
         _header.nonInventorySalesProducts.push(_b);
       }
-
     });
 
     this._salesService.createOrUpdateSales(_header).subscribe((i) => {
