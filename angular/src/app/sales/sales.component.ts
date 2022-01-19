@@ -19,7 +19,7 @@ export class SalesComponent extends PagedListingComponentBase<SaleDto> {
   keyword = "";
   isActive: boolean | null;
   advancedFiltersVisible = false;
-  pageNumber: number = 1;
+  skipCount: number = 0;
 
   displayedColumns: string[] = [
     "no",
@@ -42,8 +42,7 @@ export class SalesComponent extends PagedListingComponentBase<SaleDto> {
     pageNumber: number,
     finishedCallback: Function
   ): void {
-    console.log(this.pageNumber);
-    this.pageNumber = pageNumber;
+    this.skipCount = request.skipCount;
     request.keyword = this.keyword;
     request.isActive = this.isActive;
 
@@ -61,7 +60,6 @@ export class SalesComponent extends PagedListingComponentBase<SaleDto> {
       )
       .subscribe((result: SaleDtoPagedResultDto) => {
         this.dataSource = result.items;
-        console.log(result.items.length)
         this.showPaging(result, pageNumber);
       });
   }

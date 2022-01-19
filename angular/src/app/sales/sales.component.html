@@ -23,7 +23,7 @@
                         {{ "No" | localize }}
                     </th>
                     <td mat-cell *matCellDef="let element; let i = index">
-                        <span>{{ pageNumber * (i+1) }}</span>
+                        <span>{{ skipCount + (i+1) }}</span>
                     </td>
                 </ng-container>
 
