@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,6 +19,8 @@ namespace Odco.PointOfSales.Core.Finance
         public Guid? PaymentId { get; set; }
         
         public Payment Payment { get; set; }
+
+        public PaymentType? PaymentType { get; set; }   // Just for a reference
 
         [StringLength(15)]
         public string InvoiceNumber { get; set; }

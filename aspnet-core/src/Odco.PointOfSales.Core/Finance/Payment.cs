@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Sales;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,13 @@ namespace Odco.PointOfSales.Core.Finance
     /// Payment : PaymentLineLevel = 1 : M
     /// Payment will generate the "InvoiceNumber"
     /// 2 Types of Payment Header
-    ///     1. Sales Payment => SaleId (Exist) Or IsOutstandingPaymentInvolved (False)
-    ///     2. Outstanding Payment => SaleId (Not Exist) Or IsOutstandingPaymentInvolved (True)
+    ///     1. Sales Payment => SaleId (Exist)
+    ///     2. Outstanding Payment => SaleId (Not Exist) 
+    /// If IsOutstandingPaymentInvolved (True) => This Sales Payment having an outstanding payment
+    /// 
+    /// Identify Payment Type (Sale or Outstanding)
+    ///     1. Directly from "PaymentType"
+    ///     2. "SaleId" (Not Exist) =>  Outstanding else Sale 
     /// </summary>
     [Table("Finance.Payment")]
     public class Payment : FullAuditedEntity<Guid>
@@ -56,6 +62,12 @@ namespace Odco.PointOfSales.Core.Finance
 
         [StringLength(100)]
         public string Remarks { get; set; }
+
+        /// <summary>
+        /// 1 => Sales
+        /// 2 => Outstanding
+        /// </summary>
+        public PaymentType PaymentType { get; set; }
 
         public bool IsOutstandingPaymentInvolved { get; set; }
 

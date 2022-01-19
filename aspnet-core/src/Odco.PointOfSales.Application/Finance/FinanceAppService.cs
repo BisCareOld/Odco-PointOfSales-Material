@@ -71,7 +71,8 @@ namespace Odco.PointOfSales.Application.Finance
             payment.TotalBalanceAmount = input.TotalBalanceAmount;
             payment.TotalPaidAmount = input.TotalReceivedAmount - input.TotalBalanceAmount;
             payment.Remarks = input.Remarks;
-            payment.IsOutstandingPaymentInvolved = true;
+            payment.PaymentType = PaymentType.Outstanding;
+            payment.IsOutstandingPaymentInvolved = false;
             #endregion
 
             #region Payment Line Level
@@ -164,6 +165,7 @@ namespace Odco.PointOfSales.Application.Finance
                 pll.IsCheque = pll.IsCheque;
                 pll.IsDebitCard = pll.IsDebitCard;
                 pll.IsGiftCard = pll.IsGiftCard;
+                pll.PaymentType = PaymentType.Outstanding;
                 pll.IsOutstandingPaymentInvolved = pll.IsOutstandingPaymentInvolved;
             }
 

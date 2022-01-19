@@ -37,9 +37,7 @@
                                             ")" : "" }}
                                         </p>
                                         <div *ngIf="customer">
-                                            <p>425 Market Street</p>
-                                            <p>Suite 2200, San Francisco</p>
-                                            <p>California, 94105</p>
+                                            <p>N/A</p>
                                             <p>{{ "Phone" | localize }}: {{
                                                 !isNullOrEmptyString(customer.contactNumber1) ? customer.contactNumber1
                                                 : "N/A" }}</p>
@@ -74,11 +72,12 @@
                                         </p>
                                         <p>
                                             {{ "Type" | localize }}:
-                                            <span *ngIf="!isNullOrEmptyString(payment.salesNumber)"
+                                            <span *ngIf="payment.paymentType == 1"
                                                 class="badge rounded-pill bg-info text-dark">Sales</span>
-                                            <span
-                                                *ngIf="isNullOrEmptyString(payment.salesNumber) && !isNullOrEmptyString(payment.invoiceNumber)"
+                                            <span *ngIf="payment.paymentType == 2"
                                                 class="badge rounded-pill bg-warning text-dark">Outstanding</span>
+                                            <span *ngIf="payment.paymentType != 1 && payment.paymentType != 2"
+                                                class="badge rounded-pill bg-danger">N/A</span>
                                         </p>
                                     </div>
                                 </div>

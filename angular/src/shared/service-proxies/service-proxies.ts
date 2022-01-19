@@ -6257,6 +6257,11 @@ export interface ICreatePaymentForOutstandingDto {
     giftCards: GiftCardDto[] | undefined;
 }
 
+export enum PaymentType {
+    _1 = 1,
+    _2 = 2,
+}
+
 export class PaymentLineLevelDto implements IPaymentLineLevelDto {
     paymentId: string | undefined;
     invoiceNumber: string | undefined;
@@ -6395,6 +6400,7 @@ export class PaymentDto implements IPaymentDto {
     totalBalanceAmount: number;
     totalPaidAmount: number;
     remarks: string | undefined;
+    paymentType: PaymentType;
     isOutstandingPaymentInvolved: boolean;
     creationTime: moment.Moment;
     paymentLineLevels: PaymentLineLevelDto[] | undefined;
@@ -6421,6 +6427,7 @@ export class PaymentDto implements IPaymentDto {
             this.totalBalanceAmount = _data["totalBalanceAmount"];
             this.totalPaidAmount = _data["totalPaidAmount"];
             this.remarks = _data["remarks"];
+            this.paymentType = _data["paymentType"];
             this.isOutstandingPaymentInvolved = _data["isOutstandingPaymentInvolved"];
             this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
             if (Array.isArray(_data["paymentLineLevels"])) {
@@ -6451,6 +6458,7 @@ export class PaymentDto implements IPaymentDto {
         data["totalBalanceAmount"] = this.totalBalanceAmount;
         data["totalPaidAmount"] = this.totalPaidAmount;
         data["remarks"] = this.remarks;
+        data["paymentType"] = this.paymentType;
         data["isOutstandingPaymentInvolved"] = this.isOutstandingPaymentInvolved;
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         if (Array.isArray(this.paymentLineLevels)) {
@@ -6481,6 +6489,7 @@ export interface IPaymentDto {
     totalBalanceAmount: number;
     totalPaidAmount: number;
     remarks: string | undefined;
+    paymentType: PaymentType;
     isOutstandingPaymentInvolved: boolean;
     creationTime: moment.Moment;
     paymentLineLevels: PaymentLineLevelDto[] | undefined;

@@ -86,10 +86,11 @@
                         {{ "PaymentType" | localize }}
                     </th>
                     <td mat-cell *matCellDef="let element">
-                        <span *ngIf="!isNullOrEmpty(element.salesNumber)"
-                            class="badge rounded-pill bg-info text-dark">Sales</span>
-                        <span *ngIf="isNullOrEmpty(element.salesNumber) && !isNullOrEmpty(element.invoiceNumber)"
+                        <span *ngIf="element.paymentType == 1" class="badge rounded-pill bg-info text-dark">Sales</span>
+                        <span *ngIf="element.paymentType == 2"
                             class="badge rounded-pill bg-warning text-dark">Outstanding</span>
+                        <span *ngIf="element.paymentType != 1 && element.paymentType != 2"
+                            class="badge rounded-pill bg-danger">N/A</span>
                     </td>
                 </ng-container>
 

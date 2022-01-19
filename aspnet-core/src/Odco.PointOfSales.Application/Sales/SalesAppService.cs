@@ -858,6 +858,7 @@ namespace Odco.PointOfSales.Application.Sales
                     payment.TotalReceivedAmount = input.ReceivedAmount;
                     payment.TotalBalanceAmount = input.BalanceAmount;
                     payment.TotalPaidAmount = input.ReceivedAmount - input.BalanceAmount;
+                    payment.PaymentType = PaymentType.Sales;
                     payment.IsOutstandingPaymentInvolved = input.Outstandings.Any() ? true : false;
 
                     #region
@@ -957,6 +958,7 @@ namespace Odco.PointOfSales.Application.Sales
                         pll.IsCheque = pll.IsCheque;
                         pll.IsDebitCard = pll.IsDebitCard;
                         pll.IsGiftCard = pll.IsGiftCard;
+                        pll.PaymentType = PaymentType.Sales;
                         pll.IsOutstandingPaymentInvolved = pll.IsOutstandingPaymentInvolved;
                     }
 
