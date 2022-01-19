@@ -634,6 +634,69 @@ export class FinanceServiceProxy {
         }
         return _observableOf<PaymentDto>(<any>null);
     }
+
+    /**
+     * @param saleId (optional) 
+     * @return Success
+     */
+    getAllInvoiceNumbersBySaleId(saleId: string | undefined): Observable<InvoiceNumberDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Finance/GetAllInvoiceNumbersBySaleId?";
+        if (saleId === null)
+            throw new Error("The parameter 'saleId' cannot be null.");
+        else if (saleId !== undefined)
+            url_ += "saleId=" + encodeURIComponent("" + saleId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllInvoiceNumbersBySaleId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllInvoiceNumbersBySaleId(<any>response_);
+                } catch (e) {
+                    return <Observable<InvoiceNumberDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<InvoiceNumberDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllInvoiceNumbersBySaleId(response: HttpResponseBase): Observable<InvoiceNumberDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(InvoiceNumberDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<InvoiceNumberDto[]>(<any>null);
+    }
 }
 
 @Injectable()
@@ -6477,6 +6540,57 @@ export class PaymentDtoPagedResultDto implements IPaymentDtoPagedResultDto {
 export interface IPaymentDtoPagedResultDto {
     totalCount: number;
     items: PaymentDto[] | undefined;
+}
+
+export class InvoiceNumberDto implements IInvoiceNumberDto {
+    paymentId: string;
+    invoiceNumber: string | undefined;
+    paymentType: number;
+
+    constructor(data?: IInvoiceNumberDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paymentId = _data["paymentId"];
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.paymentType = _data["paymentType"];
+        }
+    }
+
+    static fromJS(data: any): InvoiceNumberDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceNumberDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paymentId"] = this.paymentId;
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["paymentType"] = this.paymentType;
+        return data; 
+    }
+
+    clone(): InvoiceNumberDto {
+        const json = this.toJSON();
+        let result = new InvoiceNumberDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IInvoiceNumberDto {
+    paymentId: string;
+    invoiceNumber: string | undefined;
+    paymentType: number;
 }
 
 export enum TransactionStatus {

@@ -2,7 +2,7 @@ import { Component, Injector, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/app-component-base';
-import { FinanceServiceProxy, SalesServiceProxy, InventorySalesProductDto, NonInventorySalesProductDto, SaleDto, CustomerDto } from '@shared/service-proxies/service-proxies';
+import { FinanceServiceProxy, SalesServiceProxy, InventorySalesProductDto, NonInventorySalesProductDto, SaleDto, CustomerDto, InvoiceNumberDto } from '@shared/service-proxies/service-proxies';
 
 // Having combination of "InventorySalesProductDto" & "NonInventorySalesProductDto"
 class SalesProduct {
@@ -46,6 +46,7 @@ export class SalesDetailsComponent extends AppComponentBase implements OnInit {
   sale: SaleDto;
   salesProducts: SalesProduct[] = [];
   customer: CustomerDto;
+  invoiceNumbers: InvoiceNumberDto[] = [];
   displayedColumns: string[] = ["sequence-number", "product-name", "price", "quantity", "discount", "line-total"];
   dataSource: SalesProduct[] = [];
 
@@ -66,6 +67,8 @@ export class SalesDetailsComponent extends AppComponentBase implements OnInit {
     } else {
       this.getSaledetails();
     }
+
+    this.getPaymentDetails();
   }
 
   getSaledetails() {
@@ -141,6 +144,12 @@ export class SalesDetailsComponent extends AppComponentBase implements OnInit {
     if (this.sale.paymentStatus == 3) return "Paid";
     else if (this.sale.paymentStatus == 1 || this.sale.paymentStatus == 2) return "Pending";
     else "N/A"
+  }
+
+  getPaymentDetails() {
+    this._financeService.getAllInvoiceNumbersBySaleId(this.saleId).subscribe((result) => {
+      this.invoiceNumbers = result;
+    });
   }
 
 }

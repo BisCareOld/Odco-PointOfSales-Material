@@ -32,7 +32,7 @@
                                 <hr>
                                 <div class="row">
 
-                                    <div class="col-sm-6 to" *ngIf="sale.customerId">
+                                    <div class="col-xl-4 col-lg-4 col-md-4 to" *ngIf="sale.customerId">
                                         <p class="lead marginbottom">To :
                                             {{ !isNullOrEmptyString(sale.customerName) ? sale.customerName : "N/A"
                                             }}
@@ -50,7 +50,7 @@
 
                                     </div>
 
-                                    <div class="col text-right sales-details">
+                                    <div class="col-xl-4 col-lg-4 col-md-4 text-right sales-details">
                                         <p class="lead marginbottom sales-info">Sales details</p>
                                         <p>
                                             {{ "Date" | localize }}:
@@ -79,6 +79,22 @@
 
                                         </p>
 
+                                    </div>
+
+                                    <div class="col text-right sales-details">
+                                        <p class="lead marginbottom sales-info">Payment details</p>
+                                        <p *ngFor="let ivNo of invoiceNumbers">
+                                            <a [routerLink]="['/app/payment-details']"
+                                                [queryParams]="{paymentId: ivNo.paymentId}"
+                                                style="text-decoration: none;">
+                                                {{ivNo.invoiceNumber}}
+                                            </a>
+                                            -
+                                            {{ivNo.paymentType == 1 ? 'Sales' : 'Outstanding'}}
+                                        </p>
+                                        <p *ngIf="invoiceNumbers.length <= 0">
+                                            N/A
+                                        </p>
                                     </div>
                                 </div>
 
