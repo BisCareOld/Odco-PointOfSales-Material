@@ -17,8 +17,8 @@ namespace Odco.PointOfSales.Core.Finance
     ///     2. Outstanding Payment => SaleId (Not Exist) 
     /// If IsOutstandingPaymentInvolved (True) => This Sales Payment having an outstanding payment
     /// 
-    /// Identify Payment Type (Sale or Outstanding)
-    ///     1. Directly from "PaymentType"
+    /// Identify Payment Type (Sale or Outstanding) from 2 methods
+    ///     1. Directly from "PaymentType" (enum)
     ///     2. "SaleId" (Not Exist) =>  Outstanding else Sale 
     /// </summary>
     [Table("Finance.Payment")]
@@ -69,6 +69,10 @@ namespace Odco.PointOfSales.Core.Finance
         /// </summary>
         public PaymentType PaymentType { get; set; }
 
+        /// <summary>
+        /// Only for sales payment which doesnt have fully paid invoice
+        /// True => Partially paid or Not Purchased invoice
+        /// </summary>
         public bool IsOutstandingPaymentInvolved { get; set; }
 
         public ICollection<PaymentLineLevel> PaymentLineLevels { get; set; }
