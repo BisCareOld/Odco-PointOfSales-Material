@@ -18,16 +18,15 @@ export class PaymentsComponent extends PagedListingComponentBase<PaymentDto> {
   keyword = "";
   isActive: boolean | null;
   advancedFiltersVisible = false;
+  skipCount: number = 0;
   displayedColumns: string[] = [
+    "position",
     "sales-number",
     "invoice-number",
     "customer",
     "type",
     "is-outstanding-payment-involved",
     "paid-amount"
-    // "net-amount",
-    // "payment-status",
-    // "actions",
   ];
   dataSource;
 
@@ -43,6 +42,7 @@ export class PaymentsComponent extends PagedListingComponentBase<PaymentDto> {
     pageNumber: number,
     finishedCallback: Function
   ): void {
+    this.skipCount = request.skipCount;
     request.keyword = this.keyword;
     request.isActive = this.isActive;
 

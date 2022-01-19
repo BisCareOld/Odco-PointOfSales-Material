@@ -17,7 +17,17 @@
                 <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
 
-                <!-- Number Column -->
+                <!-- Position Column -->
+                <ng-container matColumnDef="position">
+                    <th mat-header-cell *matHeaderCellDef>
+                        {{ "No" | localize }}
+                    </th>
+                    <td mat-cell *matCellDef="let element; let i = index">
+                        {{ skipCount + (i+1) }}
+                    </td>
+                </ng-container>
+
+                <!-- Sales Number Column -->
                 <ng-container matColumnDef="sales-number">
                     <th mat-header-cell *matHeaderCellDef>
                         {{ "SalesNumber" | localize }}
