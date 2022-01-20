@@ -290,17 +290,17 @@ namespace Odco.PointOfSales.Application.Sales
         {
             try
             {
-                var temp = await _saleRepository
+                var sale = await _saleRepository
                     .GetAllIncluding(t => t.InventorySalesProducts)
                     .FirstOrDefaultAsync(t => t.Id == saleId);
-                var tempDto = ObjectMapper.Map<SaleDto>(temp);
+                var saleDto = ObjectMapper.Map<SaleDto>(sale);
 
                 var stockBalancesOfSalesProducts = await _stockBalancesOfSalesProductRepository
                     .GetAll()
                     .Where(sbsp => sbsp.SaleId == saleId)
                     .ToListAsync();
 
-                foreach (var sp in tempDto.InventorySalesProducts)
+                foreach (var sp in saleDto.InventorySalesProducts)
                 {
                     sp.ReceivedQuantity = stockBalancesOfSalesProducts
                         .Where(sbsp => sbsp.ProductId == sp.ProductId && sbsp.SellingPrice == sp.SellingPrice)?
@@ -315,8 +315,8 @@ namespace Odco.PointOfSales.Application.Sales
                 }
 
                 // Adding NonInventorySalesProducts
-                tempDto.NonInventorySalesProducts = await GetNonInventoryProductBySaleIdAsync(saleId);
-                return tempDto;
+                saleDto.NonInventorySalesProducts = await GetNonInventoryProductBySaleIdAsync(saleId);
+                return saleDto;
             }
             catch (Exception ex)
             {
@@ -678,6 +678,7 @@ namespace Odco.PointOfSales.Application.Sales
                     Id = n.Id,
                     SequenceNumber = n.SequenceNumber,
                     SaleId = n.SaleId,
+                    SalesNumber = n.SalesNumber,
                     ProductId = n.ProductId,
                     ProductCode = n.ProductCode,
                     ProductName = n.ProductName,
@@ -740,7 +741,7 @@ namespace Odco.PointOfSales.Application.Sales
 
                         await _nonInventoryProductRepository.InsertAsync(new NonInventorySalesProduct
                         {
-                            SequenceNumber = 1,
+                            SequenceNumber = input_nip.SequenceNumber,
                             SaleId = saleId,
                             SalesNumber = salesNumber,
                             ProductId = input_nip.ProductId,
@@ -764,33 +765,33 @@ namespace Odco.PointOfSales.Application.Sales
                 else
                 {
                     // UPDATE
-                    var updatedDto = existingNIPs.FirstOrDefault(n => n.Id == input_nip.Id);
-                    if (updatedDto != null)
+                    var existNIP = existingNIPs.FirstOrDefault(n => n.Id == input_nip.Id);
+                    if (existNIP != null)
                     {
-                        if (updatedDto.Quantity <= input_nip.Quantity)
-                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, updatedDto.Quantity, input_nip.Quantity);
+                        if (existNIP.Quantity <= input_nip.Quantity)
+                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, existNIP.Quantity, input_nip.Quantity);
                         else
-                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, updatedDto.Quantity, input_nip.Quantity);
+                            await UpdateNonInventoryProductSummariesAsync(nonInventoryProductSummaries2, existNIP.Quantity, input_nip.Quantity);
 
-                        updatedDto.SequenceNumber = 1;
-                        updatedDto.SaleId = saleId;
-                        updatedDto.SalesNumber = salesNumber;
-                        updatedDto.ProductId = input_nip.ProductId;
-                        updatedDto.ProductCode = input_nip.ProductCode;
-                        updatedDto.ProductName = input_nip.ProductName;
-                        updatedDto.WarehouseId = input_nip.WarehouseId;
-                        updatedDto.WarehouseCode = input_nip.WarehouseCode;
-                        updatedDto.WarehouseName = input_nip.WarehouseName;
-                        updatedDto.Quantity = input_nip.Quantity;
-                        updatedDto.QuantityUnitOfMeasureUnit = null;
-                        updatedDto.DiscountRate = input_nip.DiscountRate;
-                        updatedDto.DiscountAmount = input_nip.DiscountAmount;
-                        updatedDto.LineTotal = input_nip.LineTotal;
-                        updatedDto.CostPrice = input_nip.CostPrice;
-                        updatedDto.SellingPrice = input_nip.SellingPrice;
-                        updatedDto.MaximumRetailPrice = input_nip.MaximumRetailPrice;
-                        updatedDto.Price = input_nip.Price;
-                        await _nonInventoryProductRepository.UpdateAsync(updatedDto);
+                        existNIP.SequenceNumber = input_nip.SequenceNumber;
+                        existNIP.SaleId = saleId;
+                        existNIP.SalesNumber = salesNumber;
+                        existNIP.ProductId = input_nip.ProductId;
+                        existNIP.ProductCode = input_nip.ProductCode;
+                        existNIP.ProductName = input_nip.ProductName;
+                        existNIP.WarehouseId = input_nip.WarehouseId;
+                        existNIP.WarehouseCode = input_nip.WarehouseCode;
+                        existNIP.WarehouseName = input_nip.WarehouseName;
+                        existNIP.Quantity = input_nip.Quantity;
+                        existNIP.QuantityUnitOfMeasureUnit = null;
+                        existNIP.DiscountRate = input_nip.DiscountRate;
+                        existNIP.DiscountAmount = input_nip.DiscountAmount;
+                        existNIP.LineTotal = input_nip.LineTotal;
+                        existNIP.CostPrice = input_nip.CostPrice;
+                        existNIP.SellingPrice = input_nip.SellingPrice;
+                        existNIP.MaximumRetailPrice = input_nip.MaximumRetailPrice;
+                        existNIP.Price = input_nip.Price;
+                        await _nonInventoryProductRepository.UpdateAsync(existNIP);
                     }
                 }
             }
@@ -843,122 +844,126 @@ namespace Odco.PointOfSales.Application.Sales
                 var invoiceNumber = string.Empty;
 
                 if (input.Cashes.Any() || input.Cheques.Any() || input.DebitCards.Any() || input.GiftCards.Any())
+                {
                     invoiceNumber = await _documentSequenceNumberManager.GetAndUpdateNextDocumentNumberAsync(DocumentType.Invoice);
 
-                var payment = new Payment();
+                    var payment = new Payment();
 
-                payment.SaleId = input.Id.Value;
-                payment.SalesNumber = input.SalesNumber;
-                payment.InvoiceNumber = invoiceNumber;
-                payment.CustomerId = input.CustomerId;
-                payment.CustomerCode = input.CustomerCode;
-                payment.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
-                payment.TotalReceivedAmount = input.ReceivedAmount;
-                payment.TotalBalanceAmount = input.BalanceAmount;
-                payment.TotalPaidAmount = input.ReceivedAmount - input.BalanceAmount;
-                payment.IsOutstandingPaymentInvolved = input.Outstandings.Any() ? true : false;
+                    payment.SaleId = input.Id.Value;
+                    payment.SalesNumber = input.SalesNumber;
+                    payment.InvoiceNumber = invoiceNumber;
+                    payment.CustomerId = input.CustomerId;
+                    payment.CustomerCode = input.CustomerCode;
+                    payment.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
+                    payment.TotalReceivedAmount = input.ReceivedAmount;
+                    payment.TotalBalanceAmount = input.BalanceAmount;
+                    payment.TotalPaidAmount = input.ReceivedAmount - input.BalanceAmount;
+                    payment.PaymentType = PaymentType.Sales;
+                    payment.IsOutstandingPaymentInvolved = input.Outstandings.Any() ? true : false;
 
-                #region
-                decimal remainingReceivedAmount = 0;
-                if (input.ReceivedAmount < input.NetAmount)
-                    remainingReceivedAmount = input.ReceivedAmount;
-                else
-                    remainingReceivedAmount = input.ReceivedAmount - input.BalanceAmount - (input.Outstandings?.FirstOrDefault()?.OutstandingAmount ?? 0);
-                #endregion
-
-                #region Map Payment from Payments[]
-
-                if (input.Cashes.Any())
-                {
-                    decimal _amountPaid = 0;
-
-                    // Get the total amount of cash payments
-                    var totalCashAmount = input.Cashes.Select(c => c.CashAmount).Sum();
-                    if (remainingReceivedAmount <= totalCashAmount)
-                    {
-                        _amountPaid = remainingReceivedAmount;
-                        remainingReceivedAmount = 0;
-                    }
+                    #region
+                    decimal remainingReceivedAmount = 0;
+                    if (input.ReceivedAmount < input.NetAmount)
+                        remainingReceivedAmount = input.ReceivedAmount;
                     else
+                        remainingReceivedAmount = input.ReceivedAmount - input.BalanceAmount - (input.Outstandings?.FirstOrDefault()?.OutstandingAmount ?? 0);
+                    #endregion
+
+                    #region Map Payment from Payments[]
+
+                    if (input.Cashes.Any())
                     {
-                        _amountPaid = totalCashAmount;
-                        remainingReceivedAmount -= totalCashAmount;
+                        decimal _amountPaid = 0;
+
+                        // Get the total amount of cash payments
+                        var totalCashAmount = input.Cashes.Select(c => c.CashAmount).Sum();
+                        if (remainingReceivedAmount <= totalCashAmount)
+                        {
+                            _amountPaid = remainingReceivedAmount;
+                            remainingReceivedAmount = 0;
+                        }
+                        else
+                        {
+                            _amountPaid = totalCashAmount;
+                            remainingReceivedAmount -= totalCashAmount;
+                        }
+                        payment.PaymentLineLevels.Add(new PaymentLineLevel
+                        {
+                            PaidAmount = _amountPaid,
+                            IsCash = true,
+                            SpecificReceivedAmount = totalCashAmount,
+                            SpecificBalanceAmount = totalCashAmount - _amountPaid,
+                        });
                     }
-                    payment.PaymentLineLevels.Add(new PaymentLineLevel
+                    foreach (var ip in input.Cheques)
                     {
-                        PaidAmount = _amountPaid,
-                        IsCash = true,
-                        SpecificReceivedAmount = totalCashAmount,
-                        SpecificBalanceAmount = totalCashAmount - _amountPaid,
-                    });
-                }
-                foreach (var ip in input.Cheques)
-                {
-                    decimal _amountPaid = 0;
+                        decimal _amountPaid = 0;
 
-                    if (remainingReceivedAmount <= ip.ChequeAmount)
-                    {
-                        _amountPaid = remainingReceivedAmount;
-                        remainingReceivedAmount = 0;
+                        if (remainingReceivedAmount <= ip.ChequeAmount)
+                        {
+                            _amountPaid = remainingReceivedAmount;
+                            remainingReceivedAmount = 0;
+                        }
+                        else
+                        {
+                            _amountPaid = ip.ChequeAmount;
+                            remainingReceivedAmount -= ip.ChequeAmount;
+                        }
+                        payment.PaymentLineLevels.Add(new PaymentLineLevel
+                        {
+                            PaidAmount = _amountPaid,
+                            ChequeNumber = ip.ChequeNumber,
+                            ChequeReturnDate = ip.ChequeReturnDate,
+                            BankId = ip.BankId,
+                            Bank = ip.Bank,
+                            BranchId = ip.BranchId,
+                            Branch = ip.Branch,
+                            IsCheque = true,
+                            SpecificReceivedAmount = ip.ChequeAmount,
+                            SpecificBalanceAmount = ip.ChequeAmount - _amountPaid,
+                        });
                     }
-                    else
+                    foreach (var ip in input.DebitCards)
                     {
-                        _amountPaid = ip.ChequeAmount;
-                        remainingReceivedAmount -= ip.ChequeAmount;
+                        payment.PaymentLineLevels.Add(new PaymentLineLevel
+                        {
+                            IsDebitCard = true,
+                        });
                     }
-                    payment.PaymentLineLevels.Add(new PaymentLineLevel
+                    foreach (var ip in input.GiftCards)
                     {
-                        PaidAmount = _amountPaid,
-                        ChequeNumber = ip.ChequeNumber,
-                        ChequeReturnDate = ip.ChequeReturnDate,
-                        BankId = ip.BankId,
-                        Bank = ip.Bank,
-                        BranchId = ip.BranchId,
-                        Branch = ip.Branch,
-                        IsCheque = true,
-                        SpecificReceivedAmount = ip.ChequeAmount,
-                        SpecificBalanceAmount = ip.ChequeAmount - _amountPaid,
-                    });
-                }
-                foreach (var ip in input.DebitCards)
-                {
-                    payment.PaymentLineLevels.Add(new PaymentLineLevel
+                        payment.PaymentLineLevels.Add(new PaymentLineLevel
+                        {
+                            PaidAmount = ip.GiftCardAmount,
+                            IsGiftCard = true,
+                        });
+                    }
+
+                    foreach (var pll in payment.PaymentLineLevels)
                     {
-                        IsDebitCard = true,
-                    });
+                        pll.InvoiceNumber = invoiceNumber;
+
+                        pll.SaleId = input.Id.Value;
+                        pll.SalesNumber = input.SalesNumber;
+
+                        pll.CustomerId = input.CustomerId;
+                        pll.CustomerCode = input.CustomerCode;
+                        pll.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
+
+                        pll.SpecificReceivedAmount = input.ReceivedAmount;
+                        pll.SpecificBalanceAmount = input.BalanceAmount;
+
+                        pll.PaidAmount = pll.PaidAmount;
+                        pll.IsCash = pll.IsCash;
+                        pll.IsCheque = pll.IsCheque;
+                        pll.IsDebitCard = pll.IsDebitCard;
+                        pll.IsGiftCard = pll.IsGiftCard;
+                        pll.PaymentType = PaymentType.Sales;
+                        pll.IsOutstandingPaymentInvolved = pll.IsOutstandingPaymentInvolved;
+                    }
+
+                    await _paymentRepository.InsertAsync(payment);
                 }
-                foreach (var ip in input.GiftCards)
-                {
-                    payment.PaymentLineLevels.Add(new PaymentLineLevel
-                    {
-                        PaidAmount = ip.GiftCardAmount,
-                        IsGiftCard = true,
-                    });
-                }
-
-                foreach (var pll in payment.PaymentLineLevels)
-                {
-                    pll.InvoiceNumber = invoiceNumber;
-
-                    pll.SaleId = input.Id.Value;
-                    pll.SalesNumber = input.SalesNumber;
-
-                    pll.CustomerId = input.CustomerId;
-                    pll.CustomerCode = input.CustomerCode;
-                    pll.CustomerName = !string.IsNullOrEmpty(input.CustomerName) ? input.CustomerName.Trim() : null;
-
-                    pll.SpecificReceivedAmount = input.ReceivedAmount;
-                    pll.SpecificBalanceAmount = input.BalanceAmount;
-
-                    pll.PaidAmount = pll.PaidAmount;
-                    pll.IsCash = pll.IsCash;
-                    pll.IsCheque = pll.IsCheque;
-                    pll.IsDebitCard = pll.IsDebitCard;
-                    pll.IsGiftCard = pll.IsGiftCard;
-                    pll.IsOutstandingPaymentInvolved = pll.IsOutstandingPaymentInvolved;
-                }
-
-                await _paymentRepository.InsertAsync(payment);
 
                 if (input.Outstandings.Any())
                 {
@@ -993,11 +998,11 @@ namespace Odco.PointOfSales.Application.Sales
 
             var _totalPayingAmount = previouslyPaidAmount + totalPayingAmount;
 
-            if(_totalPayingAmount == 0)
+            if (_totalPayingAmount == 0)
                 return PaymentStatus.NotPurchased;
             if (netAmount <= _totalPayingAmount)
                 return PaymentStatus.Completed;
-            
+
             return PaymentStatus.PartiallyPaid;
         }
         #endregion

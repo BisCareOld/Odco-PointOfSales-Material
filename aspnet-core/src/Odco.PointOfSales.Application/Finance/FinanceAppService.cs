@@ -4,7 +4,9 @@ using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq;
 using Abp.Linq.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.Common.SequenceNumbers;
+using Odco.PointOfSales.Application.Finance.CustomerOutstandingSettlements;
 using Odco.PointOfSales.Application.Finance.Payments;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Finance;
@@ -71,7 +73,8 @@ namespace Odco.PointOfSales.Application.Finance
             payment.TotalBalanceAmount = input.TotalBalanceAmount;
             payment.TotalPaidAmount = input.TotalReceivedAmount - input.TotalBalanceAmount;
             payment.Remarks = input.Remarks;
-            payment.IsOutstandingPaymentInvolved = true;
+            payment.PaymentType = PaymentType.Outstanding;
+            payment.IsOutstandingPaymentInvolved = false;
             #endregion
 
             #region Payment Line Level
@@ -164,6 +167,7 @@ namespace Odco.PointOfSales.Application.Finance
                 pll.IsCheque = pll.IsCheque;
                 pll.IsDebitCard = pll.IsDebitCard;
                 pll.IsGiftCard = pll.IsGiftCard;
+                pll.PaymentType = PaymentType.Outstanding;
                 pll.IsOutstandingPaymentInvolved = pll.IsOutstandingPaymentInvolved;
             }
 
@@ -174,7 +178,7 @@ namespace Odco.PointOfSales.Application.Finance
             var inputOutstandingSales = isAnySalesChecked ?
                                         input.OutstandingSales.Where(os => os.IsSelected).ToList() :
                                         input.OutstandingSales.ToList();
-            
+
             var paramA = inputOutstandingSales.Select(os => os.SaleId).ToArray();
             var sales = GetSalesQueryBySaleIdsAsync(paramA).Result.ToList();
 
@@ -221,6 +225,7 @@ namespace Odco.PointOfSales.Application.Finance
                     remainingPaidAmount2 -= customerOutstanding.DueOutstandingAmount;
                     customerOutstanding.DueOutstandingAmount = 0;
                 }
+                await _saleRepository.UpdateAsync(sale);
                 if (remainingPaidAmount2 == 0) break;
             }
             #endregion
@@ -260,6 +265,36 @@ namespace Odco.PointOfSales.Application.Finance
                 .FirstOrDefault(p => p.Id == paymentId);
             return ObjectMapper.Map<PaymentDto>(payment);
         }
+
+        public async Task<List<InvoiceNumberDto>> GetAllInvoiceNumbersBySaleIdAsync(Guid saleId)
+        {
+            var returnDto = new List<InvoiceNumberDto>();
+
+            returnDto = _paymentRepository.GetAll().Where(p => p.SaleId == saleId)?.Select(p => new InvoiceNumberDto
+            {
+                PaymentId = p.Id,
+                InvoiceNumber = p.InvoiceNumber,
+                PaymentType = 1
+            }).ToList();
+            returnDto.AddRange(
+                _customerOutstandingSettlementRepository.GetAll().Where(cos => cos.SaleId == saleId)?.Select(p => new InvoiceNumberDto
+                {
+                    PaymentId = p.PaymentId,
+                    InvoiceNumber = p.InvoiceNumber,
+                    PaymentType = 2
+                }).ToList()
+            );
+            returnDto.Distinct();
+            return returnDto;
+        }
+        #endregion
+
+        #region CustomerOutstandingSettlements
+        public async Task<List<CustomerOutstandingSettlementDto>> GetCustomerOutstandingSettlementsByPaymentIdAsync(Guid paymentId)
+        {
+            var coss = await _customerOutstandingSettlementRepository.GetAll().Where(cos => cos.PaymentId == paymentId).ToListAsync();
+            return ObjectMapper.Map<List<CustomerOutstandingSettlementDto>>(coss);
+        }
         #endregion
 
         private async Task<IQueryable<Sale>> GetSalesQueryBySaleIdsAsync(Guid[] saleIds)
@@ -277,6 +312,5 @@ namespace Odco.PointOfSales.Application.Finance
             await _customerOutstandingSettlementRepository.InsertAsync(cos);
         }
 
-        
     }
 }

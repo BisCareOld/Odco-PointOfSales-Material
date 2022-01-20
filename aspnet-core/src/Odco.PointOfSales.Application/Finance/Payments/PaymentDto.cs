@@ -2,6 +2,7 @@
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Odco.PointOfSales.Application.Finance.PaymentLineLevels;
+using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Finance;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,8 @@ namespace Odco.PointOfSales.Application.Finance.Payments
 
         [StringLength(100)]
         public string Remarks { get; set; }
+
+        public PaymentType PaymentType { get; set; }
 
         public bool IsOutstandingPaymentInvolved { get; set; }
 

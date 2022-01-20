@@ -74,3 +74,11 @@ h1 {
   font-size: 0.8em;
   font-weight: 400;
 }
+
+.non-inventory-product-identification {
+  height: 8px;
+  width: 8px;
+  background-color: rgb(237, 204, 72);
+  border-radius: 50%;
+  display: inline-block;
+}

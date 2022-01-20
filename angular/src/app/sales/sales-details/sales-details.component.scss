@@ -15,7 +15,7 @@
   margin-top: 25px;
 }
 
-.invoice .payment-info {
+.invoice .sales-info {
   font-weight: 500;
 }
 
@@ -84,10 +84,10 @@
   right: 0;
 }
 
-@media (max-width: 575px) {
+@media (max-width: 770px) {
   .invoice .top-left,
   .invoice .top-right,
-  .invoice .payment-details {
+  .invoice .sales-details {
     text-align: center;
   }
 
@@ -96,7 +96,7 @@
   }
 
   .invoice .to,
-  .invoice .payment-details {
+  .invoice .sales-details {
     float: none;
     width: 100%;
     text-align: center;
@@ -105,7 +105,7 @@
 
   .invoice p.lead,
   .invoice .to p.lead,
-  .invoice .payment-details p.lead {
+  .invoice .sales-details p.lead {
     font-size: 1.4rem;
   }
 }

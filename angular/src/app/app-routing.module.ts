@@ -15,11 +15,12 @@ import { InventoryTransactionsComponent } from "./inventory/inventory-transactio
 import { CreateInventoryTransactionsComponent } from "./inventory/inventory-transactions/create-inventory-transaction/create-inventory-transactions.component";
 import { CreatePurchaseOrderComponent } from "./purchasings/purchase-orders/create-purchase-order/create-purchase-order.component";
 import { SalesComponent } from "./sales/sales.component";
-import { PaymentPanelComponent } from "./sales/payment-panel/payment-panel.component";
-import { TempSalesListComponent } from "./sales/temp-sales-list/temp-sales-list.component";
+import { CreatePaymentComponent } from "./sales/create-payment/create-payment.component";
 import { CreateOutstandingPaymentComponent } from "./payments/create-payment-for-customer-outstanding/create-outstanding-payment.component";
 import { PaymentsComponent } from "./payments/payments.component";
 import { PaymentDetailsComponent } from "./payments/payment-details/payment-details.component";
+import { CreateSalesComponent } from "./sales/create-sales/create-sales.component";
+import { SalesDetailsComponent } from "./sales/sales-details/sales-details.component";
 
 @NgModule({
   imports: [
@@ -94,20 +95,26 @@ import { PaymentDetailsComponent } from "./payments/payment-details/payment-deta
             canActivate: [AppRouteGuard],
           },
           {
-            path: "sales",
-            component: SalesComponent,
+            path: "create-sales",
+            component: CreateSalesComponent,
+            data: { permission: "Pages.Tenants" },
+            canActivate: [AppRouteGuard],
+          },
+          {
+            path: "sales-details",
+            component: SalesDetailsComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
           {
             path: "payment-component/:tempSalesId",
-            component: PaymentPanelComponent,
+            component: CreatePaymentComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
           {
-            path: "sales-list",
-            component: TempSalesListComponent,
+            path: "sales",
+            component: SalesComponent,
             data: { permission: "Pages.Tenants" },
             canActivate: [AppRouteGuard],
           },
