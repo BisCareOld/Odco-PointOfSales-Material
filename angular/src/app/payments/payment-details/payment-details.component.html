@@ -83,6 +83,7 @@
                                 </div>
 
                                 <div class="row table-row my-3">
+                                    <h2>Payments</h2>
                                     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 center">
 
                                         <!--- Note that these columns can be defined in any order.
@@ -135,14 +136,66 @@
                                     </table>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-12 text-right pull-right invoice-total" style="text-align: right;">
-                                        <p>{{ "ReceivedAmount" | localize }}: {{ payment.totalReceivedAmount.toFixed(2)
-                                            }}</p>
-                                        <p>{{ "BalanceAmount" | localize }}: {{ payment.totalBalanceAmount.toFixed(2) }}
-                                        </p>
-                                        <p>{{ "PaidAmount" | localize }}: {{ payment.totalPaidAmount.toFixed(2) }}</p>
+                                <div class="row invoice-total">
+                                    <div class="col-xl-10 col-lg-10 col-md-10 col-sm-8 col-6"
+                                        style="text-align: right;">
+                                        <p>{{ "ReceivedAmount" | localize }}:</p>
+                                        <p>{{ "BalanceAmount" | localize }}:</p>
+                                        <p>{{ "PaidAmount" | localize }}:</p>
                                     </div>
+                                    <div class="col invoice-total-values">
+                                        <p>{{ payment.totalReceivedAmount.toFixed(2) }}</p>
+                                        <p>{{ payment.totalBalanceAmount.toFixed(2) }}</p>
+                                        <p>{{ payment.totalPaidAmount.toFixed(2) }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="row table-row my-3" *ngIf="dataSourceSettlement.length > 0">
+                                    <h2>Sales</h2>
+                                    <table mat-table [dataSource]="dataSourceSettlement"
+                                        class="mat-elevation-z8 center">
+
+                                        <!--- Note that these columns can be defined in any order.
+                                            The actual rendered columns are set as a property on the row definition" -->
+
+                                        <!-- Position Column -->
+                                        <ng-container matColumnDef="position">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "No" | localize }}</th>
+                                            <td mat-cell *matCellDef="let element; let i = index"> {{ i+1 }} </td>
+                                        </ng-container>
+
+                                        <!-- Customer Column -->
+                                        <ng-container matColumnDef="customer">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "Customer" | localize }}</th>
+                                            <td mat-cell *matCellDef="let element">{{ element.customerName }}</td>
+                                        </ng-container>
+
+                                        <!-- Sale Number Column -->
+                                        <ng-container matColumnDef="sale-number">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "SalesNumber" | localize }}</th>
+                                            <td class="td-amount" mat-cell *matCellDef="let element">{{
+                                                element.salesNumber }}</td>
+                                        </ng-container>
+
+                                        <!-- Invoice Number Column -->
+                                        <ng-container matColumnDef="invoice-number">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "InvoiceNumber" | localize }}</th>
+                                            <td class="td-amount" mat-cell *matCellDef="let element">{{
+                                                element.invoiceNumber }}</td>
+                                        </ng-container>
+
+                                        <!-- Paid Amount Column -->
+                                        <ng-container matColumnDef="paid-amount">
+                                            <th mat-header-cell *matHeaderCellDef>{{ "PaidAmount" | localize }}</th>
+                                            <td class="td-amount" mat-cell *matCellDef="let element"> {{
+                                                element.paidAmount.toFixed(2)
+                                                }}
+                                            </td>
+                                        </ng-container>
+
+                                        <tr mat-header-row *matHeaderRowDef="displayedSettlementColumns"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedSettlementColumns;"></tr>
+                                    </table>
                                 </div>
 
                             </div>

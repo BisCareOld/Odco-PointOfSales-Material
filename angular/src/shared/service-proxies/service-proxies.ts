@@ -697,6 +697,69 @@ export class FinanceServiceProxy {
         }
         return _observableOf<InvoiceNumberDto[]>(<any>null);
     }
+
+    /**
+     * @param paymentId (optional) 
+     * @return Success
+     */
+    getCustomerOutstandingSettlementsByPaymentId(paymentId: string | undefined): Observable<CustomerOutstandingSettlementDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Finance/GetCustomerOutstandingSettlementsByPaymentId?";
+        if (paymentId === null)
+            throw new Error("The parameter 'paymentId' cannot be null.");
+        else if (paymentId !== undefined)
+            url_ += "paymentId=" + encodeURIComponent("" + paymentId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCustomerOutstandingSettlementsByPaymentId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCustomerOutstandingSettlementsByPaymentId(<any>response_);
+                } catch (e) {
+                    return <Observable<CustomerOutstandingSettlementDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CustomerOutstandingSettlementDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetCustomerOutstandingSettlementsByPaymentId(response: HttpResponseBase): Observable<CustomerOutstandingSettlementDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(CustomerOutstandingSettlementDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CustomerOutstandingSettlementDto[]>(<any>null);
+    }
 }
 
 @Injectable()
@@ -6600,6 +6663,85 @@ export interface IInvoiceNumberDto {
     paymentId: string;
     invoiceNumber: string | undefined;
     paymentType: number;
+}
+
+export class CustomerOutstandingSettlementDto implements ICustomerOutstandingSettlementDto {
+    customerOutstandingId: string;
+    customerId: string;
+    customerCode: string;
+    customerName: string;
+    saleId: string;
+    salesNumber: string;
+    paymentId: string;
+    invoiceNumber: string;
+    paidAmount: number;
+    id: string;
+
+    constructor(data?: ICustomerOutstandingSettlementDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.customerOutstandingId = _data["customerOutstandingId"];
+            this.customerId = _data["customerId"];
+            this.customerCode = _data["customerCode"];
+            this.customerName = _data["customerName"];
+            this.saleId = _data["saleId"];
+            this.salesNumber = _data["salesNumber"];
+            this.paymentId = _data["paymentId"];
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.paidAmount = _data["paidAmount"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CustomerOutstandingSettlementDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CustomerOutstandingSettlementDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["customerOutstandingId"] = this.customerOutstandingId;
+        data["customerId"] = this.customerId;
+        data["customerCode"] = this.customerCode;
+        data["customerName"] = this.customerName;
+        data["saleId"] = this.saleId;
+        data["salesNumber"] = this.salesNumber;
+        data["paymentId"] = this.paymentId;
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["paidAmount"] = this.paidAmount;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): CustomerOutstandingSettlementDto {
+        const json = this.toJSON();
+        let result = new CustomerOutstandingSettlementDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICustomerOutstandingSettlementDto {
+    customerOutstandingId: string;
+    customerId: string;
+    customerCode: string;
+    customerName: string;
+    saleId: string;
+    salesNumber: string;
+    paymentId: string;
+    invoiceNumber: string;
+    paidAmount: number;
+    id: string;
 }
 
 export enum TransactionStatus {

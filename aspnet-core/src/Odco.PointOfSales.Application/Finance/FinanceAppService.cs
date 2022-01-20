@@ -4,7 +4,9 @@ using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq;
 using Abp.Linq.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Odco.PointOfSales.Application.Common.SequenceNumbers;
+using Odco.PointOfSales.Application.Finance.CustomerOutstandingSettlements;
 using Odco.PointOfSales.Application.Finance.Payments;
 using Odco.PointOfSales.Core.Enums;
 using Odco.PointOfSales.Core.Finance;
@@ -287,6 +289,14 @@ namespace Odco.PointOfSales.Application.Finance
         }
         #endregion
 
+        #region CustomerOutstandingSettlements
+        public async Task<List<CustomerOutstandingSettlementDto>> GetCustomerOutstandingSettlementsByPaymentIdAsync(Guid paymentId)
+        {
+            var coss = await _customerOutstandingSettlementRepository.GetAll().Where(cos => cos.PaymentId == paymentId).ToListAsync();
+            return ObjectMapper.Map<List<CustomerOutstandingSettlementDto>>(coss);
+        }
+        #endregion
+
         private async Task<IQueryable<Sale>> GetSalesQueryBySaleIdsAsync(Guid[] saleIds)
         {
             return _saleRepository.GetAll().Where(s => saleIds.Any(sId => sId == s.Id));
@@ -301,7 +311,6 @@ namespace Odco.PointOfSales.Application.Finance
         {
             await _customerOutstandingSettlementRepository.InsertAsync(cos);
         }
-
 
     }
 }

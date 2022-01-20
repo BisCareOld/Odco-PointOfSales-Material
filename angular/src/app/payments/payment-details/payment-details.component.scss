@@ -36,6 +36,11 @@
   font-size: 1rem;
 }
 
+.invoice-total-values {
+  max-width: 90px;
+  text-align: end;
+}
+
 .invoice .last-row {
   border-bottom: 1px solid #ddd;
 }
@@ -102,10 +107,6 @@
   .invoice .to p.lead,
   .invoice .payment-details p.lead {
     font-size: 1.4rem;
-  }
-
-  .invoice .btn {
-    margin-top: 10px;
   }
 }
 
